@@ -22,51 +22,51 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
-    
+
         $user = User::create([
+            'name'=>request('name'),
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $token=$user->createToken('myapptoken')->plainTextToken;
-    
-        $response=[
-            'user'=>$user,
-            'token'=>$token
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
         ];
 
-        return response($response,201);
-        
+        return response($response, 201);
     }
-    
+
 
     /**
      * Log in an existing user
      */
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|string|email',
-        'password' => 'required|string',
-        
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
 
-    $user = User::where('email', $request->email)->first();
-
-  
-
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials are incorrect.'],
         ]);
+
+        $user = User::where('email', $request->email)->first();
+
+
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        return response()
+            ->json([
+                'message' => 'You have logged in successfully.',
+                'user' => $user,
+                'token' => $user->createToken('myapptoken')->plainTextToken,
+            ]);
     }
-           
-    return response()
-     ->json([
-         'message' => 'You have logged in successfully.',
-         'user' => $user,
-         'token' => $user->createToken('myapptoken')->plainTextToken,
-     ]);
-}
 
 
     /**
@@ -78,10 +78,15 @@ class AuthController extends Controller
 
         // Log::info($request->user());
         // Log::info($request->header('Authorization'));
-    
+
         $request->user()->currentAccessToken()->delete();
-    
+
         return response()->json('Logged out successfully');
     }
-    
+
+    public function deleteUser(User $user)
+    {
+        $user->delete();
+        return response()->json(null, 204);
+    }
 }
