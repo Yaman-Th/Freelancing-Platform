@@ -9,9 +9,18 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\welcomNotification;
+use App\Notifications\welcomNotfication;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use App\Models\EmailVerfcation;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
-
-class AuthController extends Controller
+class AuthController extends Controller 
 {
     /**
      * Register a new user
@@ -30,12 +39,28 @@ class AuthController extends Controller
         ]);
         $token = $user->createToken('myapptoken')->plainTextToken;
 
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
+        // إنشاء رمز التحقق
+        $token = Str::random(6);
 
-        return response($response, 201);
+        EmailVerfcation::create([
+            'email' => $user->email,
+            'token' => $token,
+        ]);
+
+        // إرسال الرمز عبر البريد الإلكتروني
+        Mail::raw("Your verification code is: $token", function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Email Verification');
+                });
+                    
+        return response()
+        ->json([
+            'message' => 'You have register successfully.',
+            'user' => $user,
+            'token' => $user->createToken('myapptoken')->plainTextToken,
+        ]);
+    //    $user->notify(new welcomNotfication());
+        
     }
 
 
@@ -75,10 +100,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
 
-
-        // Log::info($request->user());
-        // Log::info($request->header('Authorization'));
-
         $request->user()->currentAccessToken()->delete();
 
         return response()->json('Logged out successfully');
@@ -89,4 +110,37 @@ class AuthController extends Controller
         $user->delete();
         return response()->json(null, 204);
     }
+
+
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['current_password' => ['The provided password does not match our records.']], 400);
+        }
+
+        $user->password = bcrypt($request->new_password);
+        // $user->save();
+
+        
+        return response()->json(['message' => 'Password changed successfully.'], 200);
+    }
+
+
+
+
+
+
+
+
+
+
 }
+
