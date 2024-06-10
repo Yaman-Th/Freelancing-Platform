@@ -8,16 +8,19 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 'First_Name'=> 'required|string|max:255|alpha', 
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->id('user_id');
+            $table->string('First_Name');
+            $table->string('Last_name');
+            $table->string('type');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            // $table->timestamp('Birthdate');
-            $table->string('password');
+            $table->date('Birthdate');
+            $table->boolean("is_Active");
             $table->rememberToken();
             $table->timestamps();
         });

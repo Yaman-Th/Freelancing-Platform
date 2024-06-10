@@ -28,14 +28,25 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+        'First_Name'=> 'required|string|max:255|alpha',
+        'Last_name'=> 'required|string|max:255|alpha',
+        'personal_Image'=>'required|string',
+        "type"=> 'required|string|max:255',
+        'email'=> 'required|string|email|max:255|unique:users',
+        'password'=> 'required|string|min:8|confirmed',
+        "is_Active"=> 'required|boolean',
+        'Birthdate'=> 'required|date'
         ]);
 
         $user = User::create([
-            'name'=>request('name'),
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        'First_Name'=> request('First_Name'),
+        'Last_name'=> request('Last_name'),
+        'personal_Image'=>request('personal_Image'),
+        "type"=> request('type'),
+        'email'=> request('email'),
+        'password'=> Hash::make($request->password),
+        "is_Active"=> request('is_Active'),
+        'Birthdate'=>request('Birthdate')
         ]);
         $token = $user->createToken('myapptoken')->plainTextToken;
 
