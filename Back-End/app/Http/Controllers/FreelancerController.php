@@ -2,70 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Freelancer;
-use Illuminate\Http\Request;
-use App\Http\Requests\StoreFreelancerRequest;
+use App\Http\Requests;
+use App\Models\Auth\User;
+use App\Models\Auth\users;
+use Ramsey\Uuid\Type\Integer;
+use App\Models\Auth\Freelancer;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use App\Http\Requests\UpdateFreelancerRequest;
 
 class FreelancerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // to make the user Freelancer
+    public function upgrade(Request $request, Freelancer $freelancer,User $user)
     {
-        //
+        $user = Freelancer::create([
+            'user_id' => request("user_id"),
+            'personal_Overview' => request("personal_Overview"),
+            'Wallet' => 0,
+            'is_Avilable' => true
+
+        ]);
+        
+        return response()->json(['message' => 'Account is Freelancer now']);
+    }
+    
+    /**
+     * profile
+     */
+    // all info
+    public function profile($id)
+    //    SELECT * FROM freelancers f JOIN users u on u.id=f.id WHERE f.id=3
+       { $freelancer = DB::table('freelancers')
+        ->join('users', 'users.id', '=', 'freelancers.user_id') // Assuming freelancers table has user_id column
+        ->select('freelancers.*', 'users.*')
+        ->where('freelancers.id', $id)
+        ->first();
+        return response()->json($freelancer);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
-    {
-     Freelancer::create([
-        'personal_Overview'=>request('personal_Overview'),
-        "Wallet"=>0,
-        "is_Avilable"=>request('is_Avilable')
-     ]);  
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreFreelancerRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Freelancer $freelancer)
-    {
-       //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Freelancer $freelancer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    // update info 
     public function update(UpdateFreelancerRequest $request, Freelancer $freelancer)
     {
-        //
-    }
+        $newData=request()->valdate([
+            "personal_Overview"=>"max:255|string",
+            "is_Avilable"=>"boolean"
+        ]);
+        $freelancer->update($newData);
+        
+        return response()->json($$freelancer);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Freelancer $freelancer)
-    {
-        //
     }
+    
+    public function addService(){
+
+    }
+   
 }

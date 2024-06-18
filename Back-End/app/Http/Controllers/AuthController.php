@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Auth\User;
+use App\Models\Auth\EmailVerfcation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -16,12 +17,12 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use App\Models\EmailVerfcation;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-
 class AuthController extends Controller 
 {
+
+
     /**
      * Register a new user
      */
@@ -143,6 +144,7 @@ class AuthController extends Controller
         
         return response()->json(['message' => 'Password changed successfully.'], 200);
     }
+
 
 
 

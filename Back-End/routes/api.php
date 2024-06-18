@@ -1,43 +1,47 @@
 <?php
 
+use App\Models\Auth\User;
+use App\Models\Auth\client;
 use Illuminate\Http\Request;
+use App\Models\Auth\Freelancer;
+use App\Models\Auth\EmailVerfcation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Models\User;
-use App\Models\EmailVerfcation;
+use App\Http\Controllers\FreelancerController;
 
 
 
 
-Route::post('/users/register',[AuthController::class,'Register']);
-
-Route::post('/users/login',[AuthController::class,'login']);
-
-
-Route::post('/users/resetPasswordEmail',[AuthController::class,'changePassword']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 
+// Routes for freelancer actions
+Route::middleware('auth:sanctum')->group(function () {
+    // user api 
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/change-password', [AuthController::class, 'changePassword']);
+    // freelancer api 
+        Route::post('/freelancer/profile/{id}', [FreelancerController::class, 'profile']);
+        Route::post('/freelancer/upgrade', [FreelancerController::class, 'upgrade']);
+        Route::post('/freelancer/update', [FreelancerController::class, 'update']);
+        Route::post('/freelancer/addservice', [FreelancerController::class, 'addService']);
+    // client api 
+    Route::post('/client/upgrade', [FreelancerController::class, 'upgrade']);
+    Route::post('/client/update', [FreelancerController::class, 'update']);
 
-
-Route::group((['middleware' => ['auth:sanctum']]), function () {
-
-
-
-   
-
-    Route::post('/users/logout',[AuthController::class,'logout']);
     
-    Route::post('password/change', [AuthController::class,'changePassword']);
+    //Route services
+    // Route::post('/freelancer/services', [ServiceController::class, 'addService']);
+    // Route::put('/freelancer/services/{service}', [ServiceController::class, 'updateService']);
+    // Route::delete('/freelancer/services/{service}', [ServiceController::class, 'deleteService']);
+    // Route::get('/freelancer/services', [ServiceController::class, 'listServices']); // List all services by the freelancer
+    // Route::get('/freelancer/orders', [FreelancerController::class, 'listOrders']); // List all orders received
+    //Route::post('/freelancer/orders/{order}/accept', [FreelancerController::class, 'acceptOrder']); // Accept an order
+    //Route::post('/freelancer/orders/{order}/reject', [FreelancerController::class, 'rejectOrder']); // Reject an order
+
 });
-
-
-
-Route::get('/user', function (Request $request) {
-})->middleware('auth:sanctum');
-
-
-
 
 Route::post('/verify-email', function (Request $request) {
     $request->validate([

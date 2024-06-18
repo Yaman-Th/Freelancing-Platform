@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Auth\client;
+use App\Models\Auth\Freelancer;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 
@@ -55,5 +57,25 @@ class User extends Authenticatable  implements CanResetPassword,MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function freelancer()
+    {
+        return $this->hasOne(Freelancer::class);
+    }
+
+    public function client()
+    {
+        return $this->hasOne(client::class);
+    }
+
+    public function isFreelancer()
+    {
+        return $this->freelancer()->exists();
+    }
+
+    public function isClient()
+    {
+        return $this->client()->exists();
     }
 }

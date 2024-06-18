@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('freelancers', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table) {
             $table->id()->unique();
             $table->unsignedBigInteger('user_id')->unique();
-            $table->text("personal_Overview");
-            $table->double("Wallet")->default('0');
-            $table->boolean( "is_Avilable");
-
-
+            $table->text("personalOverview");
+            $table->double("wallet")->default('0');
+            $table->boolean( "isAvilable");
             // Relation
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('freelancers');
+        Schema::dropIfExists('clients');
     }
 };
