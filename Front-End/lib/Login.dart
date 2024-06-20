@@ -1,16 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:freelancing/main.dart';
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final userNameController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   @override
   Widget build(context) {
     return Scaffold(
-      backgroundColor: backGroundColor,
+      backgroundColor:Theme.of(context).colorScheme.background,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -22,11 +27,9 @@ class LoginPage extends StatelessWidget {
             ),
             Text(
               'Sign in',
-              style: GoogleFonts.lato(
-                color: color1,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
+             style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
             ),
             const SizedBox(
               height: 30,
@@ -57,20 +60,19 @@ class LoginPage extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(color1),
+                      backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.onSurface),
                     ),
                     child: Text('Login',
-                        style: GoogleFonts.lato(
-                          fontSize: 20,
-                          color: Colors.white,
-                        )),
+                         style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.background,
+                      )),
                   ),
                 )),
             Text(
               'or sign in with :',
-              style: GoogleFonts.lato(
-                fontSize: 16,
-                color: color1,
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      
               ),
             ),
             IconButton(
@@ -79,7 +81,7 @@ class LoginPage extends StatelessWidget {
                 Icons.g_mobiledata,
               ),
               style:
-                  IconButton.styleFrom(iconSize: 50, foregroundColor: color1),
+                  IconButton.styleFrom(iconSize: 50, foregroundColor:Theme.of(context).colorScheme.onSurface ),
             ),
             Row(
               children: [
@@ -87,26 +89,24 @@ class LoginPage extends StatelessWidget {
                     onPressed: () {},
                     child: Text(
                       "Don't Have An Account",
-                      style: GoogleFonts.lato(
-                        fontSize: 16,
-                        color: color1,
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      )
                       ),
-                    ),),
+                    ),
                     const SizedBox(width:50,),
                      TextButton(
                     onPressed: () {},
                     child: Text(
                       "Forgot Password",
-                      style: GoogleFonts.lato(
-                        fontSize: 16,
-                        color: color1,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      )
                     ),),
               ],
-            )
-          ],
-        ),
-      ),
-    );
+                    )
+      ],
+      )),
+      );
   }
 }
