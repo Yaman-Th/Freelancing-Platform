@@ -18,20 +18,20 @@ final theme = ThemeData().copyWith(
     useMaterial3: true,
     scaffoldBackgroundColor: colorScheme.background,
     colorScheme: colorScheme,
-    textTheme: GoogleFonts.latoTextTheme().copyWith(
-      titleSmall: GoogleFonts.lato(
+    textTheme: GoogleFonts.ubuntuCondensedTextTheme().copyWith(
+      titleSmall: GoogleFonts.ubuntuCondensed(
         fontWeight: FontWeight.bold,
          fontSize:16
       ),
-      titleMedium: GoogleFonts.lato(
+      titleMedium: GoogleFonts.ubuntuCondensed(
         fontWeight: FontWeight.bold,
         fontSize:20
       ),
-      titleLarge: GoogleFonts.lato(
+      titleLarge: GoogleFonts.ubuntuCondensed(
         fontWeight: FontWeight.bold,
         fontSize:30
       ),
-      bodyMedium: GoogleFonts.lato(
+      bodyMedium: GoogleFonts.ubuntuCondensed(
         fontWeight: FontWeight.bold,
         fontSize:25
       

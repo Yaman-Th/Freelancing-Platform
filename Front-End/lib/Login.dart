@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                       )
                       ),
                     ),
-                    const SizedBox(width:50,),
+                    const SizedBox(width:100,),
                      TextButton(
                     onPressed: () {},
                     child: Text(
