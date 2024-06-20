@@ -19,7 +19,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-class AuthController extends Controller 
+
+class AuthController extends Controller
 {
 
 
@@ -29,25 +30,25 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-        'First_Name'=> 'required|string|max:255|alpha',
-        'Last_name'=> 'required|string|max:255|alpha',
-        'personal_Image'=>'required|string',
-        "type"=> 'required|string|max:255',
-        'email'=> 'required|string|email|max:255|unique:users',
-        'password'=> 'required|string|min:8|confirmed',
-        "is_Active"=> 'required|boolean',
-        'Birthdate'=> 'required|date'
-        ]);
+            'firstName' => 'required|string|max:255|alpha',
+            'lastName' => 'required|string|max:255|alpha',
+            'personalImage' => 'required|string',
+            "type" => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            "isActive" => 'required|boolean',
+            'birthdate' => 'required|date'
 
+        ]);
         $user = User::create([
-        'First_Name'=> request('First_Name'),
-        'Last_name'=> request('Last_name'),
-        'personal_Image'=>request('personal_Image'),
-        "type"=> request('type'),
-        'email'=> request('email'),
-        'password'=> Hash::make($request->password),
-        "is_Active"=> request('is_Active'),
-        'Birthdate'=>request('Birthdate')
+            'firstName' => request('firstName'),
+            'lastName' => request('lastName'),
+            'personalImage' => request('personalImage'),
+            "type" => request('type'),
+            'email' => request('email'),
+            'password' => Hash::make($request->password),
+            "isActive" => request('isActive'),
+            'birthdate' => request('birthdate')
         ]);
         $token = $user->createToken('myapptoken')->plainTextToken;
 
@@ -62,17 +63,17 @@ class AuthController extends Controller
         // إرسال الرمز عبر البريد الإلكتروني
         Mail::raw("Your verification code is: $token", function ($message) use ($user) {
             $message->to($user->email)
-                    ->subject('Email Verification');
-                });
-                    
+                ->subject('Email Verification');
+        });
+
         return response()
-        ->json([
-            'message' => 'You have register successfully.',
-            'user' => $user,
-            'token' => $user->createToken('myapptoken')->plainTextToken,
-        ]);
-    //    $user->notify(new welcomNotfication());
-        
+            ->json([
+                'message' => 'You have register successfully.',
+                'user' => $user,
+                'token' => $user->createToken('myapptoken')->plainTextToken,
+            ]);
+        //    $user->notify(new welcomNotfication());
+
     }
 
 
@@ -139,21 +140,8 @@ class AuthController extends Controller
         }
 
         $user->password = bcrypt($request->new_password);
-        // $user->save();
+        $user->save();
 
-        
         return response()->json(['message' => 'Password changed successfully.'], 200);
     }
-
-
-
-
-
-
-
-
-
-
-
 }
-

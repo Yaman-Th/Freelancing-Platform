@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/client/update', [FreelancerController::class, 'update']);
 
     
+    
     //Route services
     // Route::post('/freelancer/services', [ServiceController::class, 'addService']);
     // Route::put('/freelancer/services/{service}', [ServiceController::class, 'updateService']);
