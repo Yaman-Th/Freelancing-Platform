@@ -10,13 +10,10 @@ class Freelancer extends Model
 {
     use HasFactory;
 
-    protected $fillable =['user_id','personal_Overview','Wallet',"is_Avilable"];
-
-
+    protected $fillable = ['user_id', 'personal_overview', 'wallet', 'is_avilable'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-   
 }
