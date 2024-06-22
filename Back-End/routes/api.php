@@ -42,28 +42,32 @@ Route::middleware('auth:sanctum')->group(function () {
     //Route::post('/freelancer/orders/{order}/accept', [FreelancerController::class, 'acceptOrder']); // Accept an order
     //Route::post('/freelancer/orders/{order}/reject', [FreelancerController::class, 'rejectOrder']); // Reject an order
 
+
+
+    Route::post('/verify-email', function (Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+        ]);
+    
+        $verification = EmailVerfcation::where('email', $request->email)
+                                          ->where('token', $request->token)
+                                          ->first();
+    
+        if ($verification) {
+            $user = User::where('email', $request->email)->first();
+            $user->email_verified_at = now();
+            $user->save();
+    
+            // حذف سجل التحقق بعد التحقق الناجح
+            $verification->delete();
+    
+            return response()->json(['message' => 'Email verified successfully.']);
+        }
+    
+        return response()->json(['message' => 'Invalid verification code.'], 400);
+    });
 });
 
-Route::post('/verify-email', function (Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'token' => 'required|string',
-    ]);
 
-    $verification = EmailVerfcation::where('email', $request->email)
-                                      ->where('token', $request->token)
-                                      ->first();
 
-    if ($verification) {
-        $user = User::where('email', $request->email)->first();
-        $user->email_verified_at = now();
-        $user->save();
-
-        // حذف سجل التحقق بعد التحقق الناجح
-        $verification->delete();
-
-        return response()->json(['message' => 'Email verified successfully.']);
-    }
-
-    return response()->json(['message' => 'Invalid verification code.'], 400);
-});
