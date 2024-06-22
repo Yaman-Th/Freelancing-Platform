@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id()->unique();
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->text("personalOverview");
+            $table->foreignIdFor(User::class)->onDelete('cascade');
+            // $table->unsignedBigInteger('user_id')->unique();
+            $table->text("personal_overview");
             $table->double("wallet")->default('0');
-            $table->boolean( "isAvilable");
+            $table->boolean("is_avilable");
             // Relation
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

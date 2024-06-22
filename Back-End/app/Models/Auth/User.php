@@ -26,13 +26,13 @@ class User extends Authenticatable  implements CanResetPassword,MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        'firstName',
-        'lastName',
-        'personalImage',
+        'first_name',
+        'last_name',
+        'personal_image',
         "type",
         'email',
         'password',
-        "isActive",
+        "is_active",
         'birthdate'
     ];
 

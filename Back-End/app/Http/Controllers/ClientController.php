@@ -46,7 +46,7 @@ class ClientController extends Controller
     // update info 
     public function update(Request $request, client $client)
     {
-        $newData = request()->valdate([
+        $newData = request()->validate([
             'personal_overview' => "max:255|string",
             'is_avilable' => "boolean"
         ]);

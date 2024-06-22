@@ -22,32 +22,40 @@ use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-
-
     /**
      * Register a new user
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'firstName' => 'required|string|max:255|alpha',
-            'lastName' => 'required|string|max:255|alpha',
-            'personalImage' => 'required|string',
-            "type" => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            "isActive" => 'required|boolean',
-            'birthdate' => 'required|date'
+        try {
+            $request->validate([
+                'first_name' => 'required|string|max:255|alpha',
+                'last_name' => 'required|string|max:255|alpha',
+                'personal_image' => 'image',
+                "type" => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                "is_active" => 'boolean',
+                'birthdate' => 'required|date'
 
-        ]);
+            ]);
+            if ($request->hasFile('personal_image')) {
+                $personal_image = $request->file('personal_image')->store('personal_images');
+            }
+        } catch (ValidationException $exception) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $exception->errors()
+            ], 422);
+        }
         $user = User::create([
-            'firstName' => request('firstName'),
-            'lastName' => request('lastName'),
-            'personalImage' => request('personalImage'),
+            'first_name' => request('first_name'),
+            'last_name' => request('last_name'),
+            'personal_image' => $personal_image,
             "type" => request('type'),
             'email' => request('email'),
             'password' => Hash::make($request->password),
-            "isActive" => request('isActive'),
+            // "is_active" => request('is_active'),
             'birthdate' => request('birthdate')
         ]);
         $token = $user->createToken('myapptoken')->plainTextToken;
