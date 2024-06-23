@@ -3,7 +3,7 @@
 namespace App\Models\Auth;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Auth\client;
+use App\Models\Auth\Client;
 use App\Models\Auth\Freelancer;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +16,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 // use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable  implements CanResetPassword,MustVerifyEmail
+class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
 {
-    use HasApiTokens,HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -66,8 +66,9 @@ class User extends Authenticatable  implements CanResetPassword,MustVerifyEmail
 
     public function client()
     {
-        return $this->hasOne(client::class);
+        return $this->hasOne(Client::class);
     }
+
 
     public function isFreelancer()
     {

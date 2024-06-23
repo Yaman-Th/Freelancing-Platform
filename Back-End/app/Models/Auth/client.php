@@ -2,11 +2,12 @@
 
 namespace App\Models\Auth;
 
+use App\Models\Post;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class client extends Model
+class Client extends Model
 {
     use HasFactory;
 
@@ -15,5 +16,10 @@ class client extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 }
