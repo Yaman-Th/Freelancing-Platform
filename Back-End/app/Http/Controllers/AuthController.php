@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auth\client;
 use App\Models\Auth\User;
 use App\Models\Auth\EmailVerfcation;
+use App\Models\Auth\Freelancer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +29,6 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        try {
             $request->validate([
                 'first_name' => 'required|string|max:255|alpha',
                 'last_name' => 'required|string|max:255|alpha',
@@ -37,28 +38,23 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 "is_active" => 'boolean',
                 'birthdate' => 'required|date'
-
             ]);
-            if ($request->hasFile('personal_image')) {
-                $personal_image = $request->file('personal_image')->store('personal_images');
-            }
-        } catch (ValidationException $exception) {
-            return response()->json([
-                'message' => 'Validation Error',
-                'errors' => $exception->errors()
-            ], 422);
-        }
         $user = User::create([
             'first_name' => request('first_name'),
             'last_name' => request('last_name'),
-            'personal_image' => $personal_image,
             "type" => request('type'),
             'email' => request('email'),
             'password' => Hash::make($request->password),
-            // "is_active" => request('is_active'),
             'birthdate' => request('birthdate')
         ]);
-        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        if ($request->type === 'freelancer') {
+            Freelancer::create(['user_id' => $user->id]);
+        }
+    
+        if ($request->type === 'client') {
+            Client::create(['user_id' => $user->id]);
+        }
 
         // إنشاء رمز التحقق
         $token = Str::random(6);
@@ -78,7 +74,7 @@ class AuthController extends Controller
             ->json([
                 'message' => 'You have register successfully.',
                 'user' => $user,
-                'token' => $user->createToken('myapptoken')->plainTextToken,
+                // 'token' => $user->createToken('myapptoken')->plainTextToken,
             ]);
         //    $user->notify(new welcomNotfication());
 

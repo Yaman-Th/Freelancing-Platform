@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Skill;
+use Illuminate\Http\Request;
+use App\Models\Auth\Freelancer;
 use App\Http\Requests\StoreSkillRequest;
 use App\Http\Requests\UpdateSkillRequest;
-use Illuminate\Http\Request;
+
 class SkillController extends Controller
 {
     /**
@@ -13,7 +15,7 @@ class SkillController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(["skill"=>Skill::all()]);
     }
 
     /**
@@ -25,20 +27,37 @@ class SkillController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * connect skill with freelancer
      */
-    public function store(StoreSkillRequest $request)
+    public function addSkill(Request $request, $freelancerId)
     {
-        //
+        $request->validate([
+            'skill_id' => 'required|exists:skills,id',
+        ]);
+
+        $freelancer = Freelancer::findOrFail($freelancerId);
+
+        $freelancer->skills()->attach($request->skill_id);
+
+        return response()->json(['message' => 'Skill added successfully'], 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Skill $skill)
+   public function removeSkill(Request $request, $freelancerId)
     {
-        //
+        $request->validate([
+            'skill_id' => 'required|exists:skills,id',
+        ]);
+
+        $freelancer = Freelancer::findOrFail($freelancerId);
+
+        $freelancer->skills()->delete($request->skill_id);
+
+        return response()->json(['message' => 'Skill removed successfully'], 200);
     }
+    
 
     /**
      * Show the form for editing the specified resource.

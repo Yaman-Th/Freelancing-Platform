@@ -11,7 +11,13 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'personal_overview', 'wallet', 'is_avilable'];
+    protected $fillable = [
+        'user_id',
+        'personal_overview',
+        'personal_image',
+        'wallet',
+        'is_avilable'
+    ];
 
     public function user()
     {
