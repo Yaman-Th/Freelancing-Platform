@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('service_orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId(Service::class)->constrained()->onDelete('cascade');
-            $table->foreignId(Client::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Service::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Client::class)->constrained()->onDelete('cascade');
             $table->date("order_date");
             $table->date("delivery_date");
             $table->string("status");
@@ -35,4 +35,3 @@ return new class extends Migration
         Schema::dropIfExists('service_orders');
     }
 };
-

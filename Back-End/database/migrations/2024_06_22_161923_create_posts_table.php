@@ -3,6 +3,7 @@
 use App\Models\Auth\Client;
 use App\Models\Contract;
 use App\Models\Post;
+use App\Models\Category;
 use App\Models\Skill;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->float('budget');
             $table->date('deadline');
             // $table->foreignIdFor(Team::class)->onDelete('cascade');
-            // $table->foreignIdFor(Category::class)->onDelete('cascade');
+            $table->foreignIdFor(Category::class)->onDelete('cascade');
             $table->timestamps();
         });
 
