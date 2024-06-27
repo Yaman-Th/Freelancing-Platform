@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Auth\Freelancer;
+use App\Models\Auth\User;
 use App\Models\Service;
 use App\Models\Category;
 use Illuminate\Database\Migrations\Migration;
@@ -19,11 +20,11 @@ return new class extends Migration
             $table->foreignIdFor(Freelancer::class)->onDelete('cascade');
             $table->text('title');
             $table->text('description');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->unsignedBigInteger('delivery_dayes');
             $table->float('price');
             $table->unsignedBigInteger('category_id');
-            // $table->foreignIdFor(Category::class)->onDelete('cascade');
+            $table->foreignIdFor(Category::class)->onDelete('cascade');
             $table->timestamps();
         });
     }

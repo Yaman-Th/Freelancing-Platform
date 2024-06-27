@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Skill;
 use Illuminate\Http\Request;
 use App\Models\Auth\Freelancer;
-use App\Http\Requests\StoreSkillRequest;
-use App\Http\Requests\UpdateSkillRequest;
 
 class SkillController extends Controller
 {
@@ -17,27 +15,36 @@ class SkillController extends Controller
     {
         return response()->json(["skill"=>Skill::all()]);
     }
-
+    public function show(Skill $skill)
+    {
+        return response()->json(["skill"=>Skill::find($skill->id)]);
+    }
     /**
      * Show the form for creating a new resource.
      */
     public function create(Request $request)
     {
-        Skill::create(['name'=>request('name')]);
+        $data=$request->validate([
+            'name'=>'required|string|max:255'
+        ]);
+        Skill::create($data);
+        return response()->json([
+            'message'=>'Skill Create Sccessfully',
+            'Skill'=>$data
+        ]);
     }
 
     /**
      * connect skill with freelancer
      */
-    public function addSkill(Request $request, $freelancerId)
+    public function addSkill(Request $request)
     {
         $request->validate([
             'skill_id' => 'required|exists:skills,id',
         ]);
-
-        $freelancer = Freelancer::findOrFail($freelancerId);
-
-        $freelancer->skills()->attach($request->skill_id);
+        $freelancer=auth()->user();
+        
+        
 
         return response()->json(['message' => 'Skill added successfully'], 200);
     }
@@ -59,27 +66,10 @@ class SkillController extends Controller
     }
     
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Skill $skill)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateSkillRequest $request, Skill $skill)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
+   
     public function destroy(Skill $skill)
     {
-        //
+        $skill->delete();
+        return response()->json(['message'=>'Skill delete Sccessfully']);
     }
 }

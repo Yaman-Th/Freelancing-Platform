@@ -18,6 +18,8 @@ class FreelancerController extends Controller
     // to make the user Freelancer
     public function updateProfile(Request $request, Freelancer $freelancer)
 {
+    $user=auth()->user();
+    $freelancer=$user->freelancer;
     try {
         $request->validate([
             'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -25,7 +27,7 @@ class FreelancerController extends Controller
         ]);
 
         if ($request->hasFile('personal_image')) {
-            $personal_image = $request->file('personal_image')->store('personal_images');
+            $personal_image = $request->file('personal_image')->store('personal_image');
             // تحديث حقل الصورة في الفريلانسر
             $freelancer->update([
                 'personal_image' => $personal_image,
@@ -49,17 +51,22 @@ class FreelancerController extends Controller
     /**
      * profile
      */
-    // all info
-    public function profile(string $id)
+    // all info about myProfile
+    public function myprofile()
     //    SELECT * FROM freelancers f JOIN users u on u.id=f.id WHERE f.id=3
     {
+        $user=auth()->user();
         $freelancerinfo = DB::table('freelancers')
             ->join('users', 'users.id', '=', 'freelancers.user_id') // Assuming freelancers table has user_id column
             ->select('freelancers.*', 'users.*')
-            ->where('freelancers.id', $id)
+            ->where('freelancers.id', $user->freelancer->id)
             ->first();
         // $Skill
         return response()->json($freelancerinfo);
+    }
+    
+    public function show(Freelancer $freelancer){
+                return response()->json(Freelancer::find($freelancer));
     }
 
 }

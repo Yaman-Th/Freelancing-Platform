@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auth\client;
+use App\Models\Auth\CLient;
 use App\Models\Auth\User;
 use App\Models\Auth\EmailVerfcation;
 use App\Models\Auth\Freelancer;
@@ -29,31 +29,27 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-            $request->validate([
-                'first_name' => 'required|string|max:255|alpha',
-                'last_name' => 'required|string|max:255|alpha',
-                'personal_image' => 'image',
-                "type" => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-                "is_active" => 'boolean',
-                'birthdate' => 'required|date'
-            ]);
-        $user = User::create([
-            'first_name' => request('first_name'),
-            'last_name' => request('last_name'),
-            "type" => request('type'),
-            'email' => request('email'),
-            'password' => Hash::make($request->password),
-            'birthdate' => request('birthdate')
+        $data = $request->validate([
+            'first_name' => 'required|string|max:255|alpha',
+            'last_name' => 'required|string|max:255|alpha',
+            "type" => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            "is_active" => 'boolean',
+            'birthdate' => 'required|date'
         ]);
+        $user = User::create($data);
 
         if ($request->type === 'freelancer') {
-            Freelancer::create(['user_id' => $user->id]);
+            Freelancer::create([
+                'user_id' => $user->id
+            ]);
         }
-    
+
         if ($request->type === 'client') {
-            Client::create(['user_id' => $user->id]);
+            Client::create([
+                'user_id' => $user->id
+            ]);
         }
 
         // إنشاء رمز التحقق
@@ -74,10 +70,8 @@ class AuthController extends Controller
             ->json([
                 'message' => 'You have registered successfully.',
                 'user' => $user,
-                // 'token' => $user->createToken('myapptoken')->plainTextToken,
+                'token' => $user->createToken('myapptoken')->plainTextToken,
             ]);
-        //    $user->notify(new welcomNotfication());
-
     }
 
 
@@ -147,5 +141,30 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Password changed successfully.'], 200);
+    }
+
+
+    public function verfiyEmail(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        $verification = EmailVerfcation::where('email', auth()->user()->email)
+            ->where('token', $request->token)
+            ->first();
+
+        if ($verification) {
+            $user = User::where('email', auth()->user()->email)->first();
+            $user->email_verified_at = now();
+            $user->save();
+
+            // حذف سجل التحقق بعد التحقق الناجح
+            $verification->delete();
+
+            return response()->json(['message' => 'Email verified successfully.']);
+        }
+
+        return response()->json(['message' => 'Invalid verification code.'], 400);
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->unique();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text("personal_overview")->nullable();
-            $table->string('personal_image')->nullable();// تعديل ل نوع موحد 
+            $table->string('personal_image')->nullable();
             $table->double("wallet")->default('0');
             $table->boolean("is_avilable")->default(true);
             $table->timestamps();

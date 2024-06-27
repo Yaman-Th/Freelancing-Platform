@@ -2,6 +2,7 @@
 
 namespace App\Models\Auth;
 
+use App\Models\Service;
 use App\Models\Skill;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
@@ -26,5 +27,8 @@ class Freelancer extends Model
     public function skill()
     {
        return $this->belongsToMany(Skill::class, 'freelancer_skill', 'skill_id', 'freelancer_id');
+    }
+    public function service(){
+        return $this->hasMany(Service::class);
     }
 }

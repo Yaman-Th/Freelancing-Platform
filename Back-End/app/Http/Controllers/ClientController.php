@@ -28,7 +28,7 @@ class ClientController extends Controller
                 $personal_image = $request->file('personal_image')->store('personal_images');
                 $client->update([
                     'personal_image' => $personal_image,
-                    'personal_overview' => $request->input('personal_overview'),
+                    'personal_overview' => $request->personal_overview,
                 ]);
             } else {
                 $client->update([
