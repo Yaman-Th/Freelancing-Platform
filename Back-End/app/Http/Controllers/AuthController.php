@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auth\CLient;
+use App\Models\Auth\Client;
 use App\Models\Auth\User;
 use App\Models\Auth\EmailVerfcation;
 use App\Models\Auth\Freelancer;
