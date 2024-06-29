@@ -24,6 +24,9 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
               ),
         ),
         centerTitle: true,
+         actions: [
+          IconButton(onPressed: (){}, icon:const CircleAvatar(backgroundImage:AssetImage('assets/images/Avatar.jpg') ,))
+         ],
       ),
       body: SingleChildScrollView(
         child: Center(
