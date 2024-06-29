@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Skill;
-use App\Http\Requests\StoreSkillRequest;
-use App\Http\Requests\UpdateSkillRequest;
 use Illuminate\Http\Request;
+use App\Models\Auth\Freelancer;
+
 class SkillController extends Controller
 {
     /**
@@ -13,54 +13,63 @@ class SkillController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(["skill"=>Skill::all()]);
     }
-
+    public function show(Skill $skill)
+    {
+        return response()->json(["skill"=>Skill::find($skill->id)]);
+    }
     /**
      * Show the form for creating a new resource.
      */
     public function create(Request $request)
     {
-        Skill::create(['name'=>request('name')]);
+        $data=$request->validate([
+            'name'=>'required|string|max:255'
+        ]);
+        Skill::create($data);
+        return response()->json([
+            'message'=>'Skill Create Sccessfully',
+            'Skill'=>$data
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * connect skill with freelancer
      */
-    public function store(StoreSkillRequest $request)
+    public function addSkill(Request $request)
     {
-        //
+        $request->validate([
+            'skill_id' => 'required|exists:skills,id',
+        ]);
+        $freelancer=auth()->user();
+        
+        
+
+        return response()->json(['message' => 'Skill added successfully'], 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Skill $skill)
+   public function removeSkill(Request $request, $freelancerId)
     {
-        //
-    }
+        $request->validate([
+            'skill_id' => 'required|exists:skills,id',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Skill $skill)
-    {
-        //
-    }
+        $freelancer = Freelancer::findOrFail($freelancerId);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateSkillRequest $request, Skill $skill)
-    {
-        //
-    }
+        $freelancer->skills()->delete($request->skill_id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
+        return response()->json(['message' => 'Skill removed successfully'], 200);
+    }
+    
+
+   
     public function destroy(Skill $skill)
     {
-        //
+        $skill->delete();
+        return response()->json(['message'=>'Skill delete Sccessfully']);
     }
 }

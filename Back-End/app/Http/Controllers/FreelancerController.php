@@ -2,60 +2,72 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Skill;
 use App\Http\Requests;
 use App\Models\Auth\User;
-use App\Models\Auth\users;
+use GuzzleHttp\Psr7\Message;
+use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
 use App\Models\Auth\Freelancer;
+use App\Models\Freelancer_Skill;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use App\Http\Requests\UpdateFreelancerRequest;
+use Illuminate\Validation\ValidationException;
 
 class FreelancerController extends Controller
 {
     // to make the user Freelancer
-    public function upgrade(Request $request, Freelancer $freelancer,User $user)
-    {
-        $user = Freelancer::create([
-            'user_id' => request("user_id"),
-            'personal_Overview' => request("personal_Overview"),
-            'Wallet' => 0,
-            'is_Avilable' => true
-
+    public function updateProfile(Request $request, Freelancer $freelancer)
+{
+    $user=auth()->user();
+    $freelancer=$user->freelancer;
+    try {
+        $request->validate([
+            'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'personal_overview' => 'sometimes|string',
         ]);
-        
-        return response()->json(['message' => 'Account is Freelancer now']);
+
+        if ($request->hasFile('personal_image')) {
+            $personal_image = $request->file('personal_image')->store('personal_image');
+            // تحديث حقل الصورة في الفريلانسر
+            $freelancer->update([
+                'personal_image' => $personal_image,
+                'personal_overview' => $request->input('personal_overview'),
+            ]);
+        } else {
+            $freelancer->update([
+                'personal_overview' => $request->personal_overview
+            ]);
+        }
+    } catch (ValidationException $exception) {
+        return response()->json([
+            'message' => 'Validation Error',
+            'errors' => $exception->errors()
+        ], 422);
     }
-    
+
+    return response()->json(['message' => 'Update Successfully']);
+}
+
     /**
      * profile
      */
-    // all info
-    public function profile($id)
+    // all info about myProfile
+    public function myprofile()
     //    SELECT * FROM freelancers f JOIN users u on u.id=f.id WHERE f.id=3
-       { $freelancer = DB::table('freelancers')
-        ->join('users', 'users.id', '=', 'freelancers.user_id') // Assuming freelancers table has user_id column
-        ->select('freelancers.*', 'users.*')
-        ->where('freelancers.id', $id)
-        ->first();
-        return response()->json($freelancer);
-    }
-
-    // update info 
-    public function update(UpdateFreelancerRequest $request, Freelancer $freelancer)
     {
-        $newData=request()->valdate([
-            "personal_Overview"=>"max:255|string",
-            "is_Avilable"=>"boolean"
-        ]);
-        $freelancer->update($newData);
-        
-        return response()->json($$freelancer);
-
+        $user=auth()->user();
+        $freelancerinfo = DB::table('freelancers')
+            ->join('users', 'users.id', '=', 'freelancers.user_id') // Assuming freelancers table has user_id column
+            ->select('freelancers.*', 'users.*')
+            ->where('freelancers.id', $user->freelancer->id)
+            ->first();
+        // $Skill
+        return response()->json($freelancerinfo);
     }
     
-    public function addService(){
-
+    public function show(Freelancer $freelancer){
+                return response()->json(Freelancer::find($freelancer));
     }
-   
+
 }
+

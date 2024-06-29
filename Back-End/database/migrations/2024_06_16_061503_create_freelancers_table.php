@@ -13,17 +13,15 @@ return new class extends Migration
     {
         Schema::create('freelancers', function (Blueprint $table) {
             $table->id()->unique();
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->text("personalOverview");
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->text("personal_overview")->nullable();
+            $table->string('personal_image')->nullable();
             $table->double("wallet")->default('0');
-            $table->boolean( "isAvilable");
+            $table->boolean("is_avilable")->default(true);
             $table->timestamps();
 
 
-            // Relation
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
         });
-        
     }
 
     /**

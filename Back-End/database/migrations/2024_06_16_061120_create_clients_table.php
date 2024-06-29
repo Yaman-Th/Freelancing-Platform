@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id()->unique();
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->text("personalOverview");
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->text("personal_overview")->nullable();
+            $table->string('personal_image')->nullable();// تعديل ل نوع موحد 
             $table->double("wallet")->default('0');
-            $table->boolean( "isAvilable");
-            // Relation
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->boolean("is_avilable")->default(true);
+            $table->timestamps();
+            
         });
     }
 

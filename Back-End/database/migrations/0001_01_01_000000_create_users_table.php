@@ -14,15 +14,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('firstName');
-            $table->string('lastname');
-            $table->string('personalImage');
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('password');
             $table->string('type');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->date('birthdate');
-            $table->boolean("isActive");
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -39,7 +38,7 @@ return new class extends Migration
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
-            $table->integer('lastActivity')->index();
+            $table->integer('last_activity')->index();
         });
     }
 

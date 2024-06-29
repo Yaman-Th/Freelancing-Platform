@@ -1,13 +1,13 @@
 <?php
 
-namespace Database\Factories\Auth;
+namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Auth\client>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ServiceOrder>
  */
-class clientFactory extends Factory
+class ServiceOrderFactory extends Factory
 {
     /**
      * Define the model's default state.

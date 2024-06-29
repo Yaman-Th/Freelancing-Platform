@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auth\Client;
 use App\Models\Auth\User;
 use App\Models\Auth\EmailVerfcation;
+use App\Models\Auth\Freelancer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -19,37 +21,36 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-class AuthController extends Controller 
+
+class AuthController extends Controller
 {
-
-
     /**
      * Register a new user
      */
     public function register(Request $request)
     {
-        $request->validate([
-        'First_Name'=> 'required|string|max:255|alpha',
-        'Last_name'=> 'required|string|max:255|alpha',
-        'personal_Image'=>'required|string',
-        "type"=> 'required|string|max:255',
-        'email'=> 'required|string|email|max:255|unique:users',
-        'password'=> 'required|string|min:8|confirmed',
-        "is_Active"=> 'required|boolean',
-        'Birthdate'=> 'required|date'
+        $data = $request->validate([
+            'first_name' => 'required|string|max:255|alpha',
+            'last_name' => 'required|string|max:255|alpha',
+            "type" => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            "is_active" => 'boolean',
+            'birthdate' => 'required|date'
         ]);
+        $user = User::create($data);
 
-        $user = User::create([
-        'First_Name'=> request('First_Name'),
-        'Last_name'=> request('Last_name'),
-        'personal_Image'=>request('personal_Image'),
-        "type"=> request('type'),
-        'email'=> request('email'),
-        'password'=> Hash::make($request->password),
-        "is_Active"=> request('is_Active'),
-        'Birthdate'=>request('Birthdate')
-        ]);
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        if ($request->type === 'freelancer') {
+            Freelancer::create([
+                'user_id' => $user->id
+            ]);
+        }
+
+        if ($request->type === 'client') {
+            Client::create([
+                'user_id' => $user->id
+            ]);
+        }
 
         // إنشاء رمز التحقق
         $token = Str::random(6);
@@ -62,17 +63,15 @@ class AuthController extends Controller
         // إرسال الرمز عبر البريد الإلكتروني
         Mail::raw("Your verification code is: $token", function ($message) use ($user) {
             $message->to($user->email)
-                    ->subject('Email Verification');
-                });
-                    
+                ->subject('Email Verification');
+        });
+
         return response()
-        ->json([
-            'message' => 'You have register successfully.',
-            'user' => $user,
-            'token' => $user->createToken('myapptoken')->plainTextToken,
-        ]);
-    //    $user->notify(new welcomNotfication());
-        
+            ->json([
+                'message' => 'You have registered successfully.',
+                'user' => $user,
+                'token' => $user->createToken('myapptoken')->plainTextToken,
+            ]);
     }
 
 
@@ -139,21 +138,33 @@ class AuthController extends Controller
         }
 
         $user->password = bcrypt($request->new_password);
-        // $user->save();
+        $user->save();
 
-        
         return response()->json(['message' => 'Password changed successfully.'], 200);
     }
 
 
+    public function verfiyEmail(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+        ]);
 
+        $verification = EmailVerfcation::where('email', auth()->user()->email)
+            ->where('token', $request->token)
+            ->first();
 
+        if ($verification) {
+            $user = User::where('email', auth()->user()->email)->first();
+            $user->email_verified_at = now();
+            $user->save();
 
+            // حذف سجل التحقق بعد التحقق الناجح
+            $verification->delete();
 
+            return response()->json(['message' => 'Email verified successfully.']);
+        }
 
-
-
-
-
+        return response()->json(['message' => 'Invalid verification code.'], 400);
+    }
 }
-
