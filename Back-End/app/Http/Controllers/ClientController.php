@@ -25,7 +25,7 @@ class ClientController extends Controller
                 'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'personal_overview' => 'sometimes|string',
             ]);
-    
+
             if ($request->hasFile('personal_image')) {
                 $personal_image = $request->file('personal_image')->store('personal_images');
                 $client->update([
@@ -43,31 +43,30 @@ class ClientController extends Controller
                 'errors' => $exception->errors()
             ], 422);
         }
-    
+
         return response()->json(['message' => 'Update Successfully']);
     }
-    
-        /**
-         * profile
-         */
-        // all info
-        public function myprofile()
-        //    SELECT * FROM client f JOIN users u on u.id=f.id WHERE f.id=3
-        {
-            $user=auth()->user();
-            $client=$user->client;
-            $clientinfo = DB::table('clients')
-                ->join('users', 'users.id', '=', 'clients.user_id') // Assuming client table has user_id column
-                ->select('clients.*', 'users.*')
-                ->where('clients.id', $client->id)
-                ->first();
-            // $Skill
-            return response()->json($clientinfo);
-        }
-        public function show($id){
-            return response()->json(Client::find($id));
 
+    /**
+     * profile
+     */
+    // all info
+    public function profile(Client $client)
+    //    SELECT * FROM client f JOIN users u on u.id=f.id WHERE f.id=3
+    {
+        $clientinfo = DB::table('client')
+            ->join('users', 'users.id', '=', 'client.user_id') // Assuming client table has user_id column
+            ->select('client.*', 'users.*')
+            ->where('client.id', $client->id)
+            ->first();
+        // $Skill
+        return response()->json($clientinfo);
+    }
 
-        }
-    
+    // Get All Clients
+    public function index()
+    {
+        $clients = User::role('client')->get();
+        return response()->json($clients, 200);
+    }
 }

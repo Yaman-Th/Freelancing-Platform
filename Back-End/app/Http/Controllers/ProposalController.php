@@ -57,18 +57,21 @@ class ProposalController extends Controller
     }
 
 
-    // Update Post
-    // public function update(Request $request, Proposal $proposal)
-    // {
-    //     $proposal->update([
-    //         'comment' => request('title'),
-    //         'description' => request('description'),
-    //         'type' => request('type'),
-    //         'budget' => request('budget'),
-    //         'deadline' => request('deadline')
-    //     ]);
-    //     return response()->json($post, 204);
-    // }
+    // Accept Proposal
+    public function acceptProposal(Proposal $proposal)
+    {
+        $proposal->update([
+            'status' => 'accepted',
+        ]);
+    }
+
+    // Reject Proposal
+    public function rejectProposal(Proposal $proposal)
+    {
+        $proposal->update([
+            'status' => 'rejected',
+        ]);
+    }
 
     // Delete Proposal
     public function destroy(Proposal $proposal)

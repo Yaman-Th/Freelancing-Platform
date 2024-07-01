@@ -89,11 +89,4 @@ class PostController extends Controller
         $proposals = $post->proposals()->with('freelancer')->get();
         return response()->json($proposals, 200);
     }
-
-    // Accept Proposal
-    
-
-    // Reject Proposal
-
-
 }
