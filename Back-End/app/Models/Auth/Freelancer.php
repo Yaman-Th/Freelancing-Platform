@@ -2,6 +2,7 @@
 
 namespace App\Models\Auth;
 
+use App\Models\Proposal;
 use App\Models\Service;
 use App\Models\Skill;
 use Illuminate\Foundation\Auth\User;
@@ -12,13 +13,8 @@ class Freelancer extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'personal_overview',
-        'personal_image',
-        'wallet',
-        'is_avilable'
-    ];
+    protected $fillable = ['user_id', 'personal_overview', 'wallet', "is_avilable"];
+
 
     public function user()
     {
@@ -26,9 +22,14 @@ class Freelancer extends Model
     }
     public function skill()
     {
-       return $this->belongsToMany(Skill::class, 'freelancer_skill', 'skill_id', 'freelancer_id');
+        return $this->belongsToMany(Skill::class, 'freelancer_skill', 'skill_id', 'freelancer_id');
     }
-    public function service(){
+    public function propsals()
+    {
+        return $this->hasMany(Proposal::class);
+    }
+    public function service()
+    {
         return $this->hasMany(Service::class);
     }
 }
