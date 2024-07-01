@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auth\Client;
 use App\Models\Post;
+use App\Models\Proposal;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -18,9 +20,11 @@ class PostController extends Controller
     // Store New Posts
     public function store(Request $request)
     {
+        $client = auth()->user()->client()->first();
+
         try {
             $request->validate([
-                'client_id' => 'required|numeric',
+                'category_id' => 'required|numeric',
                 'title' => 'required|string',
                 'description' => 'required|string',
                 'type' => 'required|string',
@@ -35,8 +39,8 @@ class PostController extends Controller
         }
 
         $post = Post::create([
-            'client_id' => request('client_id'),
-            // 'category_id' => request('category_id'),
+            'client_id' => $client->id,
+            'category_id' => request('category_id'),
             // 'team_id' => request('team_id'),
             'title' => request('title'),
             'description' => request('description'),
@@ -76,5 +80,20 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
+        return response()->json(['Post Deleted Successfuly'], 200);
     }
+
+    // Get Proposals
+    public function getProposals(Post $post)
+    {
+        $proposals = $post->proposals()->with('freelancer')->get();
+        return response()->json($proposals, 200);
+    }
+
+    // Accept Proposal
+    
+
+    // Reject Proposal
+
+
 }

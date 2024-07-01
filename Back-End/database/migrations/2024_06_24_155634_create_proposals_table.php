@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\Auth\Freelancer;
-use App\Models\Auth\User;
-use App\Models\Service;
-use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,16 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('proposals', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Post::class)->onDelete('cascade');
             $table->foreignIdFor(Freelancer::class)->onDelete('cascade');
-            $table->text('title');
-            $table->text('description');
-            $table->string('image')->nullable();
-            $table->unsignedBigInteger('delivery_dayes');
-            $table->float('price');
-            //$table->unsignedBigInteger('category_id');
-            $table->foreignIdFor(Category::class)->onDelete('cascade');
+            $table->string('comment')->nullable();
+            $table->string('status');
+            $table->date('date');
             $table->timestamps();
         });
     }
@@ -34,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('proposals');
     }
 };

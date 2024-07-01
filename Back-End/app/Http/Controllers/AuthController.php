@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\myEmail;
 use App\Models\Auth\Client;
 use App\Models\Auth\User;
 use App\Models\Auth\EmailVerfcation;
@@ -61,10 +62,7 @@ class AuthController extends Controller
         ]);
 
         // إرسال الرمز عبر البريد الإلكتروني
-        Mail::raw("Your verification code is: $token", function ($message) use ($user) {
-            $message->to($user->email)
-                ->subject('Email Verification');
-        });
+        Mail::to($user->email)->send(new myEmail($token));
 
         return response()
             ->json([
