@@ -16,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 class FreelancerController extends Controller
 {
     // to make the user Freelancer
-    public function updateProfile(Request $request, Freelancer $freelancer)
+    public function update(Request $request)
 {
     $user=auth()->user();
     $freelancer=$user->freelancer;
@@ -28,7 +28,7 @@ class FreelancerController extends Controller
 
         if ($request->hasFile('personal_image')) {
             $personal_image = $request->file('personal_image')->store('personal_image');
-            // تحديث حقل الصورة في الفريلانسر
+
             $freelancer->update([
                 'personal_image' => $personal_image,
                 'personal_overview' => $request->input('personal_overview'),
@@ -38,6 +38,7 @@ class FreelancerController extends Controller
                 'personal_overview' => $request->personal_overview
             ]);
         }
+        $freelancer->save();
     } catch (ValidationException $exception) {
         return response()->json([
             'message' => 'Validation Error',
@@ -65,7 +66,7 @@ class FreelancerController extends Controller
         return response()->json($freelancerinfo);
     }
     
-    public function show(Freelancer $freelancer){
+    public function show($freelancer){
                 return response()->json(Freelancer::find($freelancer));
     }
 

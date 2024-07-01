@@ -39,13 +39,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
 
     // freelancer api 
-
+ 
     // return profile
     //Route::middleware('role:freelancer')->group(function () {
     // return own profile 
     Route::get('/freelancer/myprofile', [FreelancerController::class, 'myprofile']);
     // update prfile
-    Route::post('/freelancer/updateProfile', [FreelancerController::class, 'updateProfile']);
+    Route::post('/freelancer/updateProfile', [FreelancerController::class, 'update']);
+    // freelancer by id
+    Route::post('/freelancer/Profile/{id}', [FreelancerController::class, 'show']);
 
     Route::post('/freelancer/services', [ServiceController::class, 'addService']);
 
@@ -54,9 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // return one service by id
     Route::get('/freelancer/services/{serivce}', [ServiceController::class, 'show']); // List all services by the freelancer
     // edit service 
-    Route::put('/freelancer/services/{service}', [ServiceController::class, 'edit']);
+    Route::post('/freelancer/services/{service}', [ServiceController::class, 'edit']);
     // delete service
-    Route::delete('/freelancer/services/{serviceId}', [ServiceController::class, 'destroy']);
+    Route::delete('/freelancer/services/{service}', [ServiceController::class, 'destroy']);
 
 
     /* Proposal Routes*/
@@ -76,7 +78,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     //update Prfile
-    Route::post('/client/updateProfile/{client}', [ClientController::class, 'updateProfile']);
+    Route::post('/client/updateProfile', [ClientController::class, 'updateProfile']);
+    
+    Route::get('/client/myprofile', [ClientController::class, 'myprofile']);
+    
+    Route::get('/client/profile/{id}', [ClientController::class, 'show']);
 
 
     /* Post Routes */

@@ -16,8 +16,10 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function updateProfile(Request $request, Client $client)
+    public function updateProfile(Request $request)
     {
+        $user=auth()->user();
+        $client=$user->client;
         try {
             $request->validate([
                 'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -49,17 +51,23 @@ class ClientController extends Controller
          * profile
          */
         // all info
-        public function profile(Client $client)
+        public function myprofile()
         //    SELECT * FROM client f JOIN users u on u.id=f.id WHERE f.id=3
         {
-            $clientinfo = DB::table('client')
-                ->join('users', 'users.id', '=', 'client.user_id') // Assuming client table has user_id column
-                ->select('client.*', 'users.*')
-                ->where('client.id', $client->id)
+            $user=auth()->user();
+            $client=$user->client;
+            $clientinfo = DB::table('clients')
+                ->join('users', 'users.id', '=', 'clients.user_id') // Assuming client table has user_id column
+                ->select('clients.*', 'users.*')
+                ->where('clients.id', $client->id)
                 ->first();
             // $Skill
             return response()->json($clientinfo);
         }
+        public function show($id){
+            return response()->json(Client::find($id));
 
+
+        }
     
 }
