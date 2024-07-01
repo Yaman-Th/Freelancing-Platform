@@ -45,12 +45,14 @@ class AuthController extends Controller
             Freelancer::create([
                 'user_id' => $user->id
             ]);
+            $user->assignRole('freelancer');
         }
 
         if ($request->type === 'client') {
             Client::create([
                 'user_id' => $user->id
             ]);
+            $user->assignRole('client');
         }
 
         // إنشاء رمز التحقق

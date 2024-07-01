@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -15,19 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         // User::factory(10)->create();
-
-        $user=User::create([
-            'first_name' => 'Admin',
-            'last_name' => 'Freelancer',
-            'type' => 'Admin',
-            'birthdate' => now(),
-            'is_active' => true,
-            'email' => 'admin@example.com',
-            'password' => Hash::make('admin'),            
-        ]);
 
         $this->call(CategorySeeder::class);
         $this->call(SkillSeeder::class);
+        $this->call(RoleSeeder::class);
     }
 }
