@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Models\Auth\Freelancer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use app\Models\Post;
+use App\Models\Post;
 
 class Proposal extends Model
 {

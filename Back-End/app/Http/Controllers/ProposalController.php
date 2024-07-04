@@ -12,7 +12,9 @@ class ProposalController extends Controller
     // Get All Proposals
     public function index()
     {
-        $proposals = Proposal::all();
+        $freelancer = auth()->user()->freelancer()->first();
+        $proposals = Proposal::query()->where('freelancer_id', $freelancer->id)->get();
+
         return response()->json([$proposals], 200);
     }
 
@@ -23,10 +25,7 @@ class ProposalController extends Controller
         try {
             $request->validate([
                 'post_id' => 'required|numeric',
-                //'freelancer_id' => 'required|numeric',
                 'comment' => 'string',
-                // 'status' => 'required|string',
-                // 'date' => 'required|string'
             ]);
         } catch (ValidationException $exception) {
             return response()->json([

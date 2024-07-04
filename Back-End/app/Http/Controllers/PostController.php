@@ -13,7 +13,9 @@ class PostController extends Controller
     // Get All Posts
     public function index()
     {
-        $posts = Post::all();
+        $client = auth()->user()->client()->first();
+        
+        $posts = Post::query()->where('client_id', $client->id)->get();
         return response()->json([$posts], 200);
     }
 

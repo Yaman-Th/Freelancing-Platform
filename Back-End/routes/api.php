@@ -18,8 +18,6 @@ use App\Http\Controllers\SkillController;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-// For Testing
-Route::get('clients', [ClientController::class, 'index']);
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -30,23 +28,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    // Password Reset
     Route::post('/change-password', [AuthController::class, 'changePassword']);
-
+    // Email Verification
     Route::post('/verify-email', [AuthController::class, 'verfiyEmail']);
-
-    // return profile by id
-    Route::get('/freelancer/profile/{freelancer}', [FreelancerController::class, 'show']);
 
     // return profile
     Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
 
     // FreelancerRoutes  
-    Route::group(['middleware' => ['role:freelancer']], function () {
+    Route::middleware('role:freelancer')->group(function () {
         // return own profile 
         Route::get('/freelancer/myprofile', [FreelancerController::class, 'myprofile']);
         // update prfile
-        Route::post('/freelancer/updateProfile', [FreelancerController::class, 'updateProfile']);
+        Route::post('/freelancer/updateProfile', [FreelancerController::class, 'update']);
         // Add New Service
         Route::post('/freelancer/services', [ServiceController::class, 'addService']);
         // return all service
@@ -58,45 +53,60 @@ Route::middleware('auth:sanctum')->group(function () {
         // delete service
         Route::delete('/freelancer/services/{serviceId}', [ServiceController::class, 'destroy']);
 
-        /* Proposal Routes*/
-
-        // Get All Proposals
-        Route::get('/proposals', [ProposalController::class, 'index']);
-        // Store New Proposal
-        Route::post('/proposals/create', [ProposalController::class, 'store']);
-        // Get Proposal By id
-        Route::get('/proposals/{proposal}', [ProposalController::class, 'show']);
-        // Destroy Proposal
-        Route::delete('/proposals/{proposal}', [ProposalController::class, 'destroy']);
-        // Accept Proposal
-        Route::put('/proposals/{proposal}/accept', [ProposalController::class, 'acceptProposal']);
-        // Reject Proposal
-        Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal']);
+        /* Proposal Routes */
+        Route::prefix('proposals')->group(function () {
+            // Get All Proposals of Freelacner
+            Route::get('/', [ProposalController::class, 'index']);
+            // Store New Proposal
+            Route::post('/', [ProposalController::class, 'store'])
+                ->can('create', 'proposal');
+            // Get Proposal By id
+            Route::get('/{proposal}', [ProposalController::class, 'show']);
+            // Destroy Proposal
+            Route::delete('/{proposal}', [ProposalController::class, 'destroy'])
+                ->can('delete', 'proposal');
+        });
     });
-    // client api 
+
+    // ClientRoutes 
     Route::middleware('role:client')->group(function () {
+
         //update Prfile
         Route::post('/client/updateProfile/{client}', [ClientController::class, 'updateProfile']);
 
 
         /* Post Routes */
+        Route::prefix('posts')->group(function () {
+            // Get All Posts of Client
+            Route::get('/', [PostController::class, 'index']);
+            // Get Post By id
+            Route::get('/{post}', [PostController::class, 'show']);
+            // Create New Post
+            Route::post('/', [PostController::class, 'store'])
+                ->can('create', 'post');
+            // Update Post
+            Route::put('/{post}', [PostController::class, 'update'])
+                ->can('update', 'post');
+            // Destroy Post
+            Route::delete('/{post}', [PostController::class, 'destroy'])
+                ->can('delete', 'post');
+            // Get Proposals
+            Route::get('/{post}/proposals', [PostController::class, 'getProposals']);
+        });
 
-        // Get All Posts
-        Route::get('/posts', [PostController::class, 'index']);
-        // Get Post By id
-        Route::get('/posts/{post}', [PostController::class, 'show']);
-        // Create New Post
-        Route::post('/posts/create', [PostController::class, 'store']);
-        // Update Post
-        Route::put('/posts/{post}', [PostController::class, 'update']);
-        // Destroy Post
-        Route::delete('/posts/{post}', [PostController::class, 'destroy']);
-        // Get Proposals
-        Route::get('/posts/{post}/proposals', [PostController::class, 'getProposals']);
+        /* Proposal Routes */
+        // Accept Proposal
+        Route::put('/proposals/{proposal}/accept', [ProposalController::class, 'acceptProposal'])
+            ->can('update', 'proposal');
+        // Reject Proposal
+        Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal'])
+            ->can('update', 'proposal');
 
-        /*  order  */
+        // return profile by id
+        Route::get('/freelancer/profile/{freelancer}', [FreelancerController::class, 'show']);
     });
 
+    // AdminRoutes
     Route::middleware('role:admin')->group(function () {
 
         /* Category Routes */
@@ -108,7 +118,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Delete Category
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 
-        /*Skill API */
+        /* Skill Routes */
         // create Skill
         Route::post('/Skill', [SkillController::class, 'create']);
 
