@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,20 +15,6 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {}, icon: Icon(Icons.arrow_back_ios_new,color:Theme.of(context).colorScheme.primary ,)),
-        title: Text(
-          'Dashboard',
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-        ),
-        centerTitle: true,
-         actions: [
-          IconButton(onPressed: (){}, icon:const CircleAvatar(backgroundImage:AssetImage('assets/images/Avatar.jpg') ,))
-         ],
-      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -46,14 +33,14 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
                   children: [
                     Text(
                       'Amount',
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Theme.of(context).colorScheme.background,
                           ),
                     ),
                     Text(
                         NumberFormat.simpleCurrency(
                                 locale: 'en_US', decimalDigits: 0)
-                            .format(30450190),
+                            .format(1503510),
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color: Theme.of(context).colorScheme.background,
                             ))
@@ -67,16 +54,16 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
                 padding: const EdgeInsets.all(16),
                 width: 250,
                 height: 100,
-                decoration:  BoxDecoration(
-                    color:Theme.of(context).colorScheme.onSecondary,
-                    borderRadius:const BorderRadius.all(Radius.circular(15))),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    borderRadius: const BorderRadius.all(Radius.circular(15))),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Total Project',
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
@@ -94,16 +81,16 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
                 padding: const EdgeInsets.all(16),
                 width: 250,
                 height: 100,
-                decoration:  BoxDecoration(
-                    color:Theme.of(context).colorScheme.onPrimary,
-                    borderRadius:const BorderRadius.all(Radius.circular(15))),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    borderRadius: const BorderRadius.all(Radius.circular(15))),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Total Service',
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
@@ -120,50 +107,119 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
               SizedBox(
                 width: 320,
                 child: Text('History',
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: Theme.of(context).colorScheme.primary)),
               ),
-              Container(
-                height: 200,
-                child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (ctx, index) => ListTile(
-                      title: Row(
+              SizedBox(
+                  height: 200,
+                  child: ListView(
                     children: [
-                      const SizedBox(
-                        width: 20,
+                      ListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              'Label 1',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                            const SizedBox(width: 80),
+                            Text(
+                              'Value 1',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        trailing: Text(
+                          'accept',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Colors.green,
+                                  ),
+                        ),
                       ),
-                      Text('Label 1',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              )),
-                      const SizedBox(
-                        width: 80,
+                     const SizedBox(height:10,),
+                      ListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              'Label 2',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                            const SizedBox(width: 80),
+                            Text(
+                              'Value 2',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        trailing: Text(
+                          'pending',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Colors.orange,
+                                  ),
+                        ),
                       ),
-                      Text('Value 1 ',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              )),
-                      const SizedBox(
-                        width: 80,
+                      const SizedBox(height:10,),
+                      ListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              'Label 3',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                            const SizedBox(width: 80),
+                            Text(
+                              'Value 3',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        trailing: Text(
+                          'pending',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Colors.orange,
+                                  ),
+                        ),
                       ),
-                      Text('Status',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ))
                     ],
                   )),
-                ),
-              ),
             ],
           ),
         ),

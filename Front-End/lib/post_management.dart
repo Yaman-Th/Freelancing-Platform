@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:freelancing/main.dart';
 
-class ServiceManagement extends StatefulWidget {
-  const ServiceManagement({super.key});
+class PostManagement extends StatefulWidget {
+  const PostManagement({super.key});
 
   @override
-  State<ServiceManagement> createState() {
-    return ServiceManagementState();
+  State<PostManagement> createState() {
+    return PostManagementState();
   }
 }
 
-class ServiceManagementState extends State<ServiceManagement> {
+class PostManagementState extends State<PostManagement> {
   final postServiceController = TextEditingController();
   Widget? lastPost;
   @override
@@ -25,7 +25,7 @@ class ServiceManagementState extends State<ServiceManagement> {
               height: 15,
             ),
             Text(
-              'Post Your Service',
+              'Create a Post',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -58,7 +58,7 @@ class ServiceManagementState extends State<ServiceManagement> {
                         cursorColor: Colors.white,
                         controller: postServiceController,
                         decoration: InputDecoration(
-                          hintText: ('Write your service here'),
+                          hintText: ('Write your post here'),
                           hintStyle: Theme.of(context)
                               .textTheme
                               .titleMedium!
