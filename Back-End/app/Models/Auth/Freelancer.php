@@ -2,9 +2,10 @@
 
 namespace App\Models\Auth;
 
-use App\Models\Proposal;
-use App\Models\Service;
 use App\Models\Skill;
+use App\Models\Service;
+use App\Models\Contract;
+use App\Models\Proposal;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,5 +32,9 @@ class Freelancer extends Model
     public function service()
     {
         return $this->hasMany(Service::class);
+    }
+    public function contract()
+    {
+        return $this->hasMany(Contract::class);
     }
 }

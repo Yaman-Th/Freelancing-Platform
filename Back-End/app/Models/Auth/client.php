@@ -2,6 +2,7 @@
 
 namespace App\Models\Auth;
 
+use App\Models\Contract;
 use App\Models\Post;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
@@ -28,4 +29,9 @@ class Client extends Model
     {
         return $this->hasMany(Post::class);
     }
+    public function contract()
+    {
+        return $this->hasMany(Contract::class);
+    }
+    
 }

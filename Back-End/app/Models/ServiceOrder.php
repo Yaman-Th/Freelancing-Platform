@@ -17,7 +17,8 @@ class ServiceOrder extends Model
         'oreder_date',
         'delivery_date',
         'status',
-        'total_amount'
+        'amount',
+        'total'
     ];
     public function client(){
         return $this->belongsTo(Client::class);
@@ -25,5 +26,7 @@ class ServiceOrder extends Model
     public function service(){
         return $this->belongsTo(Service::class);
     }
-    
+    public function Contract(){
+        return $this->hasOne(Contract::class);
+    }    
 }

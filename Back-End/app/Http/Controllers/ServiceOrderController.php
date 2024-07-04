@@ -18,7 +18,7 @@ class ServiceOrderController extends Controller
     }
 
 
-    public function OrderClient()
+    public function allOrderClient()
     {
         $user = auth()->user();
         $clientId = $user->client->id;
@@ -26,17 +26,27 @@ class ServiceOrderController extends Controller
         return response()->json($orders);
     }
 
+    public function allOrderFreelancer()
+    {
+        $user = auth()->user();
+        $FreelancertId = $user->freelancer->id;
+        $orders = ServiceOrder::where('freelancer_id', $FreelancertId)->get();
+        return response()->json($orders);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request, Service $service)
+    public function create(Request $request,Service $service)
     {
         $data = $request->validate([
             'order_date' => 'required|date',
-            'deliverr_date' => 'required|date',
-            'total_amount' => 'required|numeric',
+            'delivery_date' => 'required|date',
+            'amount' => 'required|numeric',
 
         ]);
+        $data['service_id']=$service->id;
+        $data['total']=request()->amount*$service->price;
         $user = auth()->user();
         $data['client_id'] = $user->client->id;
         ServiceOrder::create($data);

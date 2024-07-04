@@ -20,7 +20,8 @@ return new class extends Migration
             $table->date("order_date");
             $table->date("delivery_date");
             $table->string("status");
-            $table->bigInteger("total_amount");
+            $table->bigInteger("amount");
+            $table->float("total");
             $table->timestamps();
         });
     }
