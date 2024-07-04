@@ -59,9 +59,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/', [ProposalController::class, 'index']);
             // Store New Proposal
             Route::post('/', [ProposalController::class, 'store'])
-                ->can('create', 'proposal');
+                ->middleware('can:proposal.create');
             // Get Proposal By id
             Route::get('/{proposal}', [ProposalController::class, 'show']);
+            // Update Proposal
+            Route::put('/{proposal}', [ProposalController::class, 'update'])
+                ->can('update', 'proposal');
             // Destroy Proposal
             Route::delete('/{proposal}', [ProposalController::class, 'destroy'])
                 ->can('delete', 'proposal');
@@ -97,10 +100,10 @@ Route::middleware('auth:sanctum')->group(function () {
         /* Proposal Routes */
         // Accept Proposal
         Route::put('/proposals/{proposal}/accept', [ProposalController::class, 'acceptProposal'])
-            ->can('update', 'proposal');
+            ->can('updateStatus', 'proposal');
         // Reject Proposal
         Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal'])
-            ->can('update', 'proposal');
+            ->can('updateStatus', 'proposal');
 
         // return profile by id
         Route::get('/freelancer/profile/{freelancer}', [FreelancerController::class, 'show']);

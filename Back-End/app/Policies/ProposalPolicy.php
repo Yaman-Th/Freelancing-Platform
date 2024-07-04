@@ -20,16 +20,25 @@ class ProposalPolicy
         return $user->hasPermissionTo('proposal.create');
     }
 
+    public function update(User $user, Proposal $proposal): bool
+    {
+        $freelancer = $user->freelancer()->first();
+        if ($user->hasPermissionTo('proposal.update') && $freelancer->id == $proposal->freelancer_id)
+            return true;
+        else return false;
+    }
+
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Proposal $proposal): bool
+    public function updateStatus(User $user, Proposal $proposal): bool
     {
         $client = $user->client()->first();
         $post = $proposal->post()->first();
 
         return $post->id == $proposal->post_id &&
-            $client->id == $post->client_id;
+            $client->id == $post->client_id &&
+            $user->hasAnyPermission(['proposal.reject', 'proposal.accept']);
     }
 
     /**

@@ -72,6 +72,19 @@ class ProposalController extends Controller
         ]);
     }
 
+    // Update Proposal
+    public function update(Request $request, Proposal $proposal)
+    {
+        if ($proposal['status'] === 'pending') {
+
+            $proposal->update([
+                'comment' => request('comment'),
+            ]);
+            return response()->json(['message' => 'Proposal updated successfuly'], 204);
+        }
+        return response()->json(['message' => 'You cannot edit this proposal right now'], 500);
+    }
+
     // Delete Proposal
     public function destroy(Proposal $proposal)
     {

@@ -41,7 +41,6 @@ class RoleSeeder extends Seeder
         $freelancer->givePermissionTo([
             'service.create', 'service.update', 'service.delete',
             'proposal.create', 'proposal.update', 'proposal.delete',
-
         ]);
 
         $client = Role::create(['name' => 'client']);

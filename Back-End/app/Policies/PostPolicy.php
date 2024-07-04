@@ -38,6 +38,6 @@ class PostPolicy
         $client = $user->client()->first();
         if ($user->hasPermissionTo('post.delete') && $client->id == $post->client_id)
             return true;
-        else return response()->json(['Not Authorized'], 403);
+        else return false;
     }
 }
