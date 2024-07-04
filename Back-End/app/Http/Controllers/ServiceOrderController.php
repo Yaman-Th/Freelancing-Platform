@@ -37,17 +37,23 @@ class ServiceOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request,Service $service)
+    public function create(Request $request)
     {
+        $id = request('service_id');
+        $service = Service::find($id);
+        $user = auth()->user();
+
+
         $data = $request->validate([
-            'order_date' => 'required|date',
             'delivery_date' => 'required|date',
             'amount' => 'required|numeric',
+            
 
         ]);
-        $data['service_id']=$service->id;
-        $data['total']=request()->amount*$service->price;
-        $user = auth()->user();
+        $data['status']='pinding';
+        $data['order_date'] = now();
+        $data['service_id'] = $service->id;
+        $data['total'] = request()->amount * $service->price;
         $data['client_id'] = $user->client->id;
         ServiceOrder::create($data);
 

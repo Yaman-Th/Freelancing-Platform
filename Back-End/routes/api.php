@@ -14,6 +14,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\SkillController;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -25,6 +26,11 @@ Route::post('/login', [AuthController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+
+    Route::post('/addOrder', [ServiceOrderController::class, 'create']);
+
+
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);

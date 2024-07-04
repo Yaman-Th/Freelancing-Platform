@@ -11,10 +11,10 @@ class ServiceOrder extends Model
 {
     use HasFactory;
     
-    protected $fiilable=[
+    protected $fillable=[
         'service_id',
         'client_id',
-        'oreder_date',
+        'order_date',
         'delivery_date',
         'status',
         'amount',
