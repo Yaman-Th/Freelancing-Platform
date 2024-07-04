@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Auth\User;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
@@ -24,5 +26,9 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('adminpassword'),
         ]);
         $admin->assignRole(['admin', '']);
+
+        $permissions = Role::findByName('admin', 'web')->permissions()->pluck('name')->toArray();
+
+        $admin->givePermissionTo($permissions);
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Auth\Client;
 use App\Models\Auth\User;
 use App\Models\Auth\EmailVerfcation;
 use App\Models\Auth\Freelancer;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +23,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -30,42 +32,58 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $data = $request->validate([
-            'first_name' => 'required|string|max:255|alpha',
-            'last_name' => 'required|string|max:255|alpha',
-            "type" => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            "is_active" => 'boolean',
-            'birthdate' => 'required|date'
-        ]);
-        $user = User::create($data);
-
-        if ($request->type === 'freelancer') {
-            Freelancer::create([
-                'user_id' => $user->id
+        try {
+            $data = $request->validate([
+                'first_name' => 'required|string|max:255|alpha',
+                'last_name' => 'required|string|max:255|alpha',
+                "type" => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                "is_active" => 'boolean',
+                'birthdate' => 'required|date'
             ]);
-            $user->assignRole('freelancer');
-        }
+            $user = User::create($data);
 
-        if ($request->type === 'client') {
-            Client::create([
-                'user_id' => $user->id
+            if ($request->type === 'freelancer') {
+                Freelancer::create([
+                    'user_id' => $user->id
+                ]);
+
+                $freelancerRole = Role::query()->where('name', 'freelancer')->first();
+                $user->assignRole($freelancerRole);
+
+                $freelancerPermissions = $freelancerRole->permissions()->pluck('name')->toArray();
+                $user->givePermissionTo($freelancerPermissions);
+            }
+
+            if ($request->type === 'client') {
+                Client::create([
+                    'user_id' => $user->id
+                ]);
+                $clientRole = Role::query()->where('name', 'client')->first();
+                $user->assignRole($clientRole);
+
+                $clientPermissions = $clientRole->permissions()->pluck('name')->toArray();
+                $user->givePermissionTo($clientPermissions);
+            }
+
+            $user->load('roles', 'permissions');
+
+            // إنشاء رمز التحقق
+            $token = Str::random(6);
+
+            EmailVerfcation::create([
+                'email' => $user->email,
+                'token' => $token,
             ]);
-            $user->assignRole('client');
+
+            // إرسال الرمز عبر البريد الإلكتروني
+            Mail::to($user->email)->send(new myEmail($token));
+        } catch (Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage()
+            ], 500);
         }
-
-        // إنشاء رمز التحقق
-        $token = Str::random(6);
-
-        EmailVerfcation::create([
-            'email' => $user->email,
-            'token' => $token,
-        ]);
-
-        // إرسال الرمز عبر البريد الإلكتروني
-        Mail::to($user->email)->send(new myEmail($token));
-
         return response()
             ->json([
                 'message' => 'You have registered successfully.',
