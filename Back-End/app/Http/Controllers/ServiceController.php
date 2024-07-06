@@ -14,23 +14,27 @@ class ServiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function listServices()
+    public function index()
     {
-        return response()->json(Service::all());
+        $services = Service::all();
+
+        return response()->json($services);
     }
 
     /**
      * Show one item by id
      */
-    public function show($service)
+    public function show(Service $service)
     {
-        return response()->json(['service' => Service::find($service)]);
+        $service = Service::find($service);
+
+        return response()->json($service);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function addService(Request $request, Freelancer $freelancer)
+    public function store(Request $request, Freelancer $freelancer)
     {
         try {
             $validatedData = $request->validate([
@@ -50,10 +54,10 @@ class ServiceController extends Controller
 
             $user = auth()->user();
             $validatedData['freelancer_id'] = $user->freelancer->id;
-
             $service = Service::create($validatedData);
+            $category = Category::find($validatedData['category_id']);
 
-            return response()->json(['Message' => 'Service created successfully', 'Service' => $service]);
+            return response()->json(['Message' => 'Service created successfully', 'Service' => $service, 'Category' => $category['name']]);
         } catch (ValidationException $exception) {
             return response()->json([
                 'message' => 'Validation Error',
@@ -65,10 +69,10 @@ class ServiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request,Service $service)
+    public function edit(Request $request, Service $service)
     {
         try {
-            $data= $request->validate([
+            $data = $request->validate([
                 'title' => 'sometimes|max:255',
                 'description' => 'sometimes|max:255',
                 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -76,22 +80,26 @@ class ServiceController extends Controller
                 'price' => 'sometimes|numeric',
                 'category_id' => 'sometimes|numeric',
             ]);
+
+
             $freelancer = auth()->user()->freelancer()->first();
-
-
             if (!$freelancer) {
                 return response()->json(['message' => 'Freelancer not found'], 404);
             }
 
-            $services = $freelancer->service()->find($service);
-
+            // $services = $freelancer->service()->find($service);
             if (!$service) {
                 return response()->json(['message' => 'Service not found or not owned by freelancer'], 404);
             }
 
-            $service->update($data);
-
-            $service->save();
+            $service->update([
+                'title' => $request['title'],
+                'description' => $request['description'],
+                // 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'delivery_days' => $request['delivery_days'],
+                'price' => $request['price'],
+                'category_id' => $request['category_id'],
+            ]);
 
             return response()->json(['message' => 'Service updated successfully', 'service' => $service]);
         } catch (\Exception $e) {
@@ -105,14 +113,14 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         try {
-            // الحصول على المستخدم المصادق عليه حاليا
+
             $freelancer = auth()->user()->freelancer()->first();
 
-            
+
             if (!$freelancer) {
                 return response()->json(['message' => 'Freelancer not found'], 404);
             }
-            
+
 
             $services = $freelancer->service()->find($service);
 

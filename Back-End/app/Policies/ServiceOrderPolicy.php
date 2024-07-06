@@ -3,33 +3,18 @@
 namespace App\Policies;
 
 use App\Models\ServiceOrder;
-use App\Models\User;
+use App\Models\Auth\User;
 use Illuminate\Auth\Access\Response;
 
 class ServiceOrderPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, ServiceOrder $serviceOrder): bool
-    {
-        //
-    }
 
     /**
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
     {
-        //
+        return $user->hasPermissionTo('order.create');
     }
 
     /**
@@ -37,7 +22,20 @@ class ServiceOrderPolicy
      */
     public function update(User $user, ServiceOrder $serviceOrder): bool
     {
-        //
+        $client = $user->client()->first();
+        if ($user->hasPermissionTo('order.update') && $client->id == $serviceOrder->client_id)
+            return true;
+        else return false;
+    }
+
+    public function updateStatus(User $user, ServiceOrder $serviceOrder): bool
+    {
+        $freelancer = $user->freelancer()->first();
+        $service = $serviceOrder->service()->first();
+
+        return $service->id == $serviceOrder->service_id &&
+            $freelancer->id == $service->freelancer_id &&
+            $user->hasAnyPermission(['order.reject', 'order.accept']);
     }
 
     /**
@@ -45,22 +43,8 @@ class ServiceOrderPolicy
      */
     public function delete(User $user, ServiceOrder $serviceOrder): bool
     {
-        //
-    }
+        $client = $user->client()->first();
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, ServiceOrder $serviceOrder): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, ServiceOrder $serviceOrder): bool
-    {
-        //
+        return $client->id == $serviceOrder->client_id;
     }
 }
