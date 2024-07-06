@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:freelancing/auth_service.dart';
+import 'package:freelancing/Auth/auth_service.dart';
 import 'package:freelancing/main.dart';
-import 'package:freelancing/register.dart';
+import 'package:freelancing/Auth/register.dart';
 import 'package:freelancing/tabs.dart';
 
 class LoginPage extends StatefulWidget {

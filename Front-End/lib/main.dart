@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:freelancing/DashboardScreens/freelancer_dashboard.dart';
-import 'package:freelancing/client_register.dart';
-import 'package:freelancing/freelancer_register.dart';
-import 'package:freelancing/login.dart';
+import 'package:freelancing/Auth/client_register.dart';
+import 'package:freelancing/Auth/freelancer_register.dart';
+import 'package:freelancing/Auth/login.dart';
 import 'package:freelancing/post_management.dart';
-import 'package:freelancing/register.dart';
+import 'package:freelancing/Auth/register.dart';
 import 'package:freelancing/service_management.dart';
+import 'package:freelancing/tabs.dart';
 import 'package:freelancing/team_management.dart';
 
 final colorScheme = ColorScheme.fromSeed(
@@ -61,7 +62,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home:const LoginPage(),
+      home:const TabsScreen(),
     );
   }
 }

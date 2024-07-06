@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freelancing/client_register.dart';
-import 'package:freelancing/freelancer_register.dart';
-import 'package:freelancing/login.dart';
+import 'package:freelancing/Auth/client_register.dart';
+import 'package:freelancing/Auth/freelancer_register.dart';
+import 'package:freelancing/Auth/login.dart';
 import 'package:freelancing/main.dart';
 
 class Register extends StatefulWidget {
