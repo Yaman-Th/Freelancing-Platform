@@ -16,6 +16,8 @@ use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\SkillController;
+use App\Models\Service;
+use App\Models\ServiceOrder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -44,20 +46,38 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // FreelancerRoutes  
     Route::middleware('role:freelancer')->group(function () {
+
+        // return profile by id
+        Route::get('/freelancer/profile/{freelancer}', [FreelancerController::class, 'show']);
         // return own profile 
         Route::get('/freelancer/myprofile', [FreelancerController::class, 'myprofile']);
         // update prfile
         Route::post('/freelancer/updateProfile', [FreelancerController::class, 'update']);
-        // Add New Service
-        Route::post('/freelancer/services', [ServiceController::class, 'addService']);
-        // return all service
-        Route::get('/freelancer/services', [ServiceController::class, 'listServices']); // List all services by the freelancer
-        // return one service by id
-        Route::get('/freelancer/services/{serivce}', [ServiceController::class, 'show']); // List all services by the freelancer
-        // edit service 
-        Route::put('/freelancer/services/{service}', [ServiceController::class, 'edit']);
-        // delete service
-        Route::delete('/freelancer/services/{serviceId}', [ServiceController::class, 'destroy']);
+
+        // Accept ServiceOrder
+        Route::put('/orders/{serviceOrder}/accept', [ServiceOrderController::class, 'acceptOrder'])
+            ->can('updateStatus', 'serviceOrder');
+        // Reject ServiceOrder
+        Route::put('/orders/{serviceOrder}/reject', [ServiceOrderController::class, 'rejectOrder'])
+            ->can('updateStatus', 'serviceOrder');
+
+
+        /* Service Route */
+        Route::prefix('services')->group(function () {
+            // Add New Service
+            Route::post('/', [ServiceController::class, 'store'])
+                ->middleware('can:service.create');
+            // return all service
+            Route::get('/', [ServiceController::class, 'index']);
+            // return one service by id
+            Route::get('/{service}', [ServiceController::class, 'show']);
+            // edit service 
+            Route::put('/{service}', [ServiceController::class, 'edit'])
+                ->can('update', 'service');
+            // delete service
+            Route::delete('/{service}', [ServiceController::class, 'destroy'])
+                ->can('delete', 'service');
+        });
 
         /* Proposal Routes */
         Route::prefix('proposals')->group(function () {
@@ -82,7 +102,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //update Prfile
         Route::post('/client/updateProfile/{client}', [ClientController::class, 'updateProfile']);
-
 
         /* Post Routes */
         Route::prefix('posts')->group(function () {
@@ -111,15 +130,27 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal'])
             ->can('updateStatus', 'proposal');
 
-        // return profile by id
-        Route::get('/freelancer/profile/{freelancer}', [FreelancerController::class, 'show']);
+        /* ServiceOrder Routes */
+        Route::prefix('orders')->group(function () {
+            // Get All Service Orders
+            Route::get('/', [ServiceOrderController::class, 'index']);
+            // Create New Service Order
+            Route::post('/', [ServiceOrderController::class, 'store'])
+                ->middleware('can:order.create');
+            // Get Service Order By id
+            Route::get('/{serviceOrder}', [ServiceOrderController::class, 'show']);
+            // Destroy ServiceOrder
+            Route::delete('/{serviceOrder}', [ServiceOrderController::class, 'destroy'])
+                ->can('delete', 'serviceOrder');
+            // Get Service Order By CLient.
+            // Route::get('/getOrderClient', [ServiceOrderController::class, 'getOrderClient']);
+        });
     });
 
     // AdminRoutes
     Route::middleware('role:admin')->group(function () {
 
         /* Category Routes */
-
         // Get All Category
         Route::get('/categories', [CategoryController::class, 'index']);
         // Add Category or Sub-Category

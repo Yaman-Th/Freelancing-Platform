@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Auth\Client;
 use App\Models\Service;
 use App\Models\ServiceOrder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ServiceOrderController extends Controller
@@ -14,30 +15,30 @@ class ServiceOrderController extends Controller
      */
     public function index()
     {
-        return response()->json(ServiceOrder::all());
-    }
-
-
-    public function allOrderClient()
-    {
-        $user = auth()->user();
-        $clientId = $user->client->id;
-        $orders = ServiceOrder::where('client_id', $clientId)->get();
+        $orders = ServiceOrder::all();
         return response()->json($orders);
     }
 
-    public function allOrderFreelancer()
+
+    public function getOrderClient()
     {
-        $user = auth()->user();
-        $FreelancertId = $user->freelancer->id;
-        $orders = ServiceOrder::where('freelancer_id', $FreelancertId)->get();
+        $client = auth()->user()->client()->first();
+        $orders = ServiceOrder::where('client_id', $client->id)->get();
         return response()->json($orders);
     }
+
+    // public function allOrderFreelancer()
+    // {
+    //     $user = auth()->user();
+    //     $FreelancertId = $user->freelancer->id;
+    //     $orders = ServiceOrder::where('freelancer_id', $FreelancertId)->get();
+    //     return response()->json($orders);
+    // }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $id = request('service_id');
         $service = Service::find($id);
@@ -45,21 +46,27 @@ class ServiceOrderController extends Controller
 
 
         $data = $request->validate([
+            'service_id' => 'required|numeric',
+            // 'order_date' => 'required|date',
             'delivery_date' => 'required|date',
-            'amount' => 'required|numeric',
-            
-
+            'total_amount' => 'required|numeric',
         ]);
-        $data['status']='pinding';
-        $data['order_date'] = now();
-        $data['service_id'] = $service->id;
-        $data['total'] = request()->amount * $service->price;
-        $data['client_id'] = $user->client->id;
-        ServiceOrder::create($data);
+        // $data['service_id'] = $service->id;
+        // $data['total'] = request()->amount * $service->price;
+        // $user = auth()->user();
+        // $data['client_id'] = $user->client->id;
 
-        return response()->json(['message' => 'Order sent Successfuly', 'Order' => $data]);
+        $order = ServiceOrder::create([
+            'service_id' => request('service_id'),
+            'client_id' => auth()->user()->client()->first()->id,
+            'order_date' => today()->format('Y-m-d'),
+            'delivery_date' => request('delivery_date'),
+            'status' => 'pending',
+            'total_amount' => request('total_amount')
+        ]);
+
+        return response()->json(['message' => 'Order sent Successfuly', 'Order' => $order]);
     }
-
 
 
     /**
@@ -67,9 +74,25 @@ class ServiceOrderController extends Controller
      */
     public function show(ServiceOrder $serviceOrder)
     {
-        return response()->json(ServiceOrder::find($serviceOrder));
+        $serviceOrder = ServiceOrder::find($serviceOrder->id);
+        return response()->json([$serviceOrder]);
     }
 
+    // Accept SerivceOrder
+    public function acceptOrder(ServiceOrder $serviceOrder)
+    {
+        $serviceOrder->update([
+            'status' => 'accepted',
+        ]);
+    }
+
+    // Reject ServiceOrder
+    public function rejectOrder(ServiceOrder $serviceOrder)
+    {
+        $serviceOrder->update([
+            'status' => 'rejected',
+        ]);
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -77,11 +100,11 @@ class ServiceOrderController extends Controller
     public function destroy(ServiceOrder $serviceOrder)
     {
         if ($serviceOrder->status === 'complete') {
-            return response()->json(['message' => 'you can not delete ']);
+            return response()->json(['message' => 'You can not delete']);
         } else {
-            ServiceOrder::findOrFail($serviceOrder);
+            // ServiceOrder::findOrFail($serviceOrder);
             $serviceOrder->delete();
-            return response()->json(['meesage' => 'Order delete Sccessfully']);
+            return response()->json(['meesage' => 'Order deleted Successfully']);
         }
     }
 }
