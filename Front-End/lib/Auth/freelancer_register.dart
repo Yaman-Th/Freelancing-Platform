@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Auth/register.dart';
-import 'package:freelancing/Auth/auth_service.dart';
+import 'package:freelancing/Server/auth_service.dart';
 import 'package:freelancing/tabs.dart';
 
 class FreelancerRegister extends StatefulWidget {
@@ -13,11 +13,14 @@ class FreelancerRegister extends StatefulWidget {
 }
 
 class _FreelancerRegisterState extends State<FreelancerRegister> {
-  final userNameController = TextEditingController();
-  final passwordController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final rePasswordController = TextEditingController();
+  final birthdayController = TextEditingController();
   final AuthService authService = AuthService();
+  String userType = 'Freelancer';
   bool _obscureText = true;
   void _toggleVisibility() {
     setState(() {
@@ -28,11 +31,13 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
   void _signUp() async {
     if (passwordController.text == rePasswordController.text) {
       await authService.register(
-        userNameController.text,
-        emailController.text,
-        passwordController.text,
-        rePasswordController.text,
-      );
+          firstNameController.text,
+          lastNameController.text,
+          userType,
+          emailController.text,
+          passwordController.text,
+          rePasswordController.text,
+          birthdayController.text);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -45,6 +50,47 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
         ),
       );
     }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year - 100, now.month, now.day);
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: firstDate,
+      lastDate: now,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Colors.white,
+              surface: Theme.of(context).colorScheme.surface,
+              onSurface: Theme.of(context).colorScheme.onSurface,
+            ),
+            dialogBackgroundColor: Theme.of(context).colorScheme.background,
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        birthdayController.text = "${picked.toLocal()}".split(' ')[0];
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    passwordController.dispose();
+    rePasswordController.dispose();
+    emailController.dispose();
+    birthdayController.dispose();
+    super.dispose();
   }
 
   @override
@@ -123,13 +169,13 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
                       )
                     ]),
                 child: TextField(
-                  controller: emailController,
+                  controller: firstNameController,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: colorScheme.onBackground,
                       ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: ('email@domain.com'),
+                    hintText: ('First Name'),
                     hintStyle:
                         Theme.of(context).textTheme.titleMedium!.copyWith(
                               color: Theme.of(context)
@@ -160,13 +206,127 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
                       )
                     ]),
                 child: TextField(
-                  controller: userNameController,
+                  controller: lastNameController,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: colorScheme.onBackground,
                       ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: ('username'),
+                    hintText: ('Last Name'),
+                    hintStyle:
+                        Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.5),
+                            ),
+                    prefixIcon: const Icon(CupertinoIcons.profile_circled),
+                    prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.background,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  child: DropdownButtonFormField<String>(
+                    value: userType,
+                    decoration: InputDecoration(
+                      labelText: 'User Type',
+                      labelStyle: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.5), // Label color
+                      ),
+                      hintStyle: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                      prefixIcon: const Icon(Icons.supervised_user_circle),
+                      prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
+                      border: InputBorder.none,
+                    ),
+                    items: <String>['Freelancer', 'Client'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary, // Customize text color here
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        userType = newValue!;
+                      });
+                    },
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground, // Selected item color
+                    ),
+                    dropdownColor: Theme.of(context)
+                        .colorScheme
+                        .onSecondary, // Background color of the dropdown
+                    iconEnabledColor: Theme.of(context)
+                        .colorScheme
+                        .onBackground, // Arrow icon color
+                    iconDisabledColor: Theme.of(context)
+                        .colorScheme
+                        .onBackground, // Disabled icon color
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    color: colorScheme.background,
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.onBackground.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      )
+                    ]),
+                child: TextField(
+                  controller: emailController,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: colorScheme.onBackground,
+                      ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: ('email@domain.com'),
                     hintStyle:
                         Theme.of(context).textTheme.titleMedium!.copyWith(
                               color: Theme.of(context)
@@ -267,6 +427,53 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
                     ),
                     suffixIconColor: Theme.of(context).colorScheme.onBackground,
                   ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    color: colorScheme.background,
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.onBackground.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      )
+                    ]),
+                child: TextField(
+                  controller: birthdayController,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: colorScheme.onBackground,
+                      ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: ('Birthday'),
+                    hintStyle:
+                        Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.5),
+                            ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        Icons.calendar_today_outlined,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.9),
+                      ),
+                      onPressed: () => _selectDate(context),
+                    ),
+                    prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
+                  ),
+                  readOnly: true,
                 ),
               ),
             ),
