@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auth\Client;
+use App\Models\Contract;
 use App\Models\Service;
 use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ class ServiceOrderController extends Controller
     {
         return response()->json(ServiceOrder::all());
     }
+   
 
 
     public function allOrderClient()
@@ -39,25 +41,28 @@ class ServiceOrderController extends Controller
      */
     public function create(Request $request)
     {
-        $id = request('service_id');
-        $service = Service::find($id);
+        $service_id = $request->service_id;
+        $service = ServiceOrder::find($service_id);
         $user = auth()->user();
 
 
         $data = $request->validate([
             'delivery_date' => 'required|date',
             'amount' => 'required|numeric',
-            
-
         ]);
-        $data['status']='pinding';
+        $data['status'] = 'pinding';
         $data['order_date'] = now();
-        $data['service_id'] = $service->id;
+        $data['service_id'] = $service_id;
         $data['total'] = request()->amount * $service->price;
         $data['client_id'] = $user->client->id;
         ServiceOrder::create($data);
 
         return response()->json(['message' => 'Order sent Successfuly', 'Order' => $data]);
+    }
+    public function makeContract(Request $request, ServiceOrder $order)
+    {
+        $Contract = new ContractController();
+        $Contract->createContractService($request, $order);
     }
 
 

@@ -7,6 +7,8 @@
     "require": {
         "php": "^8.2",
         "illuminate/support": "*",
+        "laravel/cashier": "^15.4",
+        "laravel/cashier-paddle": "^2.4",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",

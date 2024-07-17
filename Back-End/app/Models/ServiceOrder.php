@@ -18,6 +18,7 @@ class ServiceOrder extends Model
         'delivery_date',
         'status',
         'amount',
+        'url',
         'total'
     ];
     public function client(){
