@@ -12,13 +12,14 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Paddle\Billable;
 use Spatie\Permission\Traits\HasRoles;
 
 // use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles,Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,13 +29,16 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
     protected $guard_name = 'web';
 
     protected $fillable = [
+        'name',
         'first_name',
         'last_name',
-        "type",
+        'name',
         'email',
+        'type',
         'password',
-        "is_active",
-        'birthdate'
+        'is_active',
+        'birthdate',
+        'google_id'
     ];
 
     /**
@@ -80,4 +84,5 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
     {
         return $this->client()->exists();
     }
+    
 }

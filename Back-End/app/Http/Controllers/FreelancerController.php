@@ -69,6 +69,9 @@ class FreelancerController extends Controller
     public function show($freelancer){
                 return response()->json(Freelancer::find($freelancer));
     }
+    public function addMoney(){
+        
+    }
 
 }
 

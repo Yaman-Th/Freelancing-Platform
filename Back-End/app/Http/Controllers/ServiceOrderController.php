@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auth\Client;
+use App\Models\Contract;
 use App\Models\Service;
 use App\Models\ServiceOrder;
 use Carbon\Carbon;
@@ -15,7 +16,20 @@ class ServiceOrderController extends Controller
      */
     public function index()
     {
+<<<<<<< Updated upstream
         $orders = ServiceOrder::all();
+=======
+        return response()->json(ServiceOrder::all());
+    }
+
+
+
+    public function allOrderClient()
+    {
+        $user = auth()->user();
+        $clientId = $user->client->id;
+        $orders = ServiceOrder::where('client_id', $clientId)->get();
+>>>>>>> Stashed changes
         return response()->json($orders);
     }
 
@@ -40,8 +54,8 @@ class ServiceOrderController extends Controller
      */
     public function store(Request $request)
     {
-        $id = request('service_id');
-        $service = Service::find($id);
+        $service_id = $request->service_id;
+        $service = ServiceOrder::find($service_id);
         $user = auth()->user();
 
 
@@ -49,6 +63,7 @@ class ServiceOrderController extends Controller
             'service_id' => 'required|numeric',
             // 'order_date' => 'required|date',
             'delivery_date' => 'required|date',
+<<<<<<< Updated upstream
             'total_amount' => 'required|numeric',
         ]);
         // $data['service_id'] = $service->id;
@@ -66,6 +81,23 @@ class ServiceOrderController extends Controller
         ]);
 
         return response()->json(['message' => 'Order sent Successfuly', 'Order' => $order]);
+=======
+            'amount' => 'required|numeric',
+        ]);
+        $data['status'] = 'pinding';
+        $data['order_date'] = now();
+        $data['service_id'] = $service_id;
+        $data['total'] = request()->amount * $service->price;
+        $data['client_id'] = $user->client->id;
+        ServiceOrder::create($data);
+
+        return response()->json(['message' => 'Order sent Successfuly', 'Order' => $order]);
+    }
+    public function makeContract(Request $request, ServiceOrder $order)
+    {
+        $Contract = new ContractController();
+        $Contract->createContractService($request, $order);
+>>>>>>> Stashed changes
     }
 
 

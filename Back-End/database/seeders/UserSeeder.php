@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
         $freelancer = User::create([
             'first_name' => 'Yaman',
             'last_name' => 'Tahhan',
+            'name' => 'Yaman Tahhan',
             'type' => 'freelancer',
             'birthdate' => '2002-08-02',
             'is_active' => true,
@@ -38,6 +39,7 @@ class UserSeeder extends Seeder
         $client = User::create([
             'first_name' => 'Besher',
             'last_name' => 'Majzoub',
+            'name' => 'Besher Majzuob',
             'type' => 'client',
             'birthdate' => '2002-05-12',
             'is_active' => true,

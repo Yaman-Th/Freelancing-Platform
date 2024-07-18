@@ -17,8 +17,14 @@ class ServiceOrder extends Model
         'order_date',
         'delivery_date',
         'status',
+<<<<<<< Updated upstream
         'total_amount',
         // 'total'
+=======
+        'amount',
+        'url',
+        'total'
+>>>>>>> Stashed changes
     ];
     public function client()
     {

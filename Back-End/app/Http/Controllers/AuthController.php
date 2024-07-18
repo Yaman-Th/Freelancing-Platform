@@ -42,6 +42,7 @@ class AuthController extends Controller
                 "is_active" => 'boolean',
                 'birthdate' => 'required|date'
             ]);
+            $data['name']=$data['first_name'].$data['last_name'];
             $user = User::create($data);
 
             if ($request->type === 'freelancer') {
@@ -185,4 +186,10 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Invalid verification code.'], 400);
     }
+
+    function index()  {
+        return response()->json(User::all());
+        
+    }
+
 }

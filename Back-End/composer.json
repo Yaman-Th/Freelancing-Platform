@@ -6,9 +6,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "blade-ui-kit/blade-ui-kit": "^0.6.2",
         "illuminate/support": "*",
+        "laravel/cashier": "^15.4",
+        "laravel/cashier-paddle": "^2.4",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.15",
         "laravel/tinker": "^2.9",
         "munafio/chatify": "^1.6",
         "pusher/pusher-php-server": "^7.2",

@@ -15,7 +15,8 @@ class Contract extends Model
     protected $fillable=[
         'freelancer_id',
         'client_id',
-        'serviceOrder_id',
+        'service_order_id',
+        'total',
         'type',
         'end_date',
         'payment_amount'
@@ -27,7 +28,8 @@ class Contract extends Model
     public function freelancer(){
         return $this->belongsTo(Freelancer::class);
     }
-    public function serviceOrder(){
+    
+    public function serviceorder(){
         return $this->belongsTo(ServiceOrder::class);
     }
 
