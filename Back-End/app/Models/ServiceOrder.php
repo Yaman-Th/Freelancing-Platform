@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ServiceOrder extends Model
 {
     use HasFactory;
-    
-    protected $fillable=[
+
+    protected $fillable = [
         'service_id',
         'client_id',
         'order_date',
@@ -19,15 +19,19 @@ class ServiceOrder extends Model
         'status',
         'amount',
         'url',
-        'total'
+        'total',
+        'total_amount',
     ];
-    public function client(){
+    public function client()
+    {
         return $this->belongsTo(Client::class);
     }
-    public function service(){
+    public function service()
+    {
         return $this->belongsTo(Service::class);
     }
-    public function Contract(){
+    public function Contract()
+    {
         return $this->hasOne(Contract::class);
-    }    
+    }
 }

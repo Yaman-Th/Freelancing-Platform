@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:freelancing/Auth/auth_service.dart';
+import 'package:freelancing/Server/auth_service.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Auth/register.dart';
 import 'package:freelancing/tabs.dart';
@@ -13,10 +13,13 @@ class ClientRegister extends StatefulWidget {
 }
 
 class _ClientRegisterState extends State<ClientRegister> {
-  final userNameController = TextEditingController();
-  final passwordController = TextEditingController();
+final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final rePasswordController = TextEditingController();
+  final typeController = TextEditingController();
+  final birthdayController = TextEditingController();
   final AuthService authService = AuthService();
   bool _obscureText = true;
   void _toggleVisibility() {
@@ -28,10 +31,13 @@ class _ClientRegisterState extends State<ClientRegister> {
   void _signUp() async {
     if (passwordController.text == rePasswordController.text) {
       await authService.register(
-        userNameController.text,
-        emailController.text,
-        passwordController.text,
-        rePasswordController.text,
+        firstNameController.text,
+       lastNameController.text,
+       typeController.text,
+       emailController.text,
+       passwordController.text,
+       rePasswordController.text,
+       birthdayController.text
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -159,7 +165,7 @@ class _ClientRegisterState extends State<ClientRegister> {
                       )
                     ]),
                 child: TextField(
-                  controller: userNameController,
+                  controller: firstNameController,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: colorScheme.onBackground,
                       ),

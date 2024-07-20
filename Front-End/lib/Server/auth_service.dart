@@ -4,17 +4,21 @@ import 'package:http/http.dart' as http;
 class AuthService {
   final String Url = 'http://localhost:8000/api/register';
 
-  Future<void> register(String name, String email, String password, String passwordConfirmation) async {
+  Future<void> register(String firstName,String lastName,String type, String email ,String password, String passwordConfirmation,String birthday) async {
     final response = await http.post(
-      Uri.parse('$Url/register'),
+      Uri.parse(Url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'name': name,
+        'first_name': firstName,
+        'last_name': lastName,
+        'type': type,
         'email': email,
         'password': password,
         'password_confirmation': passwordConfirmation,
+        'birthdate':birthday
+        
       }),
     );
 

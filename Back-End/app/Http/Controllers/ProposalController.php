@@ -12,8 +12,7 @@ class ProposalController extends Controller
     // Get All Proposals
     public function index()
     {
-        $freelancer = auth()->user()->freelancer()->first();
-        $proposals = Proposal::query()->where('freelancer_id', $freelancer->id)->get();
+        $proposals = Proposal::all();
 
         return response()->json([$proposals], 200);
     }
@@ -39,7 +38,7 @@ class ProposalController extends Controller
             'freelancer_id' => $freelancer->id,
             'comment' => request('comment'),
             'status' => 'pending',
-            'date' => today()
+            'date' => today()->format('Y-m-d')
         ]);
 
         return response()->json([
