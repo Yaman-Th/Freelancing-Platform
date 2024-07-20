@@ -18,6 +18,7 @@ use App\Http\Controllers\paymentController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\SkillController;
+use App\Http\Controllers\TeamController;
 use App\Models\ServiceOrder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -29,6 +30,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/pay',[paymentController::class,'pay']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/client/team',[TeamController::class,'create']);
+    Route::post('/client/sendRequest',[TeamController::class,'sendRequest']);
+
+    Route::post('/client/addMember',[TeamController::class,'addMember']);
+
+
+
+
 
     Route::get('/buy', function (Request $request) {
         $checkout = $request->user()->checkout(['pri_deluxe_album',2]);
