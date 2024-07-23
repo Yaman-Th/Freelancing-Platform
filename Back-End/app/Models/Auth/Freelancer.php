@@ -14,7 +14,17 @@ class Freelancer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'personal_overview', 'wallet', "is_avilable"];
+    protected $fillable = [
+        'user_id',
+        'personal_overview',
+        'wallet',
+        "is_avilable",
+        'personal_image',
+        'Rating',
+        'total_project',
+        'total_review',
+        'total_project',
+    ];
 
 
     public function user()

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auth\User;
 use App\Models\Team;
+use App\Models\Auth\User;
 use App\Models\TeamMember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class TeamController extends Controller
@@ -60,11 +61,16 @@ class TeamController extends Controller
     {
         return response()->json(Team::find($team));
     }
+    
     public function showMyTeams()
     {
-
-        return response()->json();
+        $client=auth()->user()->client()->first()->id;
+        $myTeams=  DB::table('teams')
+        ->where('client_id', $client)
+        ->pluck('name');
+        return response()->json(['Your Teams is '=>$myTeams]);
     }
+    
 
     public function destroy(Team $team)
     {

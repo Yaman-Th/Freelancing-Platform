@@ -36,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/client/sendRequest',[TeamController::class,'sendRequest']);
 
     Route::post('/client/addMember',[TeamController::class,'addMember']);
+    Route::get('/client/myTeam',[TeamController::class,'showMyTeams']);
+    Route::post('/client/updateProfile',[ClientController::class,'updateProfile']);
 
 
 

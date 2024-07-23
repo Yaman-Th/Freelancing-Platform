@@ -18,7 +18,11 @@ class Client extends Model
         'personal_overview',
         'personal_image',
         'wallet',
-        'is_avilable'
+        'is_avilable',
+        'Rating',
+        'total_spend',
+        'total_review',
+        'total_project',
     ];
 
     public function user()

@@ -31,7 +31,7 @@ class FreelancerController extends Controller
 
             $freelancer->update([
                 'personal_image' => $personal_image,
-                'personal_overview' => $request->input('personal_overview'),
+                'personal_overview' => $request->personal_overview,
             ]);
         } else {
             $freelancer->update([
@@ -46,7 +46,7 @@ class FreelancerController extends Controller
         ], 422);
     }
 
-    return response()->json(['message' => 'Update Successfully']);
+    return response()->json(['message' => 'Update Successfully',$freelancer]);
 }
 
     /**

@@ -40,7 +40,7 @@ class ServiceController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'description' => 'required|max:255',
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'delivery_dayes' => 'required|numeric',
                 'price' => 'required|numeric',
                 'category_id' => 'required|numeric',
@@ -95,7 +95,7 @@ class ServiceController extends Controller
             $service->update([
                 'title' => $request['title'],
                 'description' => $request['description'],
-                // 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'delivery_days' => $request['delivery_days'],
                 'price' => $request['price'],
                 'category_id' => $request['category_id'],

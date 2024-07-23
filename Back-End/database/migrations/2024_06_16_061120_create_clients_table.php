@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('personal_image')->nullable();// تعديل ل نوع موحد 
             $table->double("wallet")->default('0');
             $table->boolean("is_avilable")->default(true);
+            $table->integer("total_project")->default(0);
+            $table->float("Rating")->default(0);
+            $table->float("total_spend")->default(0);
+            $table->integer("total_review")->default(0);
             $table->timestamps();
             
         });
