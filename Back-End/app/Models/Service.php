@@ -30,4 +30,7 @@ class Service extends Model
     {
     return $this->belongsTo(category::class);
     }
+    public function service_order(){
+      return $this->hasMany(ServiceOrder::class);
+    }
 }

@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Mail\myEmail;
-use App\Models\Auth\Client;
 use App\Models\Auth\User;
-use App\Models\Auth\EmailVerfcation;
-use App\Models\Auth\Freelancer;
-use Spatie\Permission\Models\Role;
+use App\Mail\reSet;
+use App\Models\Auth\Client;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Log;
+use App\Models\Auth\Freelancer;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\welcomNotification;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
+use App\Models\Auth\EmailVerfcation;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Notifications\welcomNotfication;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail;
-use Throwable;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\welcomNotification;
 
 class AuthController extends Controller
 {
@@ -42,7 +42,7 @@ class AuthController extends Controller
                 "is_active" => 'boolean',
                 'birthdate' => 'required|date'
             ]);
-            $data['name']=$data['first_name'].$data['last_name'];
+            $data['name'] = $data['first_name'] . $data['last_name'];
             $user = User::create($data);
 
             if ($request->type === 'freelancer') {
@@ -187,9 +187,47 @@ class AuthController extends Controller
         return response()->json(['message' => 'Invalid verification code.'], 400);
     }
 
-    function index()  {
+    function index()
+    {
         return response()->json(User::all());
-        
     }
 
+
+    public function sendResetPasswordCode(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $resetCode =Str::random(6);
+        $user->password_reset_code = $resetCode;
+        $user->save();
+
+        // إرسال البريد الإلكتروني
+        Mail::send('emails.reset_password', ['code' => $resetCode], function ($message) use ($user) {
+            $message->to($user->email);
+            $message->subject('Password Reset Code');
+        });
+
+        return response()->json(['message' => 'Reset code sent']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $user = User::where('email', $request->email)
+            ->where('password_reset_code', $request->code)
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid code or email'], 400);
+        }
+
+        $user->password = bcrypt($request->password);
+        $user->password_reset_code = null; // مسح الرمز بعد الاستخدام
+        $user->save();
+
+        return response()->json(['message' => 'Password has been reset']);
+    }
 }

@@ -14,13 +14,10 @@ class ServiceOrder extends Model
     protected $fillable = [
         'service_id',
         'client_id',
-        'order_date',
+        'details',
         'delivery_date',
         'status',
-        'amount',
-        'url',
-        'total',
-        'total_amount',
+        'quantity'
     ];
     public function client()
     {
@@ -34,4 +31,5 @@ class ServiceOrder extends Model
     {
         return $this->hasOne(Contract::class);
     }
+    
 }

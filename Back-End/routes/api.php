@@ -24,29 +24,39 @@ use App\Models\ServiceOrder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
+
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/pay',[paymentController::class,'pay']);
+
+Route::post('/sendresetpassword', [AuthController::class, 'sendResetPasswordCode']);
+
+Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/client/team',[TeamController::class,'create']);
-    Route::post('/client/sendRequest',[TeamController::class,'sendRequest']);
+    Route::get('payment/info/{contractId}',[paymentController::class,'getPaymentDetails']);
 
-    Route::post('/client/addMember',[TeamController::class,'addMember']);
-    Route::get('/client/myTeam',[TeamController::class,'showMyTeams']);
-    Route::post('/client/updateProfile',[ClientController::class,'updateProfile']);
+    Route::post('payment/pay',[paymentController::class,'processPayment']);
+
+    Route::put('orders/{orderId}/approve',[ServiceOrderController::class,'approve']);
+
+    Route::post('/client/team', [TeamController::class, 'create']);
+    Route::post('/client/sendRequest', [TeamController::class, 'sendRequest']);
+
+    Route::post('/client/addMember', [TeamController::class, 'addMember']);
+    Route::get('/client/myTeam', [TeamController::class, 'showMyTeams']);
+    Route::post('/client/updateProfile', [ClientController::class, 'updateProfile']);
+
 
 
 
 
 
     Route::get('/buy', function (Request $request) {
-        $checkout = $request->user()->checkout(['pri_deluxe_album',2]);
-     
-        return response()->json( ['checkout' => $checkout]);
+        $checkout = $request->user()->checkout(['pri_deluxe_album', 2]);
+
+        return response()->json(['checkout' => $checkout]);
     });
 
     Route::post('/addOrder', [ServiceOrderController::class, 'create']);
@@ -186,32 +196,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/Skill', [SkillController::class, 'index']);
         //
         Route::delete('/Skill', [SkillController::class, 'destroy']);
-
-
     });
 
 
-    Route::post('/order',[ServiceOrderController::class,'create']);
-    
-    Route::get('/bla/{serviceorder_id}',[ContractController::class,'createContractService']);
-    
-    Route::get('/order/{serviceOrder}',[ServiceOrderController::class,'show']);
+    Route::post('/order', [ServiceOrderController::class, 'create']);
+
+    Route::get('/bla/{serviceorder_id}', [ContractController::class, 'createContractService']);
+
+    Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
 
 
 
-Route::get('/bla/bla/{serviceOrder}',[paymentController::class,'pay']);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    Route::get('/bla/bla/{serviceOrder}', [paymentController::class, 'pay']);
 });
