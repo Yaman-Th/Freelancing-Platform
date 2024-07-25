@@ -2,9 +2,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String Url = 'http://localhost:8000/api/register';
+  final String Url = 'http://192.168.1.8:8000/api/register';
 
-  Future<void> register(String firstName,String lastName,String type, String email ,String password, String passwordConfirmation,String birthday) async {
+  Future<bool> register(
+      String firstName,
+      String lastName,
+      String type,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String birthday) async {
     final response = await http.post(
       Uri.parse(Url),
       headers: <String, String>{
@@ -17,22 +24,24 @@ class AuthService {
         'email': email,
         'password': password,
         'password_confirmation': passwordConfirmation,
-        'birthdate':birthday
-        
+        'birthdate': birthday
       }),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       print('User registered successfully');
+      return true;
     } else {
-      print('Failed to register user');
+      print('Failed to register user. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      return false;
     }
   }
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$Url/login'),
-      headers: <String, String>{
+      Uri.parse('http://192.168.1.8:8000/api/login'),
+      headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
@@ -41,12 +50,15 @@ class AuthService {
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final responseBody = json.decode(response.body);
       final token = responseBody['token'];
       print('Login successful. Token: $token');
+      return true;
     } else {
-      print('Failed to login');
+      print('Failed to login. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      return false;
     }
   }
 }

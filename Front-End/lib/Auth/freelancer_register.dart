@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:freelancing/Auth/login.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Auth/register.dart';
 import 'package:freelancing/Server/auth_service.dart';
 import 'package:freelancing/tabs.dart';
 
-class FreelancerRegister extends StatefulWidget {
-  const FreelancerRegister({super.key});
+class FreelancerRegister2 extends StatefulWidget {
+  const FreelancerRegister2({super.key});
 
   @override
-  State<FreelancerRegister> createState() => _FreelancerRegisterState();
+  State<FreelancerRegister2> createState() => _FreelancerRegisterState();
 }
 
-class _FreelancerRegisterState extends State<FreelancerRegister> {
+class _FreelancerRegisterState extends State<FreelancerRegister2> {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
@@ -29,20 +30,26 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
   }
 
   void _signUp() async {
-    if (passwordController.text == rePasswordController.text) {
-      await authService.register(
-          firstNameController.text,
-          lastNameController.text,
-          userType,
-          emailController.text,
-          passwordController.text,
-          rePasswordController.text,
-          birthdayController.text);
+  if (passwordController.text == rePasswordController.text) {
+    bool success = await authService.register(
+      firstNameController.text,
+      lastNameController.text,
+      userType,
+      emailController.text,
+      passwordController.text,
+      rePasswordController.text,
+      birthdayController.text,
+    );
+
+    if (success) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) =>const LoginPage()), 
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Passwords do not match!',
+            'Failed to register user',
             style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSecondary,
                 ),
@@ -50,7 +57,20 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
         ),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Passwords do not match!',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+        ),
+      ),
+    );
   }
+}
+
 
   Future<void> _selectDate(BuildContext context) async {
     final now = DateTime.now();
@@ -486,10 +506,7 @@ class _FreelancerRegisterState extends State<FreelancerRegister> {
                   width: 370,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const TabsScreen()));
-                    },
+                    onPressed: _signUp,
                     style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Theme.of(context).colorScheme.onPrimary,

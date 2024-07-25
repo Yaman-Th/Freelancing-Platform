@@ -62,14 +62,15 @@ class TabsScreenState extends State<TabsScreen> {
           ),
         ],
       ),
-      body: pages[_selectedPageIndex], 
+      body: pages[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.background,
         selectedItemColor: Theme.of(context).colorScheme.onSurface,
         unselectedItemColor:
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            Theme.of(context).colorScheme.onSecondary,
+            type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),

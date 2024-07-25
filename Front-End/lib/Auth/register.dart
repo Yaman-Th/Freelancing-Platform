@@ -67,7 +67,7 @@ class _RegisterState extends State<Register> {
                   focusColor: colorScheme.onSecondary,
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const FreelancerRegister()));
+                        builder: (context) => const FreelancerRegister2()));
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
