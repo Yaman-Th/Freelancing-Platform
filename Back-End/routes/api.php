@@ -1,34 +1,80 @@
 <?php
 
+use App\Models\Service;
 use App\Models\Auth\User;
 use App\Models\Auth\client;
+use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
 use App\Models\Auth\Freelancer;
+use Spatie\Permission\Models\Role;
 use App\Models\Auth\EmailVerfcation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\TeamController;
+use Spatie\Permission\Models\Permission;
+use App\Http\Controllers\SkillController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\paymentController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\FreelancerController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\ServiceOrderController;
-use App\Http\Controllers\SkillController;
-use App\Models\Service;
-use App\Models\ServiceOrder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
+use App\Models\Category;
 
 // Public Routes
+
+
+
 Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/', [CategoryController::class, 'index']);
+
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::post('/sendresetpassword', [AuthController::class, 'sendResetPasswordCode']);
+
+Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
+
+Route::get('/users/search', [AuthController::class, 'Search']);
+
+Route::get('/services/search', [ServiceController::class, 'Search']);
+
+Route::get('/categories', [CategoryController::class, 'index']);
+
+Route::get('/parentcategories', [CategoryController::class, 'getParentCategory']);
+
+Route::get('/subcategories', [CategoryController::class, 'getsubCategory']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    Route::get('payment/info/{contractId}', [paymentController::class, 'getPaymentDetails']);
+
+    Route::post('payment/pay', [paymentController::class, 'processPayment']);
+
+    Route::put('orders/{orderId}/approve', [ServiceOrderController::class, 'approve']);
+
+    Route::post('/client/team', [TeamController::class, 'create']);
+    Route::post('/client/sendRequest', [TeamController::class, 'sendRequest']);
+
+    Route::post('/client/addMember', [TeamController::class, 'addMember']);
+    Route::get('/client/myTeam', [TeamController::class, 'showMyTeams']);
+    Route::post('/client/updateProfile', [ClientController::class, 'updateProfile']);
+
+
+
+
+
+
+    Route::get('/buy', function (Request $request) {
+        $checkout = $request->user()->checkout(['pri_deluxe_album', 2]);
+
+        return response()->json(['checkout' => $checkout]);
+    });
 
     Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
@@ -152,7 +198,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         /* Category Routes */
         // Get All Category
-        Route::get('/categories', [CategoryController::class, 'index']);
+        // Route::get('/categories', [CategoryController::class, 'index']);
         // Add Category or Sub-Category
         Route::post('/categories', [CategoryController::class, 'store']);
         // Delete Category
@@ -168,4 +214,15 @@ Route::middleware('auth:sanctum')->group(function () {
         //
         Route::delete('/Skill', [SkillController::class, 'destroy']);
     });
+
+
+    Route::post('/order', [ServiceOrderController::class, 'create']);
+
+    Route::get('/bla/{serviceorder_id}', [ContractController::class, 'createContractService']);
+
+    Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
+
+
+
+    Route::get('/bla/bla/{serviceOrder}', [paymentController::class, 'pay']);
 });

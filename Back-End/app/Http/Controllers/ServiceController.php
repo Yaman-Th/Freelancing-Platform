@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Auth\Freelancer;
 use App\Models\Auth\User;
 use Illuminate\Validation\ValidationException;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class ServiceController extends Controller
 {
@@ -40,7 +42,7 @@ class ServiceController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'description' => 'required|max:255',
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'delivery_dayes' => 'required|numeric',
                 'price' => 'required|numeric',
                 'category_id' => 'required|numeric',
@@ -95,7 +97,7 @@ class ServiceController extends Controller
             $service->update([
                 'title' => $request['title'],
                 'description' => $request['description'],
-                // 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'delivery_days' => $request['delivery_days'],
                 'price' => $request['price'],
                 'category_id' => $request['category_id'],
@@ -134,5 +136,12 @@ class ServiceController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error deleting service', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $data = $request->only(['title', 'description', 'delivery_dayes', 'price','category']);
+        $services = Service::filter($data)->get();
+        return response()->json(["The Services" => $services]);
     }
 }

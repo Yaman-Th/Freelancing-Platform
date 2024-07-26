@@ -12,13 +12,14 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Paddle\Billable;
 use Spatie\Permission\Traits\HasRoles;
 
 // use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +29,7 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
     protected $guard_name = 'web';
 
     protected $fillable = [
+        'name',
         'first_name',
         'last_name',
         "type",
@@ -79,5 +81,21 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
     public function isClient()
     {
         return $this->client()->exists();
+    }
+    public function scopeFilter($query, array $filters)
+    {
+        if (isset($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (isset($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        if (isset($filters['rating'])) {
+            $query->where('rating', '>=', $filters['rating']);
+        }
+
+        return $query;
     }
 }

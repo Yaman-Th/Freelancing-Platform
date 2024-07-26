@@ -18,11 +18,10 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Service::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(Client::class)->constrained()->onDelete('cascade');
-            $table->date("order_date");
+            $table->text('details');
+            $table->bigInteger("quantity");
             $table->date("delivery_date");
             $table->string("status");
-            // $table->bigInteger("amount");
-            $table->float("total_amount");
             $table->timestamps();
         });
     }
