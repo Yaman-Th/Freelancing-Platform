@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\welcomNotification;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class AuthController extends Controller
 {
@@ -201,7 +203,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $resetCode =Str::random(6);
+        $resetCode = Str::random(6);
         $user->password_reset_code = $resetCode;
         $user->save();
 
@@ -230,4 +232,11 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Password has been reset']);
     }
+     public function Search(Request $request)
+    {
+        $filters = $request->only(['name', 'type', 'rating']);
+        $users = User::filter($filters)->get();
+        return response()->json($users);
+    }
+    
 }

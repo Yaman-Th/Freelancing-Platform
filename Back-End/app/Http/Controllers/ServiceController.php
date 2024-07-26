@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Auth\Freelancer;
 use App\Models\Auth\User;
 use Illuminate\Validation\ValidationException;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class ServiceController extends Controller
 {
@@ -134,5 +136,12 @@ class ServiceController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error deleting service', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $data = $request->only(['title', 'description', 'delivery_dayes', 'price','category']);
+        $services = Service::filter($data)->get();
+        return response()->json(["The Services" => $services]);
     }
 }

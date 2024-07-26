@@ -9,10 +9,27 @@ use Illuminate\Validation\ValidationException;
 class CategoryController extends Controller
 {
     // Get All Categories With Sub-Categories
+
     public function index()
     {
         $categories = Category::whereNull('parent_id')->with('children')->get();
         return  response()->json($categories, 200);
+    }
+
+    // get sub category 
+
+    public function getSubCategory()
+    {
+        $subcategories = Category::whereNotNull('parent_id')->with('children')->get();
+        return  response()->json($subcategories, 200);
+    }
+
+    // get parent category
+
+    public function getParentCategory()
+    {
+        $parentcategories = Category::whereNull('parent_id')->get();
+        return  response()->json($parentcategories, 200);
     }
 
     // Create New Category or Sub-Category

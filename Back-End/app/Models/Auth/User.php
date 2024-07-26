@@ -19,7 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles,Billable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -82,5 +82,20 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
     {
         return $this->client()->exists();
     }
-    
+    public function scopeFilter($query, array $filters)
+    {
+        if (isset($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (isset($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        if (isset($filters['rating'])) {
+            $query->where('rating', '>=', $filters['rating']);
+        }
+
+        return $query;
+    }
 }
