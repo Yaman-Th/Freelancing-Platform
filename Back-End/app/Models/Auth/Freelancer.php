@@ -6,7 +6,10 @@ use App\Models\Skill;
 use App\Models\Service;
 use App\Models\Contract;
 use App\Models\Proposal;
-use Illuminate\Foundation\Auth\User;
+// use Illuminate\Foundation\Auth\User;
+use App\Models\Auth\User;
+use App\Models\Invitation;
+use App\Models\Team;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -46,5 +49,14 @@ class Freelancer extends Model
     public function contract()
     {
         return $this->hasMany(Contract::class);
+    }
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_freelancer');
+    }
+
+    public function invitation()
+    {
+        return $this->hasMany(Invitation::class);
     }
 }

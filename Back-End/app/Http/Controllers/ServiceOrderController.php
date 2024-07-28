@@ -6,7 +6,6 @@ use App\Models\Auth\Client;
 use App\Models\Contract;
 use App\Models\Service;
 use App\Models\ServiceOrder;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ServiceOrderController extends Controller
@@ -28,30 +27,49 @@ class ServiceOrderController extends Controller
 
     public function getOrderClient()
     {
-        $client = auth()->user()->client()->first();
-        $orders = ServiceOrder::where('client_id', $client->id)->get();
-        return response()->json(['your orders are' => $orders]);
-    }
+        $user = auth()->user();
+        $client = $user->client()->first();
 
-    // public function getOrderFreelancer()
-    // {
-    //     $user = auth()->user();
-    //     $FreelancertId = $user->freelancer->id;
-    //     $orders = ServiceOrder::where('freelancer_id', $FreelancertId)->get();
-    //     return response()->json($orders);
-    // }
+        // Check if the client exists
+        if (!$client) {
+            return response()->json(['message' => 'Client not found'], 404);
+        }
+
+        $orders = ServiceOrder::where('client_id', 1)->get();
+
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'No orders found'], 200);
+        }
+
+        return response()->json(['your orders are' => $orders], 200);
+    }
+    public function getOrderFreelancer()
+    {
+        $user = auth()->user();
+        $FreelancertId = $user->freelancer->id;
+        $orders = ServiceOrder::where('freelancer_id', $FreelancertId)->get();
+        if ($orders)
+            return response()->json(['your orders are' => $orders]);
+        else
+            return response()->json(['message' => 'you do not have orders '], 200);
+    }
 
 
     public function create(Request $request)
     {
-        $order = ServiceOrder::create([
-            'service_id' => $request->service_id,
-            'client_id' => auth()->user()->client()->first()->id,
-            'details' => $request->details,
-            'quantity' => $request->quantity,
-            'delivery_date' => $request->delivery_date,
-            'status' => 'pending'
+        $data = $request->validate([
+            'service_id' => 'required|numeric',
+            'details' => 'required',
+            'quantity' => 'required|numeric',
+            'delivery_date' => 'required|date'
         ]);
+
+        $data['status'] = 'pending';
+        $data['client_id'] = 1;
+        if ($data['delivery_date'] < now()) {
+            return response()->json(['message' => 'The date not Corect']);
+        }
+        $order = ServiceOrder::create($data);
 
         return response()->json(['message' => 'Order created successfully!', 'order' => $order]);
     }
@@ -61,7 +79,7 @@ class ServiceOrderController extends Controller
         $order = ServiceOrder::find($orderId);
         $service = Service::find($order->service_id);
         if ($order) {
-            $order->update(['status' => 'approved']);
+            $order->update(['status' => 'accepted']);
             $contract = Contract::create([
                 'service_order_id' => $order->id,
                 'client_id' => $order->client_id,
@@ -99,5 +117,22 @@ class ServiceOrderController extends Controller
             $serviceOrder->delete();
             return response()->json(['meesage' => 'Order deleted Successfully']);
         }
+    }
+    public function completeOrder(Request $request, $orderId)
+    {
+        
+        $order = ServiceOrder::find($orderId);
+
+        // Check if the order exists
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        // Update the order status to completed
+        $order->status = 'completed';
+        $order->save();
+
+        // Return a success response
+        return response()->json(['message' => 'Order completed successfully']);
     }
 }

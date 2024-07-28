@@ -18,8 +18,8 @@ class ClientController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user=auth()->user();
-        $client=$user->client;
+        $user = auth()->user();
+        $client = $user->client;
         try {
             $request->validate([
                 'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -51,13 +51,13 @@ class ClientController extends Controller
      * profile
      */
     // all info
-    public function profile(Client $client)
+    public function profile($id)
     //    SELECT * FROM client f JOIN users u on u.id=f.id WHERE f.id=3
     {
-        $clientinfo = DB::table('client')
-            ->join('users', 'users.id', '=', 'client.user_id') // Assuming client table has user_id column
-            ->select('client.*', 'users.*')
-            ->where('client.id', $client->id)
+        $clientinfo = DB::table('clients')
+            ->join('users', 'users.id', '=', 'clients.user_id') // Assuming client table has user_id column
+            ->select('clients.*', 'users.*')
+            ->where('clients.id', $id)
             ->first();
         // $Skill
         return response()->json($clientinfo);
@@ -68,5 +68,13 @@ class ClientController extends Controller
     {
         $clients = User::role('client')->get();
         return response()->json($clients, 200);
+    }
+
+    public function myProfile()
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        $data = Client::find($client->id);
+        return response()->json($data);
     }
 }

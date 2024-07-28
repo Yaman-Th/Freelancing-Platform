@@ -23,4 +23,12 @@ class Category extends Model
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        if (isset($filters['name'])) {
+            return  $query->whereRaw('LOWER(name) Like ?', ['%'.strtolower($filters['name']).'%']);
+        } else
+            return Category::all();
+    }
 }

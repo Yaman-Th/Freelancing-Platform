@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
   use HasFactory;
+
   protected $fillable = [
     "freelancer_id",
     "title",
@@ -41,7 +42,7 @@ class Service extends Model
       $query->where('title', 'like', '%' . $filters['title'] . '%');
     }
     if (isset($filters['description'])) {
-      $query->where('description', 'like', '%' . $filters['description'] . '%');
+      $query->where('description','like', '%' . $filters['description'] . '%');
     }
     if (isset($filters['price'])) {
       $query->where('price', '<=', $filters['price']);
@@ -55,8 +56,8 @@ class Service extends Model
         $query->where('category_id', $category->id);
       }
       if (isset($filters['Rating'])) {
-        $query->where('reating', '>=', $filters['Rating']);
-      } 
+        $query->where('rating', '>=', $filters['Rating']);
+      }
     }
 
     return $query;

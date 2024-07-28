@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Auth\Client;
 use App\Models\Auth\Freelancer;
+use App\Models\Rating;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -81,6 +82,22 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
     public function isClient()
     {
         return $this->client()->exists();
+    }
+
+    
+    public function ratingsGiven()
+    {
+        return $this->hasMany(Rating::class, 'rater_id');
+    }
+
+    public function ratingsReceived()
+    {
+        return $this->hasMany(Rating::class, 'ratee_id');
+    }
+
+    public function averageRating()
+    {
+        return $this->ratingsReceived()->avg('score');
     }
     public function scopeFilter($query, array $filters)
     {

@@ -11,69 +11,49 @@ use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return response()->json(Team::all());
+        $teams = auth()->user()->teams;
+        return response()->json($teams);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|String|max:255'
+        $request->validate([
+            'name' => 'required|string|max:255'
         ]);
 
-        $data['client_id'] = auth()->user()->client()->first()->id;
-        $team = Team::create($data);
-        return response()->json(['message' => 'The Team Created Sccussfuly', 'Team data' => $data]);
+        $team = auth()->user()->client()->teams()->create([
+            'name' => $request->name
+        ]);
+
+        return response()->json($team, 201);
     }
 
-    public function sendRequest(Request $request)
+    public function show($id)
     {
-        $data = $request->validate([
-            'team_id' => 'required|numeric',
-            'freelancer_id' => 'required|numeric',
-            'message' => 'required|String'
-        ]);
-        $data['name'] = Team::find($data['team_id']);
-        //add notifcation 
-        //add response
-        return response()->json($data);
+        $team = Team::with('members')->findOrFail($id);
+        return response()->json($team);
     }
-    public function addmember(Request $request)
-    {
-        $data = $request->validate([
-            'team_id' => 'required'
-        ]);
-        $data['freelancer_id'] = auth()->user()->freelancer()->first()->id;
-        $accept = TeamMember::create($data);
-        return response()->json(['message' => ' you are in Team', 'data' => $data]);
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(Team $team)
-    {
-        return response()->json(Team::find($team));
-    }
-    
-    public function showMyTeams()
-    {
-        $client=auth()->user()->client()->first()->id;
-        $myTeams=  DB::table('teams')
-        ->where('client_id', $client)
-        ->pluck('name');
-        return response()->json(['Your Teams is '=>$myTeams]);
-    }
-    
 
-    public function destroy(Team $team)
+    public function update(Request $request, $id)
     {
-        return response()->json(['message' => 'Team message Sccussfuly']);
+        $team = Team::findOrFail($id);
+
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+        ]);
+
+        $team->update($request->all());
+
+        return response()->json($team);
+    }
+
+    public function destroy($id)
+    {
+        $team = Team::findOrFail($id);
+        $team->delete();
+
+        return response()->json(null, 204);
     }
 }

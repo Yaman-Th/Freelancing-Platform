@@ -4,6 +4,7 @@ namespace App\Models\Auth;
 
 use App\Models\Contract;
 use App\Models\Post;
+use App\Models\ServiceOrder;
 use App\Models\Team;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
@@ -38,7 +39,12 @@ class Client extends Model
     {
         return $this->hasMany(Contract::class);
     }
-    public function team(){
+    public function teams()
+    {
         return $this->hasMany(Team::class);
+    }
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class);
     }
 }

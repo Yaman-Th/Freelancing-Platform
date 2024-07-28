@@ -2,24 +2,40 @@
 
 namespace App\Models;
 
-use App\Models\Auth\Client;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Auth\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Rating extends Model
 {
     use HasFactory;
 
-    protected $fiilable=['client_id','service_id','score','comment','project_id'];
+    protected $fillable = [
+        'service_order_id',
+        'post_id',
+        'rater_id',
+        'ratee_id',
+        'score',
+        'comment',
+    ];
 
-
-
-    public function client(){
-        return $this->belongsTo(Client::class);
+    public function service_order()
+    {
+        return $this->belongsTo(ServiceOrder::class);
     }
-    public function service(){
-        return $this->belongsTo(Service::class);
+
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
     }
-    public function post(){
+
+    public function rater()
+    {
+        return $this->belongsTo(User::class,'rater_id');
+    }
+
+    public function ratee()
+    {
+        return $this->belongsTo(User::class,'ratee_id');
     }
 }

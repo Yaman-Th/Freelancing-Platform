@@ -50,7 +50,6 @@ class PaymentController extends Controller
 
         $totalAmount = $contract->payment_amount;
 
-        // تسجيل تفاصيل الدفع في قاعدة البيانات
         $payment = Payment::create([
             'contract_id' => $request->contract_id,
             'amount' => $totalAmount,
@@ -63,7 +62,7 @@ class PaymentController extends Controller
 
         // تحديث حالة الدفع في العقد
         $contract->update(['payment_status' => 'paid']);
-
+        $serviceOrder->update(['status'=>'active']);
         return response()->json(['message' => 'Payment successful!', 'payment' => $payment, 'contract' => $contract]);
     }
 }

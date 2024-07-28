@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\Service;
-use App\Models\Auth\Client;
+use App\Models\Post;
+use App\Models\ServiceOrder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use App\Models\Post;
+
 return new class extends Migration
 {
     /**
@@ -15,11 +16,12 @@ return new class extends Migration
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Service::class)->onDelete('cascade');
-            $table->foreignId(Client::class)->onDelete('cascade');
-            $table->bigInteger('Score');
-            $table->text("comment");
-            // $table->foreignId(Post::class)->onDelete('cascade');
+            $table->foreignIdFor(ServiceOrder::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('post_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('rater_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('ratee_id')->constrained('users')->cascadeOnDelete();
+            $table->integer('score')->checkBetween(1, 5);
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }

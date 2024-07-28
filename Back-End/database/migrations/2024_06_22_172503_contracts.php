@@ -22,7 +22,7 @@ return new class extends Migration
             // $table->date('start_date'); we already by create contract we have create at so we don't need that
             $table->date('end_date');
             $table->float('payment_amount');
-            $table->float('payment_status');
+            $table->string('payment_status');
             $table->string('status');
             $table->timestamps();
         });

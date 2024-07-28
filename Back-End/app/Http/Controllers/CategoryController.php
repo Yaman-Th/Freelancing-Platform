@@ -54,7 +54,11 @@ class CategoryController extends Controller
 
         return response()->json([$category], 200);
     }
-
+    public function search(Request $request){
+        $filters = $request->only('name');
+        $category=Category::filter($filters)->get();
+        return response()->json($category);
+    }
     public function destroy(Category $category)
     {
         $category->delete();

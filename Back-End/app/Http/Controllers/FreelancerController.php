@@ -17,37 +17,37 @@ class FreelancerController extends Controller
 {
     // to make the user Freelancer
     public function update(Request $request)
-{
-    $user=auth()->user();
-    $freelancer=$user->freelancer;
-    try {
-        $request->validate([
-            'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'personal_overview' => 'sometimes|string',
-        ]);
-
-        if ($request->hasFile('personal_image')) {
-            $personal_image = $request->file('personal_image')->store('personal_image');
-
-            $freelancer->update([
-                'personal_image' => $personal_image,
-                'personal_overview' => $request->personal_overview,
+    {
+        $user = auth()->user();
+        $freelancer = $user->freelancer;
+        try {
+            $request->validate([
+                'personal_image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'personal_overview' => 'sometimes|string',
             ]);
-        } else {
-            $freelancer->update([
-                'personal_overview' => $request->personal_overview
-            ]);
+
+            if ($request->hasFile('personal_image')) {
+                $personal_image = $request->file('personal_image')->store('personal_image');
+
+                $freelancer->update([
+                    'personal_image' => $personal_image,
+                    'personal_overview' => $request->personal_overview,
+                ]);
+            } else {
+                $freelancer->update([
+                    'personal_overview' => $request->personal_overview
+                ]);
+            }
+            $freelancer->save();
+        } catch (ValidationException $exception) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $exception->errors()
+            ], 422);
         }
-        $freelancer->save();
-    } catch (ValidationException $exception) {
-        return response()->json([
-            'message' => 'Validation Error',
-            'errors' => $exception->errors()
-        ], 422);
-    }
 
-    return response()->json(['message' => 'Update Successfully',$freelancer]);
-}
+        return response()->json(['message' => 'Update Successfully', $freelancer]);
+    }
 
     /**
      * profile
@@ -56,7 +56,7 @@ class FreelancerController extends Controller
     public function myprofile()
     //    SELECT * FROM freelancers f JOIN users u on u.id=f.id WHERE f.id=3
     {
-        $user=auth()->user();
+        $user = auth()->user();
         $freelancerinfo = DB::table('freelancers')
             ->join('users', 'users.id', '=', 'freelancers.user_id') // Assuming freelancers table has user_id column
             ->select('freelancers.*', 'users.*')
@@ -65,13 +65,18 @@ class FreelancerController extends Controller
         // $Skill
         return response()->json($freelancerinfo);
     }
-    
-    public function show($freelancer){
-                return response()->json(Freelancer::find($freelancer));
-    }
-    public function addMoney(){
-        
-    }
 
+    public function show($id)
+    {
+        $clientinfo = DB::table('freelancers')
+            ->join('users', 'users.id', '=', 'freelancers.user_id') // Assuming client table has user_id column
+            ->select('freelancers.*', 'users.*')
+            ->where('freelancers.id', $id)
+            ->first();
+        // $Skill
+        return response()->json($clientinfo);
+    }
+    public function addMoney()
+    {
+    }
 }
-

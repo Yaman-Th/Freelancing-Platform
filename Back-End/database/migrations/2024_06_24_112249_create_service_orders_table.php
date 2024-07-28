@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('details');
             $table->bigInteger("quantity");
             $table->date("delivery_date");
-            $table->string("status");
+            $table->enum('status', ['pending', 'accepted', 'rejected', 'active', 'completed'])->default('pending');
             $table->timestamps();
         });
     }
