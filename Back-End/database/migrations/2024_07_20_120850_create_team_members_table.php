@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Team::class)->onDelete('cascade');
             $table->foreignIdFor(Freelancer::class)->onDelete('cascade');
-            $table->timestamps(); // we can take  the join date
+            $table->timestamps(); // we can take  the join date from here
         });
     }
 

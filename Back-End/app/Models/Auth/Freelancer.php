@@ -50,13 +50,13 @@ class Freelancer extends Model
     {
         return $this->hasMany(Contract::class);
     }
-    public function teams()
-    {
-        return $this->belongsToMany(Team::class, 'team_freelancer');
-    }
 
     public function invitation()
     {
         return $this->hasMany(Invitation::class);
+    }
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'invitations')->wherePivot('status', 'accepted');
     }
 }

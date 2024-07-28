@@ -1,13 +1,6 @@
 <?php
 
-use App\Models\Service;
-use App\Models\Auth\User;
-use App\Models\Auth\client;
-use App\Models\ServiceOrder;
-use Illuminate\Http\Request;
-use App\Models\Auth\Freelancer;
 use Spatie\Permission\Models\Role;
-use App\Models\Auth\EmailVerfcation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -23,16 +16,12 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\FreelancerController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceOrderController;
-use App\Models\Category;
 
 // Public Routes
 
-
-
 Route::post('/register', [AuthController::class, 'register']);
-
-Route::get('/', [CategoryController::class, 'index']);
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -40,45 +29,42 @@ Route::post('/sendresetpassword', [AuthController::class, 'sendResetPasswordCode
 
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 
+// get  &  Search  are public
 Route::get('/users/search', [AuthController::class, 'Search']);
 
 Route::get('/services/search', [ServiceController::class, 'Search']);
 
+Route::get('/categories/search', [CategoryController::class, 'Search']);
+
+// return profile client by id
+Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
+
+// return profile freelancer by id
+Route::get('/freelancer/profile/{id}', [FreelancerController::class, 'show']);
+
+// category 
 Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::get('/parentcategories', [CategoryController::class, 'getParentCategory']);
 
 Route::get('/subcategories', [CategoryController::class, 'getsubCategory']);
 
+// return all service
+Route::get('services/', [ServiceController::class, 'index']);
+// return one service by id
+Route::get('services/{service}', [ServiceController::class, 'show']);
+
+
+//////////////////////////////////////
+
+
+Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
+
+Route::post('/addOrder', [ServiceOrderController::class, 'create']);
+
+
+
 Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('payment/info/{contractId}', [paymentController::class, 'getPaymentDetails']);
-
-    Route::post('payment/pay', [paymentController::class, 'processPayment']);
-
-    Route::put('orders/{orderId}/approve', [ServiceOrderController::class, 'approve']);
-
-    Route::post('/client/team', [TeamController::class, 'create']);
-    Route::post('/client/sendRequest', [TeamController::class, 'sendRequest']);
-
-    Route::post('/client/addMember', [TeamController::class, 'addMember']);
-    Route::get('/client/myTeam', [TeamController::class, 'showMyTeams']);
-    Route::post('/client/updateProfile', [ClientController::class, 'updateProfile']);
-
-
-
-
-
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = $request->user()->checkout(['pri_deluxe_album', 2]);
-
-        return response()->json(['checkout' => $checkout]);
-    });
-
-    Route::post('/addOrder', [ServiceOrderController::class, 'create']);
-
-
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -87,36 +73,51 @@ Route::middleware('auth:sanctum')->group(function () {
     // Email Verification
     Route::post('/verify-email', [AuthController::class, 'verfiyEmail']);
 
-    // return profile
-    Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
+    /////  teams/////
+
+    Route::post('client/teams', [TeamController::class, 'create']);
+    Route::post('client/teams/requests', [TeamController::class, 'sendRequest']);
+    Route::patch('freelancer/team/responseinvintation/{id}', [TeamController::class, 'handleRequest']);
+    Route::get('clients/myteams', [TeamController::class, 'getClientTeams']);
+    Route::get('freelancer/myteams', [TeamController::class, 'getAuthenticatedFreelancerTeams']);
+
+    /////////////
+
+    ////////// ratings////////
+    Route::post('rating', [RatingController::class, 'store']);
+    Route::get('rating', [RatingController::class, 'index']);
+    Route::get('rating/{id}', [RatingController::class, 'show']);
+    Route::put('rating/{id}', [RatingController::class, 'update']);
+    Route::delete('rating/{id}', [RatingController::class, 'destroy']);
+    Route::get('ratings/service/{serviceId}', [RatingController::class, 'getServiceRatings'])->name('ratings.getServiceRatings');
+    Route::get('ratings/post/{postId}', [RatingController::class, 'getPostRatings'])->name('ratings.getPostRatings');
+    Route::get('ratings/user/{userId}', [RatingController::class, 'getUserRatings'])->name('ratings.getUserRatings');
+
+    ////////////
 
     // FreelancerRoutes  
     Route::middleware('role:freelancer')->group(function () {
 
-        // return profile by id
-        Route::get('/freelancer/profile/{freelancer}', [FreelancerController::class, 'show']);
         // return own profile 
         Route::get('/freelancer/myprofile', [FreelancerController::class, 'myprofile']);
-        // update prfile
+
+        // update profile
         Route::post('/freelancer/updateProfile', [FreelancerController::class, 'update']);
 
         // Accept ServiceOrder
-        Route::put('/orders/{serviceOrder}/accept', [ServiceOrderController::class, 'acceptOrder'])
-            ->can('updateStatus', 'serviceOrder');
+        Route::put('/orders/{serviceOrder}/approve', [ServiceOrderController::class, 'approve']);
+        // ->can('updateStatus', 'serviceOrder');
         // Reject ServiceOrder
-        Route::put('/orders/{serviceOrder}/reject', [ServiceOrderController::class, 'rejectOrder'])
-            ->can('updateStatus', 'serviceOrder');
-
+        Route::put('/orders/{serviceOrder}/reject', [ServiceOrderController::class, 'reject']);
+        // ->can('updateStatus', 'serviceOrder');
+        Route::get('/getorderfreelancer', [ServiceOrderController::class, 'getOrderFreelancer']);
 
         /* Service Route */
         Route::prefix('services')->group(function () {
             // Add New Service
-            Route::post('/', [ServiceController::class, 'store'])
-                ->middleware('can:service.create');
-            // return all service
-            Route::get('/', [ServiceController::class, 'index']);
-            // return one service by id
-            Route::get('/{service}', [ServiceController::class, 'show']);
+            Route::post('/', [ServiceController::class, 'store']);
+            // ->middleware('can:service.create');
+
             // edit service 
             Route::put('/{service}', [ServiceController::class, 'edit'])
                 ->can('update', 'service');
@@ -125,30 +126,37 @@ Route::middleware('auth:sanctum')->group(function () {
                 ->can('delete', 'service');
         });
 
+        // approve the order
+        Route::put('orders/{orderId}/approve', [ServiceOrderController::class, 'approve']);
+
         /* Proposal Routes */
         Route::prefix('proposals')->group(function () {
             // Get All Proposals of Freelacner
             Route::get('/', [ProposalController::class, 'index']);
             // Store New Proposal
-            Route::post('/', [ProposalController::class, 'store'])
-                ->middleware('can:proposal.create');
+            Route::post('/', [ProposalController::class, 'store']);
+            // ->middleware('can:proposal.create');
             // Get Proposal By id
             Route::get('/{proposal}', [ProposalController::class, 'show']);
             // Update Proposal
-            Route::put('/{proposal}', [ProposalController::class, 'update'])
-                ->can('update', 'proposal');
+            Route::put('/{proposal}', [ProposalController::class, 'update']);
+            // ->can('update', 'proposal');
             // Destroy Proposal
-            Route::delete('/{proposal}', [ProposalController::class, 'destroy'])
-                ->can('delete', 'proposal');
+            Route::delete('/{proposal}', [ProposalController::class, 'destroy']);
+            // ->can('delete', 'proposal');
         });
     });
 
     // ClientRoutes 
     Route::middleware('role:client')->group(function () {
 
-        //update Prfile
-        Route::post('/client/updateProfile/{client}', [ClientController::class, 'updateProfile']);
+        //update profile
+        Route::post('/client/updateProfile', [ClientController::class, 'updateProfile']);
 
+        Route::get('/client/myprofile', [ClientController::class, 'myProfile']);
+
+        Route::get('/client/myorders', [ServiceOrderController::class, 'getOrderClient']);
+        
         /* Post Routes */
         Route::prefix('posts')->group(function () {
             // Get All Posts of Client
@@ -156,40 +164,46 @@ Route::middleware('auth:sanctum')->group(function () {
             // Get Post By id
             Route::get('/{post}', [PostController::class, 'show']);
             // Create New Post
-            Route::post('/', [PostController::class, 'store'])
-                ->can('create', 'post');
+            Route::post('/', [PostController::class, 'store']);
+            // ->can('create', 'post');
             // Update Post
-            Route::put('/{post}', [PostController::class, 'update'])
-                ->can('update', 'post');
+            Route::put('/{post}', [PostController::class, 'update']);
+            // ->can('update', 'post');
             // Destroy Post
-            Route::delete('/{post}', [PostController::class, 'destroy'])
-                ->can('delete', 'post');
+            Route::delete('/{post}', [PostController::class, 'destroy']);
+            // ->can('delete', 'post');
             // Get Proposals
             Route::get('/{post}/proposals', [PostController::class, 'getProposals']);
         });
 
         /* Proposal Routes */
         // Accept Proposal
-        Route::put('/proposals/{proposal}/accept', [ProposalController::class, 'acceptProposal'])
-            ->can('updateStatus', 'proposal');
+        Route::put('/proposals/{proposal}/accept', [ProposalController::class, 'acceptProposal']);
+        // ->can('updateStatus', 'proposal');
         // Reject Proposal
-        Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal'])
-            ->can('updateStatus', 'proposal');
+        Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal']);
+        // ->can('updateStatus', 'proposal');
+
+        // payments Route
+        Route::get('payment/info/{contractId}', [paymentController::class, 'getPaymentDetails']);
+
+        Route::post('payment/pay', [paymentController::class, 'processPayment']);
 
         /* ServiceOrder Routes */
         Route::prefix('orders')->group(function () {
             // Get All Service Orders
             Route::get('/', [ServiceOrderController::class, 'index']);
             // Create New Service Order
-            Route::post('/', [ServiceOrderController::class, 'store'])
+            Route::post('/', [ServiceOrderController::class, 'create'])
                 ->middleware('can:order.create');
             // Get Service Order By id
             Route::get('/{serviceOrder}', [ServiceOrderController::class, 'show']);
             // Destroy ServiceOrder
             Route::delete('/{serviceOrder}', [ServiceOrderController::class, 'destroy'])
                 ->can('delete', 'serviceOrder');
+            Route::put('/complete/{orderId}', [ServiceOrderController::class, 'completeOrder']);
             // Get Service Order By CLient.
-            // Route::get('/getOrderClient', [ServiceOrderController::class, 'getOrderClient']);
+            Route::get('/getorderclient', [ServiceOrderController::class, 'getOrderClient']);
         });
     });
 
@@ -214,15 +228,4 @@ Route::middleware('auth:sanctum')->group(function () {
         //
         Route::delete('/Skill', [SkillController::class, 'destroy']);
     });
-
-
-    Route::post('/order', [ServiceOrderController::class, 'create']);
-
-    Route::get('/bla/{serviceorder_id}', [ContractController::class, 'createContractService']);
-
-    Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
-
-
-
-    Route::get('/bla/bla/{serviceOrder}', [paymentController::class, 'pay']);
 });

@@ -46,12 +46,24 @@ class ServiceOrderController extends Controller
     public function getOrderFreelancer()
     {
         $user = auth()->user();
-        $FreelancertId = $user->freelancer->id;
-        $orders = ServiceOrder::where('freelancer_id', $FreelancertId)->get();
-        if ($orders)
-            return response()->json(['your orders are' => $orders]);
-        else
-            return response()->json(['message' => 'you do not have orders '], 200);
+
+        // التحقق مما إذا كان المستخدم هو فريلانسر
+        if (!$user->freelancer) {
+            return response()->json(['message' => 'You are not a freelancer'], 403);
+        }
+
+        $freelancerId = $user->freelancer->id;
+
+        // الحصول على الطلبات التي ترتبط بالخدمات التي يقدمها الفريلانسر
+        $orders = ServiceOrder::whereHas('service', function ($query) use ($freelancerId) {
+            $query->where('freelancer_id', $freelancerId);
+        })->get();
+
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'You do not have any orders'], 200);
+        }
+
+        return response()->json(['orders' => $orders], 200);
     }
 
 
@@ -120,7 +132,7 @@ class ServiceOrderController extends Controller
     }
     public function completeOrder(Request $request, $orderId)
     {
-        
+
         $order = ServiceOrder::find($orderId);
 
         // Check if the order exists

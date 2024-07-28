@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Invitation extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = ['team_id', 'freelancer_id', 'status'];
 
     public function team()

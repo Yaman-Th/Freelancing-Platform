@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Team extends Model
 {
-    use HasFactory;
-
     protected $fillable = ['client_id', 'name'];
 
     public function client()
@@ -18,13 +16,13 @@ class Team extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function freelancers()
-    {
-        return $this->belongsToMany(Freelancer::class, 'team_freelancer');
-    }
-
     public function invitation()
     {
         return $this->hasMany(Invitation::class);
+    }
+
+    public function freelancers()
+    {
+        return $this->belongsToMany(Freelancer::class, 'invitation')->wherePivot('status', 'accepted');
     }
 }
