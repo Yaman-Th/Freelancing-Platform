@@ -42,6 +42,8 @@ Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
 // return profile freelancer by id
 Route::get('/freelancer/profile/{id}', [FreelancerController::class, 'show']);
 
+
+
 // category 
 Route::get('/categories', [CategoryController::class, 'index']);
 
@@ -49,10 +51,18 @@ Route::get('/parentcategories', [CategoryController::class, 'getParentCategory']
 
 Route::get('/subcategories', [CategoryController::class, 'getsubCategory']);
 
+//get all
+Route::get('/Skill', [SkillController::class, 'index']);
+
 // return all service
 Route::get('services/', [ServiceController::class, 'index']);
 // return one service by id
 Route::get('services/{service}', [ServiceController::class, 'show']);
+
+// Get All Posts of Client
+Route::get('/', [PostController::class, 'index']);
+// Get Post By id
+Route::get('/{post}', [PostController::class, 'show']);
 
 
 //////////////////////////////////////
@@ -103,7 +113,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // update profile
         Route::post('/freelancer/updateProfile', [FreelancerController::class, 'update']);
-
         // Accept ServiceOrder
         Route::put('/orders/{serviceOrder}/approve', [ServiceOrderController::class, 'approve']);
         // ->can('updateStatus', 'serviceOrder');
@@ -156,13 +165,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/client/myprofile', [ClientController::class, 'myProfile']);
 
         Route::get('/client/myorders', [ServiceOrderController::class, 'getOrderClient']);
-        
+
         /* Post Routes */
         Route::prefix('posts')->group(function () {
-            // Get All Posts of Client
-            Route::get('/', [PostController::class, 'index']);
-            // Get Post By id
-            Route::get('/{post}', [PostController::class, 'show']);
+
             // Create New Post
             Route::post('/', [PostController::class, 'store']);
             // ->can('create', 'post');
@@ -211,8 +217,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
 
         /* Category Routes */
-        // Get All Category
-        // Route::get('/categories', [CategoryController::class, 'index']);
         // Add Category or Sub-Category
         Route::post('/categories', [CategoryController::class, 'store']);
         // Delete Category
@@ -223,9 +227,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/Skill', [SkillController::class, 'create']);
 
         Route::post('/addSkill', [SkillController::class, 'addSkill']);
-        //get all
-        Route::get('/Skill', [SkillController::class, 'index']);
-        //
+
         Route::delete('/Skill', [SkillController::class, 'destroy']);
     });
 });
