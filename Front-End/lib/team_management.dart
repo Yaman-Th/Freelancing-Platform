@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
-
-class Freelancer {
-  final String name;
-  final String status;
-
-  Freelancer({required this.name, required this.status});
-}
-
-class Team {
-  final String name;
-  final List<Freelancer> freelancers;
-
-  Team({required this.name, required this.freelancers});
-}
+import 'package:freelancing/models/freelancer.dart';
+import 'package:provider/provider.dart';
+import 'package:freelancing/models/team.dart';
+import 'package:freelancing/provider/team_provider.dart';
 
 class TeamManagement extends StatefulWidget {
   const TeamManagement({super.key});
@@ -42,11 +32,16 @@ class TeamManagementState extends State<TeamManagement> {
     String freelancerName = freelancerNameController.text;
     if (freelancerName.isNotEmpty) {
       setState(() {
-        Team? team = teams.firstWhere((team) => team.name == teamName,
-            orElse: () => Team(name: '', freelancers: []));
+        Team? team = teams.firstWhere(
+          (team) => team.name == teamName,
+          orElse: () => Team(name: '', freelancers: []),
+        );
         if (team.name.isNotEmpty) {
-          team.freelancers
-              .add(Freelancer(name: freelancerName, status: 'pending'));
+          team.freelancers.add(Freelancer(
+            id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+            name: freelancerName,
+            status: 'pending',
+          ));
           freelancerNameController.clear();
         }
       });
@@ -75,8 +70,10 @@ class TeamManagementState extends State<TeamManagement> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  Team? team = teams.firstWhere((team) => team.name == teamName,
-                      orElse: () => Team(name: '', freelancers: []));
+                  Team? team = teams.firstWhere(
+                    (team) => team.name == teamName,
+                    orElse: () => Team(name: '', freelancers: []),
+                  );
                   if (team.name.isNotEmpty) {
                     team.freelancers.removeAt(freelancerIndex);
                   }

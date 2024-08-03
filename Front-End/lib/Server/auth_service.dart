@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:freelancing/utils/token.dart';
 import 'package:http/http.dart' as http;
-
 class AuthService {
-  final String Url = 'http://192.168.1.8:8000/api/register';
+  static const String Url = 'http://192.168.1.6:8000/api';
 
   Future<bool> register(
       String firstName,
@@ -13,8 +13,8 @@ class AuthService {
       String passwordConfirmation,
       String birthday) async {
     final response = await http.post(
-      Uri.parse(Url),
-      headers: <String, String>{
+      Uri.parse('$Url/register'),
+      headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
@@ -40,7 +40,7 @@ class AuthService {
 
   Future<bool> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.8:8000/api/login'),
+      Uri.parse('$Url/login'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -53,6 +53,7 @@ class AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final responseBody = json.decode(response.body);
       final token = responseBody['token'];
+      await TokenStorage.saveToken(token);
       print('Login successful. Token: $token');
       return true;
     } else {

@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:freelancing/Auth/freelancer_register.dart';
-import 'package:freelancing/DashboardScreens/freelancer_dashboard.dart';
-import 'package:freelancing/Auth/client_register.dart';
 import 'package:freelancing/Auth/login.dart';
-import 'package:freelancing/chat/inside_chat.dart';
-import 'package:freelancing/notification_screen.dart';
-import 'package:freelancing/post_management.dart';
-import 'package:freelancing/Auth/register.dart';
-import 'package:freelancing/post_management.dart';
-import 'package:freelancing/profile/client_profile.dart';
-import 'package:freelancing/service_management.dart';
-import 'package:freelancing/tabs.dart';
-import 'package:freelancing/team_management.dart';
-import 'package:freelancing/register/freelancer_register.dart';
+import 'package:freelancing/Provider/post_provider.dart';
+import 'package:freelancing/Provider/service_provider.dart';
+import 'package:freelancing/Provider/team_provider.dart';
+import 'package:freelancing/Server/post_service.dart';
+import 'package:freelancing/Server/team_service.dart';
+import 'package:freelancing/Server/service.dart';
+import 'package:provider/provider.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.light,
-  seedColor: const  Color(0xff214269),
-  background: const  Color(0xffFFFFFF),
-  onPrimary: const  Color(0xff65EBC6),
-  onSecondary: const  Color(0xff6792BD),
+  seedColor: const Color(0xff214269),
+  background: const Color(0xffFFFFFF),
+  onPrimary: const Color(0xff65EBC6),
+  onSecondary: const Color(0xff6792BD),
   onBackground: const Color.fromARGB(255, 110, 110, 110),
   onSurface: const Color.fromARGB(255, 33, 66, 105),
   primary: Colors.black,
@@ -56,8 +50,24 @@ final theme = ThemeData().copyWith(
     ),
   ),
 );
+
 void main() {
-  runApp(const App());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ServiceProvider(ServiceService()),
+        ),
+        // ChangeNotifierProvider<TeamProvider>(
+        //   create: (_) => TeamProvider(TeamService()),
+        // ),
+        ChangeNotifierProvider<PostProvider>(
+          create: (context) => PostProvider(PostService()),
+        ),
+      ],
+      child: const App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
@@ -68,7 +78,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home:const  TabsScreen(),
+      home: const LoginPage(),
     );
   }
 }

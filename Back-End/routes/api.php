@@ -60,7 +60,7 @@ Route::get('services/', [ServiceController::class, 'index']);
 Route::get('services/{service}', [ServiceController::class, 'show']);
 
 // Get All Posts of Client
-Route::get('/', [PostController::class, 'index']);
+Route::get('/allposts', [PostController::class, 'index']);
 // Get Post By id
 Route::get('/{post}', [PostController::class, 'show']);
 

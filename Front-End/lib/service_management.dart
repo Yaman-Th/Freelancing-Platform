@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:freelancing/Server/service.dart';
+import 'package:freelancing/models/service.dart';
 import 'dart:io';
 import 'package:freelancing/widget/image_input.dart';
-import 'package:freelancing/main.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:freelancing/Provider/service_provider.dart';
 
 class ServiceManagement extends StatefulWidget {
   const ServiceManagement({super.key});
@@ -23,8 +24,6 @@ class _ServiceManagementState extends State<ServiceManagement> {
   final _priceController = TextEditingController();
   final _categoryIdController = TextEditingController();
   File? _selectedImage;
-  //List<Service> services = [];
-  List<Map<String, dynamic>> services = [];
   int? editingIndex;
 
   @override
@@ -37,96 +36,57 @@ class _ServiceManagementState extends State<ServiceManagement> {
     super.dispose();
   }
 
-  // Future<Service> createService(Service service) async {
-  //   final response = await http.post(
-  //     Uri.parse('http://192.168.1.8:8000/api/services'),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: jsonEncode(service.toJson()),
-  //   );
-
-  //   if (response.statusCode == 201) {
-  //     return Service.fromJson(jsonDecode(response.body));
-  //   } else {
-  //     throw Exception('Failed to create service');
-  //   }
-  // }
-
-  // void _createService() async {
-  //   Service newService = Service(
-  //       title: _titleController.text,
-  //       description: _descriptionController.text,
-  //       image: _selectedImage!.path,
-  //       deliveryDays: _deliveryDaysController.text,
-  //       price: double.parse(_priceController.text),
-  //       categoryId: 10);
-
-  //   try {
-  //     final createdService = await createService(newService);
-  //     setState(() {
-  //       services.add(createdService);
-  //       _titleController.clear();
-  //       _descriptionController.clear();
-  //       _deliveryDaysController.clear();
-  //       _priceController.clear();
-  //       _selectedImage = null;
-  //     });
-  //   } catch (e) {
-  //     print('Failed to create service: $e');
-  //   }
-  // }
-  void _handleService() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        final newService = {
-          'title': _titleController.text,
-          'description': _descriptionController.text,
-          'image': _selectedImage,
-          'delivery_days': _deliveryDaysController.text,
-          'price': _priceController.text,
-          'category_id': _categoryIdController.text
-        };
-
-        if (editingIndex != null) {
-          services[editingIndex!] = newService;
-          editingIndex = null;
-        } else {
-          services.add(newService);
-        }
-
-        _titleController.clear();
-        _descriptionController.clear();
-        _deliveryDaysController.clear();
-        _priceController.clear();
-        _categoryIdController.clear();
-        _selectedImage = null;
-      });
+void _handleService() {
+  if (_formKey.currentState!.validate()) {
+    if (_selectedImage == null) {
+      // Handle the case where no image is selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select an image'),
+        ),
+      );
+      return;
     }
-  }
 
-  // void _handleEdit(int index) {
-  //   setState(() {
-  //     editingIndex = index;
-  //     final service = services[index];
-  //     _titleController.text = service.title;
-  //     _descriptionController.text = service.description;
-  //     _selectedImage = File(service.image);
-  //     _deliveryDaysController.text = service.deliveryDays;
-  //     _categoryIdController.text = service.categoryId.toString();
-  //     _priceController.text = service.price.toString();
-  //   });
-  // }
+    final service = Service(
+      title: _titleController.text,
+      description: _descriptionController.text,
+      deliveryDays: int.parse(_deliveryDaysController.text),
+      price: double.parse(_priceController.text),
+      categoryId: int.parse(_categoryIdController.text),
+      image: _selectedImage!.path,
+    );
+
+    if (editingIndex != null) {
+      Provider.of<ServiceProvider>(context, listen: false)
+          .updateService(editingIndex!, service, _selectedImage!);
+      editingIndex = null;
+    } else {
+      Provider.of<ServiceProvider>(context, listen: false)
+          .addService(service, _selectedImage!);
+    }
+
+    _titleController.clear();
+    _descriptionController.clear();
+    _deliveryDaysController.clear();
+    _priceController.clear();
+    _categoryIdController.clear();
+    setState(() {
+      _selectedImage = null;
+    });
+  }
+}
+
   void _handleEdit(int index) {
     setState(() {
       editingIndex = index;
-      final post = services[index];
-      _titleController.text = post['title'];
-      _descriptionController.text = post['description'];
-      _selectedImage = post['image'];
-      _deliveryDaysController.text = post['delivery_days'];
-      _priceController.text = post['price'];
-      _categoryIdController.text = post['category_id'];
+      final service = Provider.of<ServiceProvider>(context, listen: false).services[index];
+      _titleController.text = service.title;
+      _descriptionController.text = service.description;
+      _deliveryDaysController.text = service.deliveryDays.toString();
+      _priceController.text = service.price.toString();
+      _categoryIdController.text = service.categoryId.toString();
+      _selectedImage = service.image != null ? File(service.image!) : null;
     });
   }
 
@@ -143,7 +103,7 @@ class _ServiceManagementState extends State<ServiceManagement> {
                 ),
           ),
           content: Text(
-            'Are you sure you want to delete this post?',
+            'Are you sure you want to delete this service?',
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -157,9 +117,8 @@ class _ServiceManagementState extends State<ServiceManagement> {
                     ),
               ),
               onPressed: () {
-                setState(() {
-                  services.removeAt(index);
-                });
+                Provider.of<ServiceProvider>(context, listen: false)
+                    .deleteService(index);
                 Navigator.of(context).pop();
               },
             ),
@@ -181,28 +140,16 @@ class _ServiceManagementState extends State<ServiceManagement> {
   }
 
   void _selectImage(File pickedImage) {
-    _selectedImage = pickedImage;
+    setState(() {
+      _selectedImage = pickedImage;
+    });
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _fetchServices();
-  // }
-
-  // void _fetchServices() async {
-  //   try {
-  //     final fetchedServices = await Service.getAllServices();
-  //     setState(() {
-  //       services = fetchedServices;
-  //     });
-  //   } catch (e) {
-  //     print('Failed to fetch services: $e');
-  //   }
-  // }
-
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
+    final services = Provider.of<ServiceProvider>(context).services;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -221,15 +168,15 @@ class _ServiceManagementState extends State<ServiceManagement> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient:LinearGradient(colors: [
-                    colorScheme.onSurface,
-                    colorScheme.onSecondary,
-                    colorScheme.onPrimary
-                  ],
+                  gradient: LinearGradient(
+                    colors: [
+                      colorScheme.onSurface,
+                      colorScheme.onSecondary,
+                      colorScheme.onPrimary
+                    ],
                     begin: Alignment.bottomRight,
                     end: Alignment.topLeft,
-                  ) ,
-                 // color: Theme.of(context).colorScheme.onSecondary,
+                  ),
                   borderRadius: const BorderRadius.all(Radius.circular(25)),
                 ),
                 child: Form(
@@ -313,7 +260,7 @@ class _ServiceManagementState extends State<ServiceManagement> {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a delivery days';
+                            return 'Please enter delivery days';
                           }
                           return null;
                         },
@@ -346,9 +293,7 @@ class _ServiceManagementState extends State<ServiceManagement> {
                           return null;
                         },
                       ),
-                      const SizedBox(
-                        height: 12,
-                      ),
+                      const SizedBox(height: 12),
                       TextFormField(
                         controller: _categoryIdController,
                         style: Theme.of(context)
@@ -371,16 +316,13 @@ class _ServiceManagementState extends State<ServiceManagement> {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a category';
+                            return 'Please enter a category ID';
                           }
                           return null;
                         },
                       ),
-                      const SizedBox(
-                        height: 12,
-                      ),
+                      const SizedBox(height: 12),
                       TextFormField(
-                        readOnly: true,
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium!
@@ -389,8 +331,8 @@ class _ServiceManagementState extends State<ServiceManagement> {
                             ),
                         cursorColor: Colors.white,
                         decoration: InputDecoration(
-                          hintText: 'Image',
-                          hintStyle: Theme.of(context)
+                          labelText: 'Selected Image',
+                          labelStyle: Theme.of(context)
                               .textTheme
                               .titleMedium!
                               .copyWith(
@@ -398,26 +340,27 @@ class _ServiceManagementState extends State<ServiceManagement> {
                               ),
                           border: InputBorder.none,
                         ),
+                        controller: TextEditingController(
+                          text: _selectedImage != null ? 'Image Selected' : 'No Image Selected',
+                        ),
+                        readOnly: true,
                       ),
+                      const SizedBox(height: 12),
                       ImageInput(
                         onPickImage: (image) {
-                          _selectedImage = image;
+                          _selectImage(image);
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                       Center(
                         child: ElevatedButton(
                           onPressed: _handleService,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.background,
+                            foregroundColor: Theme.of(context).colorScheme.primary,
                           ),
                           child: Text(
-                            editingIndex != null ? 'Save' : 'Post',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .copyWith(
+                            editingIndex != null ? 'Update Service' : 'Create Service',
+                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                           ),
@@ -427,110 +370,38 @@ class _ServiceManagementState extends State<ServiceManagement> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Your latest services',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-              ),
-              const SizedBox(height: 20),
-              services.isNotEmpty
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: services.length,
-                      itemBuilder: (context, index) {
-                        final post = services[index];
-                        return Card(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Post ${index + 1}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium),
-                                // Text('Title: ${post.title}'),
-                                // Text('Description: ${post.description}'),
-                                // Text('Deliver Days: ${post.deliveryDays}'),
-                                // Text('price: ${post.price}'),
-                                // Text('Category: ${post.categoryId}'),
-                                // post.image != null
-                                //     ? Image.file(
-                                //         File(post.image),
-                                Text('Title: ${post['title']}'),
-                                Text('Description: ${post['description']}'),
-                                Text('Deliver Days: ${post['delivery_days']}'),
-                                Text('price: ${post['price']}'),
-                                Text('Category ID: ${post['category_id']}'),
-                                if (post['image'] != null)
-                                Image.file(post['image'], width: 100, height: 100),
-                                        // height: 100,
-                                        // width: double.infinity,
-                                        // fit: BoxFit.cover,
-                                      //),
-                                    // : Container(),
-                                // const SizedBox(height: 12),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () => _handleEdit(index),
-                                      child: Text(
-                                        'Edit',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                            ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .background,
-                                      ),
-                                      onPressed: () => _handleDelete(index),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+              const SizedBox(height: 16),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: services.length,
+                itemBuilder: (ctx, index) {
+                  final service = services[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading: service.image != null
+                          ? Image.file(File(service.image!))
+                          : const Icon(Icons.image),
+                      title: Text(service.title),
+                      subtitle: Text(service.description),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => _handleEdit(index),
                           ),
-                        );
-                      },
-                    )
-                  : Column(
-                      children: [
-                        Text(
-                          'No services yet',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                color:
-                                    Theme.of(context).colorScheme.onBackground,
-                              ),
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Icon(
-                          Icons.error_sharp,
-                          color: colorScheme.onSurface,
-                          size: 75,
-                        ),
-                      ],
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _handleDelete(index),
+                          ),
+                        ],
+                      ),
                     ),
+                  );
+                },
+              ),
             ],
           ),
         ),
