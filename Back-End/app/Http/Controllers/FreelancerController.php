@@ -76,7 +76,8 @@ class FreelancerController extends Controller
         // $Skill
         return response()->json($clientinfo);
     }
-    public function addMoney()
-    {
-    }
+    public function searchfree
+    $freelancers = Freelancer::whereHas('skills', function($query) {
+        $query->where('name', 'Laravel');
+    })->get();
 }

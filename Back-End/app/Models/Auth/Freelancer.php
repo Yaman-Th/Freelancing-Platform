@@ -34,10 +34,10 @@ class Freelancer extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function skill()
-    {
-        return $this->belongsToMany(Skill::class, 'freelancer_skill', 'skill_id', 'freelancer_id');
-    }
+    public function freelancers()
+{
+    return $this->belongsToMany(Freelancer::class, 'freelancer_skill', 'skill_id', 'freelancer_id')->withTimestamps();
+}
     public function propsals()
     {
         return $this->hasMany(Proposal::class);
@@ -54,6 +54,10 @@ class Freelancer extends Model
     public function invitation()
     {
         return $this->hasMany(Invitation::class);
+    }
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'freelancer_skill', 'freelancer_id', 'skill_id');
     }
     public function teams()
     {

@@ -2,35 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Skill;
 use Illuminate\Http\Request;
 use App\Models\Auth\Freelancer;
+use App\Models\Skill;
 
 class SkillController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function list()
     {
-        return response()->json(["skill"=>Skill::all()]);
+        $Skills = Skill::all();
+        return response()->json($Skills);
     }
+
     public function show(Skill $skill)
     {
-        return response()->json(["skill"=>Skill::find($skill->id)]);
+        return response()->json(["skill" => Skill::find($skill->id)]);
     }
     /**
      * Show the form for creating a new resource.
      */
     public function create(Request $request)
     {
-        $data=$request->validate([
-            'name'=>'required|string|max:255'
+        $data = $request->validate([
+            'name' => 'required|string|max:255'
         ]);
-        Skill::create($data);
+
+        $skill = Skill::create($data);
+
         return response()->json([
-            'message'=>'Skill Create Sccessfully',
-            'Skill'=>$data
+            'message' => 'Skill created successfully',
+            'skill' => $skill
         ]);
     }
 
@@ -40,11 +42,14 @@ class SkillController extends Controller
     public function addSkill(Request $request)
     {
         $request->validate([
-            'skill_id' => 'required|exists:skills,id',
+            'name' => 'required',
         ]);
-        $freelancer=auth()->user();
-        
-        
+
+        $skill = Skill::where('name', $request->name)->first();
+
+        $freelancer = auth()->user()->freelancer()->first();
+
+        $freelancer->skills()->attach($skill->id);
 
         return response()->json(['message' => 'Skill added successfully'], 200);
     }
@@ -52,24 +57,33 @@ class SkillController extends Controller
     /**
      * Display the specified resource.
      */
-   public function removeSkill(Request $request, $freelancerId)
+    public function removeSkill(Request $request)
     {
         $request->validate([
             'skill_id' => 'required|exists:skills,id',
         ]);
+        $freelancerId = auth()->user()->freelancer()->first();
 
-        $freelancer = Freelancer::findOrFail($freelancerId);
+        $skill = Skill::where('name', $request->name)->first();
 
-        $freelancer->skills()->delete($request->skill_id);
+        $freelancer = Freelancer::findOrFail($freelancerId->id);
+
+        $freelancer->skills()->detach($skill->id);
 
         return response()->json(['message' => 'Skill removed successfully'], 200);
     }
-    
 
-   
+
+
     public function destroy(Skill $skill)
     {
         $skill->delete();
-        return response()->json(['message'=>'Skill delete Sccessfully']);
+        return response()->json(['message' => 'Skill delete Sccessfully']);
+    }
+    public function search(Request $request)
+    {
+        $filters = $request->only('name');
+        $skill = Skill::filter($filters)->get();
+        return response()->json($skill);
     }
 }

@@ -30,7 +30,7 @@ Route::post('/sendresetpassword', [AuthController::class, 'sendResetPasswordCode
 
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 
-Route::get('/translated-data', [translateController::class, 'getTranslatedData']);
+Route::get('/translate/{type}/{lang}/{id}', [translateController::class, 'getTranslatedData']);
 
 // get  &  Search  are public
 Route::get('/users/search', [AuthController::class, 'Search']);
@@ -39,6 +39,8 @@ Route::get('/services/search', [ServiceController::class, 'Search']);
 
 Route::get('/categories/search', [CategoryController::class, 'Search']);
 
+Route::get('/skill/search', [SkillController::class, 'Search']);
+
 // return profile client by id
 Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
 
@@ -46,6 +48,17 @@ Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
 Route::get('/freelancer/profile/{id}', [FreelancerController::class, 'show']);
 
 
+/* Skill Routes */
+Route::get('/skills', [SkillController::class, 'list']);
+
+Route::get('/skills/{skill}', [SkillController::class, 'show']); // الحصول على مهارة واحدة
+// create Skill
+Route::post('/skills', [SkillController::class, 'create']); // إنشاء مهارة جديدة
+
+Route::delete('/skills', [SkillController::class, 'destroy']); // حذف مهارة
+
+
+//////////////////////////////////////
 
 // category 
 Route::get('/categories', [CategoryController::class, 'index']);
@@ -63,16 +76,11 @@ Route::get('services/', [ServiceController::class, 'index']);
 Route::get('services/{service}', [ServiceController::class, 'show']);
 
 // Get All Posts of Client
-Route::get('/allposts', [PostController::class, 'i`ndex']);
+Route::get('/allposts', [PostController::class, 'index']);
 // Get Post By id
 Route::get('/{post}', [PostController::class, 'show']);
 // get posts for spesfic client
 Route::get('/post/{clientId}', [PostController::class, 'getpostsbyid']);
-
-
-
-//////////////////////////////////////
-
 
 Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
 
@@ -96,7 +104,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('freelancer/team/responseinvintation/{id}', [TeamController::class, 'handleRequest']);
     Route::get('clients/myteams', [TeamController::class, 'getClientTeams']);
     Route::get('freelancer/myteams', [TeamController::class, 'getAuthenticatedFreelancerTeams']);
-    Route::get('team/{teamId}/members',[TeamController::class,'getmembers']);
+    Route::get('team/{teamId}/members', [TeamController::class, 'getmembers']);
 
 
     /////////////
@@ -128,6 +136,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/orders/{serviceOrder}/reject', [ServiceOrderController::class, 'reject']);
         // ->can('updateStatus', 'serviceOrder');
         Route::get('/getorderfreelancer', [ServiceOrderController::class, 'getOrderFreelancer']);
+
+        Route::get('/team/myinvitation', [TeamController::class, 'getinvitation']);
+
+
+
+        // مسارات لإضافة وإزالة مهارات الفريلانسر
+        Route::post('/freelancers/skills', [SkillController::class, 'addSkill']); // إضافة مهارة لفريلانسر
+        Route::delete('/freelancers/{freelancerId}/skills', [SkillController::class, 'removeSkill']); // إزالة مهارة من فريلانسر
+        //////////////////////
 
         /* Service Route */
         Route::prefix('services')->group(function () {
@@ -175,7 +192,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/client/myorders', [ServiceOrderController::class, 'getOrderClient']);
 
         Route::get('/post/mypost', [PostController::class, 'getmypost']);
-        
+
         /* Post Routes */
         Route::prefix('posts')->group(function () {
 
@@ -231,13 +248,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/categories', [CategoryController::class, 'store']);
         // Delete Category
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
-
-        /* Skill Routes */
-        // create Skill
-        Route::post('/Skill', [SkillController::class, 'create']);
-
-        Route::post('/addSkill', [SkillController::class, 'addSkill']);
-
-        Route::delete('/Skill', [SkillController::class, 'destroy']);
     });
 });

@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('freelacer_skill', function (Blueprint $table) {
+        Schema::create('freelancer_skill', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignIdFor(Freelancer::class)->onDelete('cascade');
             $table->foreignIdFor(Skill::class)->onDelete('cascade');
-
         });
     }
 

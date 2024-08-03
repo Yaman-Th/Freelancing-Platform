@@ -85,7 +85,12 @@ class TeamController extends Controller
 
         return response()->json($teams);
     }
-
+    public function getinvitation()
+    {
+        $freelancerId = auth()->user()->freelancer()->id;
+        $myinvitation = Invitation::where('freelancer_id', $freelancerId)->where('status', 'pending');
+        return response()->json(['myinvitation' => $myinvitation]);
+    }
 
     public function getmembers($teamId)
     {
@@ -95,12 +100,12 @@ class TeamController extends Controller
             return response()->json(['message' => 'there is no members yet']);
         else {
             $nameTeam = Team::find($teamId);
-            $owner_id=Client::find($nameTeam->client_id);
+            $owner_id = Client::find($nameTeam->client_id);
             $owner = User::find($owner_id->user_id);
             return response()->json([
                 'Team Name' => $nameTeam->name,
-                'owner'=>$owner->name,
-                'members'=>$members
+                'owner' => $owner->name,
+                'members' => $members
             ]);
         }
     }
