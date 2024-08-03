@@ -6,6 +6,7 @@ use App\Models\Auth\Client;
 use App\Models\Post;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PostController extends Controller
@@ -89,5 +90,16 @@ class PostController extends Controller
     {
         $proposals = $post->proposals()->with('freelancer')->get();
         return response()->json($proposals, 200);
+    }
+    public function getmypost(Request $request){
+        $client=auth()->user()->client()->first()->id;
+        
+        $mypost=Post::where('client_id',$client)->get();
+        return response()->json([$mypost]);
+    }
+    public function getpostsbyid($clientId){
+        
+        $mypost=Post::where('client_id',$clientId)->get();
+        return response()->json([$mypost]);
     }
 }

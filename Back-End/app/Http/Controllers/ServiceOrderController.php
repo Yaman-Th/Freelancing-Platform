@@ -33,9 +33,9 @@ class ServiceOrderController extends Controller
         // Check if the client exists
         if (!$client) {
             return response()->json(['message' => 'Client not found'], 404);
-        }
 
-        $orders = ServiceOrder::where('client_id', 1)->get();
+        }
+        $orders = ServiceOrder::where('client_id', $client->id)->get();
 
         if ($orders->isEmpty()) {
             return response()->json(['message' => 'No orders found'], 200);
@@ -43,7 +43,7 @@ class ServiceOrderController extends Controller
 
         return response()->json(['your orders are' => $orders], 200);
     }
-    public function getOrderFreelancer()
+        public function getOrderFreelancer()
     {
         $user = auth()->user();
 

@@ -18,6 +18,7 @@ use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceOrderController;
+use App\Http\Controllers\translateController;
 
 // Public Routes
 
@@ -28,6 +29,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/sendresetpassword', [AuthController::class, 'sendResetPasswordCode']);
 
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
+
+Route::get('/translated-data', [translateController::class, 'getTranslatedData']);
 
 // get  &  Search  are public
 Route::get('/users/search', [AuthController::class, 'Search']);
@@ -60,9 +63,12 @@ Route::get('services/', [ServiceController::class, 'index']);
 Route::get('services/{service}', [ServiceController::class, 'show']);
 
 // Get All Posts of Client
-Route::get('/allposts', [PostController::class, 'index']);
+Route::get('/allposts', [PostController::class, 'i`ndex']);
 // Get Post By id
 Route::get('/{post}', [PostController::class, 'show']);
+// get posts for spesfic client
+Route::get('/post/{clientId}', [PostController::class, 'getpostsbyid']);
+
 
 
 //////////////////////////////////////
@@ -90,6 +96,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('freelancer/team/responseinvintation/{id}', [TeamController::class, 'handleRequest']);
     Route::get('clients/myteams', [TeamController::class, 'getClientTeams']);
     Route::get('freelancer/myteams', [TeamController::class, 'getAuthenticatedFreelancerTeams']);
+    Route::get('team/{teamId}/members',[TeamController::class,'getmembers']);
+
 
     /////////////
 
@@ -166,6 +174,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/client/myorders', [ServiceOrderController::class, 'getOrderClient']);
 
+        Route::get('/post/mypost', [PostController::class, 'getmypost']);
+        
         /* Post Routes */
         Route::prefix('posts')->group(function () {
 

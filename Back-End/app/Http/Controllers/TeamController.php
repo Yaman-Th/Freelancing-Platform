@@ -72,13 +72,11 @@ class TeamController extends Controller
             return response()->json(['message' => 'Freelancer not found'], 404);
         }
 
-        // الحصول على الفرق التي يكون الفريلانسر جزءًا منها
         $teams = $freelancer->teams;
 
         return response()->json($teams);
     }
 
-    // عرض الفرق الخاصة بالعميل
     public function getClientTeams()
     {
         $id = auth()->user()->client()->first()->id;
@@ -88,4 +86,22 @@ class TeamController extends Controller
         return response()->json($teams);
     }
 
+
+    public function getmembers($teamId)
+    {
+        // $client = auth()->user()->client()->id;
+        $members = Invitation::where('team_id', $teamId)->where('status', 'accepted')->get();
+        if (!$members)
+            return response()->json(['message' => 'there is no members yet']);
+        else {
+            $nameTeam = Team::find($teamId);
+            $owner_id=Client::find($nameTeam->client_id);
+            $owner = User::find($owner_id->user_id);
+            return response()->json([
+                'Team Name' => $nameTeam->name,
+                'owner'=>$owner->name,
+                'members'=>$members
+            ]);
+        }
+    }
 }
