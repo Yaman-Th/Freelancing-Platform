@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\CategoryController;
 use App\Models\Auth\Freelancer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,8 +54,8 @@ class Service extends Model
       if ($category) {
         $query->where('category_id', $category->id);
       }
-      if (isset($filters['Rating'])) {
-        $query->where('rating', '>=', $filters['Rating']);
+      if (isset($filters['ratings'])) {
+        $query->where('ratings', '>=', $filters['ratings']);
       }
     }
 

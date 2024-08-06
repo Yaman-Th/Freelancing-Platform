@@ -91,15 +91,17 @@ class PostController extends Controller
         $proposals = $post->proposals()->with('freelancer')->get();
         return response()->json($proposals, 200);
     }
-    public function getmypost(Request $request){
-        $client=auth()->user()->client()->first()->id;
-        
-        $mypost=Post::where('client_id',$client)->get();
+    public function getmypost(Request $request)
+    {
+        $client = auth()->user()->client()->first();
+
+        $mypost = Post::where('client_id', $client->id)->get();
         return response()->json([$mypost]);
     }
-    public function getpostsbyid($clientId){
-        
-        $mypost=Post::where('client_id',$clientId)->get();
+    public function getpostsbyid($clientId)
+    {
+
+        $mypost = Post::where('client_id', $clientId)->get();
         return response()->json([$mypost]);
     }
 }

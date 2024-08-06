@@ -13,6 +13,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class ServiceController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
@@ -20,7 +21,7 @@ class ServiceController extends Controller
     {
         $services = Service::all();
 
-        return response()->json(['services'=>$services],201);
+        return response()->json(['services' => $services], 201);
     }
 
     /**
@@ -29,8 +30,8 @@ class ServiceController extends Controller
     public function show(Service $service)
     {
         $servic = Service::find($service);
-        $category= Category::find($service->category_id)->name;
-        return response()->json(['service'=>$servic,'category'=>$category],201);
+        $category = Category::find($service->category_id)->name;
+        return response()->json(['service' => $servic, 'category' => $category], 201);
     }
 
     /**
@@ -138,9 +139,18 @@ class ServiceController extends Controller
         }
     }
 
+
+    public function myservice(Request $request)
+    {
+        $user = auth()->user();
+        $freelancer=$user->freelancer;
+        // $myservice = Service::where('freelancer_id',$freelancer->id);
+        return response()->json($freelancer);
+    }
+
     public function search(Request $request)
     {
-        $data = $request->only(['title', 'description', 'delivery_dayes', 'price','category','Rating']);
+        $data = $request->only(['title', 'description', 'delivery_dayes', 'price', 'category', 'ratings']);
         $services = Service::filter($data)->get();
         return response()->json(["The Services" => $services]);
     }

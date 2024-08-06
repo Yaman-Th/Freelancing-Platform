@@ -19,6 +19,7 @@ use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\translateController;
+use App\Models\Service;
 
 // Public Routes
 
@@ -35,9 +36,11 @@ Route::get('/translate/{type}/{lang}/{id}', [translateController::class, 'getTra
 // get  &  Search  are public
 Route::get('/users/search', [AuthController::class, 'Search']);
 
-Route::get('/services/search', [ServiceController::class, 'Search']);
+// Route::get('/services/search', [ServiceController::class, 'Search']);
 
 Route::get('/categories/search', [CategoryController::class, 'Search']);
+
+Route::get('/freelancers/search-by-skills', [FreelancerController::class, 'searchBySkills']);
 
 Route::get('/skill/search', [SkillController::class, 'Search']);
 
@@ -76,9 +79,9 @@ Route::get('services/', [ServiceController::class, 'index']);
 Route::get('services/{service}', [ServiceController::class, 'show']);
 
 // Get All Posts of Client
-Route::get('/allposts', [PostController::class, 'index']);
+Route::get('/allpost', [PostController::class, 'index']);
 // Get Post By id
-Route::get('/{post}', [PostController::class, 'show']);
+Route::get('p/{post}', [PostController::class, 'show']);
 // get posts for spesfic client
 Route::get('/post/{clientId}', [PostController::class, 'getpostsbyid']);
 
@@ -87,8 +90,9 @@ Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
 Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
 
-
 Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::get('/myservices',[ServiceController::class,'myservice']);
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -97,7 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Email Verification
     Route::post('/verify-email', [AuthController::class, 'verfiyEmail']);
 
-    /////  teams/////
+    ///// teams/////
 
     Route::post('client/teams', [TeamController::class, 'create']);
     Route::post('client/teams/requests', [TeamController::class, 'sendRequest']);
@@ -191,7 +195,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/client/myorders', [ServiceOrderController::class, 'getOrderClient']);
 
-        Route::get('/post/mypost', [PostController::class, 'getmypost']);
+        // get my post
 
         /* Post Routes */
         Route::prefix('posts')->group(function () {
@@ -207,6 +211,8 @@ Route::middleware('auth:sanctum')->group(function () {
             // ->can('delete', 'post');
             // Get Proposals
             Route::get('/{post}/proposals', [PostController::class, 'getProposals']);
+
+            Route::get('/mypost', [PostController::class, 'getmypost']);
         });
 
         /* Proposal Routes */
