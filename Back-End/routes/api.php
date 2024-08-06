@@ -36,7 +36,7 @@ Route::get('/translate/{type}/{lang}/{id}', [translateController::class, 'getTra
 // get  &  Search  are public
 Route::get('/users/search', [AuthController::class, 'Search']);
 
-// Route::get('/services/search', [ServiceController::class, 'Search']);
+Route::get('/services/search', [ServiceController::class, 'Search']);
 
 Route::get('/categories/search', [CategoryController::class, 'Search']);
 
