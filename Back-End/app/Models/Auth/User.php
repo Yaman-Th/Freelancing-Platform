@@ -5,6 +5,7 @@ namespace App\Models\Auth;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Auth\Client;
 use App\Models\Auth\Freelancer;
+use App\Models\Links;
 use App\Models\Rating;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -113,5 +114,8 @@ class User extends Authenticatable  implements CanResetPassword, MustVerifyEmail
         }
 
         return $query;
+    }
+    public function link(){
+        return $this->hasMany(Links::class);
     }
 }

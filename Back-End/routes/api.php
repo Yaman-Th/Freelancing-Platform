@@ -16,10 +16,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\FreelancerController;
+use App\Http\Controllers\LinksController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\translateController;
-use App\Models\Service;
+use App\Http\Controllers\vendor\Chatify\Api\MessagesController;
 
 // Public Routes
 
@@ -91,8 +92,8 @@ Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    
-    Route::get('/myservices',[ServiceController::class,'myservice']);
+
+    Route::get('/myservices', [ServiceController::class, 'myservice']);
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -255,4 +256,39 @@ Route::middleware('auth:sanctum')->group(function () {
         // Delete Category
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
+
+    //////////////Links///////////
+
+    Route::get('Links/mylinks',[LinksController::class,'index']);
+    
+    Route::post('Links/add',[LinksController::class,'create']);
+
+    Route::delete('Links/{links}',[LinksController::class,'delete']);
+    ////////////////////////////////////////
+
+
+    ////////////chat*////////
+
+    Route::post('/sendMessage', [MessagesController::class, 'send'])->name('api.send.message');
+
+    Route::post('/fetchMessages', [MessagesController::class, 'fetch'])->name('api.fetch.messages');
+
+    Route::post('/idInfo', [MessagesController::class, 'idFetchData']);
+
+    Route::post('/pusher/auth', [MessagesController::class, 'pusherAuth']);
+
+    Route::get('/index/{channel_id?}', [MessagesController::class, 'index']);
+
+    Route::get('/getContacts', [MessagesController::class, 'getContacts']);
+
+    // Route::post('/makeSeen', [MessagesController::class,'seen'])->name('api.messages.seen');
+    // /getchannelid
+    Route::post('/getchannelid', [MessagesController::class, 'getChannelId']);
+
+    Route::post('/createGroupChat', [MessagesController::class, 'createGroupChat']);
+
+    Route::get('/search', [MessagesController::class, 'search'])->name('api.search');
+
+    Route::get('/pusherAuth', [MessagesController::class, 'pusherAuth']);
+/////////////////////////////////////////////////////////////////////////////////////////////
 });
