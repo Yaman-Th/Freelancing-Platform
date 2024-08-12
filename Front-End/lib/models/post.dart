@@ -1,12 +1,11 @@
-import 'dart:convert';
-
 class Post {
-  final int? id; 
+  final int? id;
   final String title;
   final String description;
   final String deadline;
   final double budget;
   final String type;
+  final int category;
 
   Post({
     this.id,
@@ -15,6 +14,7 @@ class Post {
     required this.deadline,
     required this.budget,
     required this.type,
+    required this.category
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -25,6 +25,7 @@ class Post {
       budget: json['budget'],
       deadline: json['deadline'],
       type: json['type'],
+      category: json['category'],
     );
   }
 
@@ -36,6 +37,7 @@ class Post {
       'budget': budget,
       'deadline': deadline,
       'type': type,
+      'category':category,
     };
   }
 }

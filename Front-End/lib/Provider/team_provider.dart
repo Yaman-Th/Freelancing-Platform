@@ -1,44 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freelancing/Server/team_service.dart';
-import 'package:freelancing/models/freelancer.dart';
 import 'package:freelancing/models/team.dart';
+import 'package:freelancing/models/freelancer.dart';
 
-class TeamProvider with ChangeNotifier {
-  final TeamService _teamService;
-  List<Team> _teams = [];
+final teamProviderNotifier = ChangeNotifierProvider<TeamProvider>((ref) {
+  return TeamProvider();
+});
 
-  TeamProvider(this._teamService);
+class TeamProvider extends ChangeNotifier {
+  List<Team> teams = [];
+  final TextEditingController teamNameController = TextEditingController();
 
-  List<Team> get teams => _teams;
+  TeamProvider() {
+    fetchTeams();
+  }
 
   Future<void> fetchTeams() async {
-    _teams = await _teamService.fetchTeams();
+    teams = await TeamService.getTeams();
     notifyListeners();
   }
 
-  Future<void> createTeam(Team team) async {
-    final newTeam = await _teamService.createTeam(team);
-    _teams.add(newTeam);
+  Future<void> createTeam() async {
+    if (teamNameController.text.isNotEmpty) {
+      final newTeam = await TeamService.createTeam(teamNameController.text);
+      teams.add(newTeam);
+      teamNameController.clear();
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteTeam(Team team) async {
+    await TeamService.deleteTeam(team.name);
+    teams.remove(team);
     notifyListeners();
   }
 
-  Future<void> deleteTeam(String teamName) async {
-    await _teamService.deleteTeam(teamName);
-    _teams.removeWhere((team) => team.name == teamName);
-    notifyListeners();
+  Future<void> addFreelancerToTeam(Team team, Freelancer freelancer) async {
+    await TeamService.addFreelancerToTeam(team.name, freelancer);
+    final teamIndex = teams.indexWhere((t) => t.name == team.name);
+    if (teamIndex != -1) {
+      teams[teamIndex].freelancers.add(freelancer);
+      notifyListeners();
+    }
   }
 
-  Future<void> addFreelancerToTeam(String teamName, Freelancer freelancer) async {
-    await _teamService.addFreelancerToTeam(teamName, freelancer);
-    final team = _teams.firstWhere((team) => team.name == teamName);
-    team.freelancers.add(freelancer);
-    notifyListeners();
-  }
-
-  Future<void> deleteFreelancerFromTeam(String teamName, int freelancerId) async {
-    await _teamService.deleteFreelancerFromTeam(teamName, freelancerId);
-    final team = _teams.firstWhere((team) => team.name == teamName);
-    team.freelancers.removeWhere((freelancer) => freelancer.id == freelancerId);
-    notifyListeners();
+  Future<void> deleteFreelancerFromTeam(Team team, Freelancer freelancer) async {
+    await TeamService.deleteFreelancerFromTeam(team.name, freelancer);
+    final teamIndex = teams.indexWhere((t) => t.name == team.name);
+    if (teamIndex != -1) {
+      teams[teamIndex].freelancers.remove(freelancer);
+      notifyListeners();
+    }
   }
 }

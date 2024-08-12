@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:freelancing/utils/token.dart';
 import 'package:http/http.dart' as http;
 class AuthService {
-  static const String Url = 'http://192.168.1.6:8000/api';
+  static const String Url = 'http://10.65.1.66:8000/api';
 
   Future<bool> register(
       String firstName,

@@ -1,73 +1,80 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freelancing/models/post.dart';
-import 'package:freelancing/Server/post_service.dart';
 
-class PostProvider with ChangeNotifier {
-  final PostService _postService;
-  List<Post> _posts = [];
-  bool _isLoading = false;
-  String? _errorMessage;
+final postNotifierProvider = StateNotifierProvider<PostNotifier, List<Post>>((ref) {
+  return PostNotifier();
+});
 
-  PostProvider(this._postService);
+class PostNotifier extends StateNotifier<List<Post>> {
+  PostNotifier() : super([]);
 
-  List<Post> get posts => _posts;
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-
+  // Fetch all posts
   Future<void> fetchPosts() async {
-    _isLoading = true;
-    notifyListeners();
     try {
-      _posts = await _postService.fetchPosts();
-      _isLoading = false;
+      // Simulate fetching posts (e.g., from a local database or a predefined list)
+      List<Post> posts = [
+        Post(id: 1, title: "Flutter Developer Needed", description: "Develop a mobile app", type: "freelance", budget: 500.0, deadline: "2024-12-01", category: 1),
+        Post(id: 2, title: "Website Design", description: "Design a responsive website", type: "job", budget: 1000.0, deadline: "2024-11-15", category: 2),
+        // Add more posts as needed
+      ];
+      state = posts;
     } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
+      // Handle error
     }
-    notifyListeners();
   }
 
+  // Create a new post
   Future<void> createPost(Post post) async {
-    _isLoading = true;
-    notifyListeners();
     try {
-      final newPost = await _postService.createPost(post);
-      _posts.add(newPost);
-      _isLoading = false;
+      // Simulate creating a post
+      final newPost = Post(
+        id: state.length + 1,
+        title: post.title,
+        description: post.description,
+        type: post.type,
+        budget: post.budget,
+        deadline: post.deadline,
+        category: post.category,
+      );
+      state = [...state, newPost];
     } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
+      // Handle error
     }
-    notifyListeners();
   }
 
+  // Delete a post by ID
   Future<void> deletePost(int index) async {
-    final postId = _posts[index].id; // Assuming `id` field exists in Post model
-    _isLoading = true;
-    notifyListeners();
     try {
-      await _postService.deletePost(postId!);
-      _posts.removeAt(index);
-      _isLoading = false;
+   state = [
+      for (int i = 0; i < state.length; i++)
+        if (i != index) state[i],
+    ];
     } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
+      // Handle error
     }
-    notifyListeners();
   }
 
-  Future<void> editPost(int index, Post updatedPost) async {
-    final postId = _posts[index].id; // Assuming `id` field exists in Post model
-    _isLoading = true;
-    notifyListeners();
+  // Edit an existing post by ID
+  Future<void> editPost(int postId, Post updatedPost) async {
     try {
-      final editedPost = await _postService.editPost(postId!, updatedPost);
-      _posts[index] = editedPost;
-      _isLoading = false;
+      // Simulate editing a post
+      state = [
+        for (final post in state)
+          if (post.id == postId) 
+            Post(
+              id: post.id,
+              title: updatedPost.title,
+              description: updatedPost.description,
+              type: updatedPost.type,
+              budget: updatedPost.budget,
+              deadline: updatedPost.deadline,
+              category: updatedPost.category,
+            )
+          else 
+            post
+      ];
     } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
+      // Handle error
     }
-    notifyListeners();
   }
 }

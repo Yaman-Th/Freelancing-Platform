@@ -1,86 +1,49 @@
-import 'dart:convert';
-import 'package:freelancing/models/freelancer.dart';
-import 'package:freelancing/utils/token.dart';
-import 'package:http/http.dart' as http;
 import 'package:freelancing/models/team.dart';
+import 'package:freelancing/models/freelancer.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class TeamService {
-  static const String _baseUrl = 'http://192.168.1.6:8000/api/teams';
+  static const String baseUrl = 'http://10.65.1.66:8000/api';
 
-  Future<List<Team>> fetchTeams() async {
-    final token = await TokenStorage.getToken();
-    final response = await http.get(
-      Uri.parse(_baseUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final List<dynamic> body = jsonDecode(response.body);
-      return body.map((dynamic item) => Team.fromJson(item)).toList();
+  static Future<List<Team>> getTeams() async {
+    final response = await http.get(Uri.parse('$baseUrl/clients/myteams'));
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((teamData) => Team.fromJson(teamData)).toList();
     } else {
       throw Exception('Failed to load teams');
     }
   }
 
-  Future<Team> createTeam(Team team) async {
-    final token = await TokenStorage.getToken();
+  static Future<Team> createTeam(String name) async {
     final response = await http.post(
-      Uri.parse(_baseUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(team.toJson()),
+      Uri.parse('$baseUrl/client/teams'),
+      body: {'name': name},
     );
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      return Team.fromJson(jsonDecode(response.body));
+    if (response.statusCode == 201) {
+      return Team.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to create team');
     }
   }
 
-  Future<void> deleteTeam(String teamName) async {
-    final token = await TokenStorage.getToken();
-    final response = await http.delete(
-      Uri.parse('$_baseUrl/$teamName'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
+  static Future<void> addFreelancerToTeam(String teamName, Freelancer freelancer) async {
+    await http.post(
+      Uri.parse('$baseUrl/client/teams/requests'),
+      body: {
+        'team_id': teamName,
+        'email': freelancer.name, // Assuming the freelancer has an email field
+        'message': 'Hello, welcome to our team',
       },
     );
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete team');
-    }
   }
 
-  Future<void> addFreelancerToTeam(String teamName, Freelancer freelancer) async {
-    final token = await TokenStorage.getToken();
-    final response = await http.post(
-      Uri.parse('$_baseUrl/$teamName/freelancers'),
-      headers: {
-        'Authorization':  'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(freelancer.toJson()),
-    );
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to add freelancer to team');
-    }
+  static Future<void> deleteTeam(String teamName) async {
+    await http.delete(Uri.parse('$baseUrl/client/teams/$teamName'));
   }
 
-  Future<void> deleteFreelancerFromTeam(String teamName, int freelancerId) async {
-    final token = await TokenStorage.getToken();
-    final response = await http.delete(
-      Uri.parse('$_baseUrl/$teamName/freelancers/$freelancerId'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-    if (response.statusCode != 204) {
-      throw Exception('Failed to delete freelancer from team');
-    }
+  static Future<void> deleteFreelancerFromTeam(String teamName, Freelancer freelancer) async {
+    await http.delete(Uri.parse('$baseUrl/client/teams/$teamName/freelancers/${freelancer.name}')); // Assuming freelancer has an email field
   }
 }

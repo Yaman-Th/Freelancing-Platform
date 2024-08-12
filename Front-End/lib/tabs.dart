@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancing/DashboardScreens/freelancer_dashboard.dart';
+import 'package:freelancing/main.dart';
 import 'package:freelancing/post_management.dart';
 import 'package:freelancing/service_management.dart';
 import 'package:freelancing/team_management.dart';
@@ -26,7 +27,7 @@ class TabsScreenState extends State<TabsScreen> {
       const FreelancerDashboard(),
       const ServiceManagement(),
       const PostManagement(),
-      const TeamManagement(),
+       const TeamManagement(),
     ];
 
     List<String> pageTitles = [
@@ -38,26 +39,41 @@ class TabsScreenState extends State<TabsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor:colorScheme.background,
+        elevation:0.0,
+        toolbarHeight: 70.0,
         leading: IconButton(
           onPressed: () {},
           icon: Icon(
             Icons.arrow_back_ios_new,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.background,
+            size:20,
           ),
         ),
         title: Text(
           pageTitles[_selectedPageIndex],
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 27
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: Theme.of(context).colorScheme.background,
+                fontSize: 24
               ),
         ),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            borderRadius:const BorderRadius.only(bottomLeft:Radius.circular(20),bottomRight:Radius.circular(20)),
+            gradient:LinearGradient(colors: 
+            [colorScheme.onSecondary,colorScheme.onSurface,],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter            
+            )
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {},
             icon: const CircleAvatar(
-              backgroundImage: AssetImage('assets/images/Avatar.png'),
+              backgroundImage: AssetImage('assets/images/Avatar.png',),
+              
             ),
           ),
         ],

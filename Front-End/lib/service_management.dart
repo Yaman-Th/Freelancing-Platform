@@ -1,22 +1,22 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:freelancing/Server/service.dart';
-import 'package:freelancing/models/service.dart';
 import 'dart:io';
-import 'package:freelancing/widget/image_input.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freelancing/Provider/service_provider.dart';
+import 'package:freelancing/models/service.dart';
+import 'package:freelancing/widget/image_input.dart';
+import 'package:freelancing/manage_service.dart';
 
-class ServiceManagement extends StatefulWidget {
-  const ServiceManagement({super.key});
+class ServiceManagement extends ConsumerStatefulWidget {
+  final Service? editingService;
+  final int? editingIndex;
+
+  const ServiceManagement({super.key, this.editingService, this.editingIndex});
 
   @override
-  State<ServiceManagement> createState() {
-    return _ServiceManagementState();
-  }
+  ConsumerState<ServiceManagement> createState() => _ServiceManagementState();
 }
 
-class _ServiceManagementState extends State<ServiceManagement> {
+class _ServiceManagementState extends ConsumerState<ServiceManagement> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -25,6 +25,24 @@ class _ServiceManagementState extends State<ServiceManagement> {
   final _categoryIdController = TextEditingController();
   File? _selectedImage;
   int? editingIndex;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editingService != null) {
+      _titleController.text = widget.editingService!.title;
+      _descriptionController.text = widget.editingService!.description;
+      _deliveryDaysController.text =
+          widget.editingService!.deliveryDays.toString();
+      _priceController.text = widget.editingService!.price.toString();
+      _categoryIdController.text = widget.editingService!.categoryId.toString();
+      _selectedImage = File(widget.editingService!.image);
+    }
+    _focusNode.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   void dispose() {
@@ -33,374 +51,434 @@ class _ServiceManagementState extends State<ServiceManagement> {
     _deliveryDaysController.dispose();
     _priceController.dispose();
     _categoryIdController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-void _handleService() {
-  if (_formKey.currentState!.validate()) {
-    if (_selectedImage == null) {
-      // Handle the case where no image is selected
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select an image'),
-        ),
-      );
-      return;
-    }
-
-    final service = Service(
-      title: _titleController.text,
-      description: _descriptionController.text,
-      deliveryDays: int.parse(_deliveryDaysController.text),
-      price: double.parse(_priceController.text),
-      categoryId: int.parse(_categoryIdController.text),
-      image: _selectedImage!.path,
-    );
-
-    if (editingIndex != null) {
-      Provider.of<ServiceProvider>(context, listen: false)
-          .updateService(editingIndex!, service, _selectedImage!);
-      editingIndex = null;
-    } else {
-      Provider.of<ServiceProvider>(context, listen: false)
-          .addService(service, _selectedImage!);
-    }
-
-    _titleController.clear();
-    _descriptionController.clear();
-    _deliveryDaysController.clear();
-    _priceController.clear();
-    _categoryIdController.clear();
-    setState(() {
-      _selectedImage = null;
-    });
-  }
-}
-
-  void _handleEdit(int index) {
-    setState(() {
-      editingIndex = index;
-      final service = Provider.of<ServiceProvider>(context, listen: false).services[index];
-      _titleController.text = service.title;
-      _descriptionController.text = service.description;
-      _deliveryDaysController.text = service.deliveryDays.toString();
-      _priceController.text = service.price.toString();
-      _categoryIdController.text = service.categoryId.toString();
-      _selectedImage = service.image != null ? File(service.image!) : null;
-    });
-  }
-
-  void _handleDelete(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-          title: Text(
-            'Confirm Delete',
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-          ),
-          content: Text(
-            'Are you sure you want to delete this service?',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Delete',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: Colors.red,
-                    ),
-              ),
-              onPressed: () {
-                Provider.of<ServiceProvider>(context, listen: false)
-                    .deleteService(index);
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                'Cancel',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+  void _handleService() {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select an image')),
         );
-      },
-    );
-  }
+        return;
+      }
 
+      final service = Service(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        deliveryDays: int.parse(_deliveryDaysController.text),
+        price: double.parse(_priceController.text),
+        categoryId: int.parse(_categoryIdController.text),
+        image: _selectedImage!.path,
+      );
+
+      if (widget.editingIndex != null) {
+        ref.read(serviceProvider.notifier).updateService(
+              widget.editingIndex!,
+              service,
+            );
+      } else {
+        ref.read(serviceProvider.notifier).addService(service);
+      }
+
+      setState(() {
+        _titleController.clear();
+        _descriptionController.clear();
+        _categoryIdController.clear();
+        _deliveryDaysController.clear();
+        _priceController.clear();
+        _selectedImage = null;
+        editingIndex = null;
+      });
+    }
+  }
+  
   void _selectImage(File pickedImage) {
     setState(() {
       _selectedImage = pickedImage;
     });
   }
 
+  void _navigateToManageService(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ManageServicesScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final services = Provider.of<ServiceProvider>(context).services;
     final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 40.0,
         title: Text(
-          'Post Your Service',
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          widget.editingService != null ? 'Edit Service' : 'Create Service',
+          style: Theme.of(context).textTheme.headline6!.copyWith(
                 color: Theme.of(context).colorScheme.primary,
+                fontSize: 20,
               ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.manage_search,
+              size: 30,
+            ),
+            onPressed: () => _navigateToManageService(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.onSurface,
-                      colorScheme.onSecondary,
-                      colorScheme.onPrimary
-                    ],
-                    begin: Alignment.bottomRight,
-                    end: Alignment.topLeft,
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(25)),
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextFormField(
-                        controller: _titleController,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: Theme.of(context).colorScheme.background,
-                            ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          labelText: 'Title',
-                          labelStyle: Theme.of(context)
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Service Title',
+                      style: TextStyle(color: colorScheme.onSurface),
+                    ),
+                    Text(
+                      'Make your title clean and short',
+                      style: TextStyle(
+                        color: colorScheme.primary.withOpacity(0.7),
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _titleController,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        fillColor: colorScheme.secondary,
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(
+                            color: colorScheme.onSurface,
+                            width: 2.8,
+                          ),
+                        ),
+                        hintText: 'Ex: Graphic Design Service',
+                        hintStyle:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground
+                                      .withOpacity(0.4),
+                                ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a title';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Description',
+                      style: TextStyle(color: colorScheme.onSurface),
+                    ),
+                    Text(
+                      'Brief your description clear',
+                      style: TextStyle(
+                        color: colorScheme.primary.withOpacity(0.7),
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondary,
+                        border: Border.all(
+                          color: _focusNode.hasFocus
+                              ? colorScheme.onSurface
+                              : colorScheme.primary,
+                          width: _focusNode.hasFocus ? 2.8 : 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: TextFormField(
+                          focusNode: _focusNode,
+                          controller: _descriptionController,
+                          style: Theme.of(context)
                               .textTheme
                               .titleMedium!
                               .copyWith(
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                          border: InputBorder.none,
+                          cursorColor: Colors.black,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: 'Description',
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground
+                                      .withOpacity(0.4),
+                                ),
+                            border: InputBorder.none,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a description';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a title';
-                          }
-                          return null;
-                        },
                       ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _descriptionController,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: Theme.of(context).colorScheme.background,
-                            ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          labelText: 'Description',
-                          labelStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Delivery Days & Price',
+                      style: TextStyle(color: colorScheme.onSurface),
+                    ),
+                    Text(
+                      'Delivery days & price by your service',
+                      style: TextStyle(
+                        color: colorScheme.primary.withOpacity(0.7),
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _deliveryDaysController,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                            cursorColor: Colors.black,
+                            decoration: InputDecoration(
+                              fillColor: colorScheme.secondary,
+                              filled: true,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(
+                                  color: colorScheme.onSurface,
+                                  width: 2.8,
+                                ),
                               ),
-                          border: InputBorder.none,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a description';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _deliveryDaysController,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: Theme.of(context).colorScheme.background,
-                            ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          labelText: 'Delivery Days',
-                          labelStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                              hintText: 'Delivery Days',
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.4),
+                                  ),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                               ),
-                          border: InputBorder.none,
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter delivery days';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _priceController,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: Theme.of(context).colorScheme.background,
-                            ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          labelText: 'Price',
-                          labelStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                              suffixIcon: Icon(
+                                Icons.calendar_today,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
-                          border: InputBorder.none,
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a price';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _categoryIdController,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: Theme.of(context).colorScheme.background,
                             ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          labelText: 'Category',
-                          labelStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                          border: InputBorder.none,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter the number of delivery days';
+                              }
+                              if (int.tryParse(value) == null) {
+                                return 'Please enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a category ID';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: Theme.of(context).colorScheme.background,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _priceController,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                            cursorColor: Colors.black,
+                            decoration: InputDecoration(
+                              fillColor: colorScheme.secondary,
+                              filled: true,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(
+                                  color: colorScheme.onSurface,
+                                  width: 2.8,
+                                ),
+                              ),
+                              hintText: 'Price',
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.4),
+                                  ),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              suffixIcon: Icon(
+                                Icons.attach_money_outlined,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          labelText: 'Selected Image',
-                          labelStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                          border: InputBorder.none,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter the price';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Please enter a valid price';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                        controller: TextEditingController(
-                          text: _selectedImage != null ? 'Image Selected' : 'No Image Selected',
-                        ),
-                        readOnly: true,
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Service Category',
+                      style: TextStyle(color: colorScheme.onSurface),
+                    ),
+                    Text(
+                      'Choose the most appropriate category',
+                      style: TextStyle(
+                        color: colorScheme.primary.withOpacity(0.7),
+                        fontSize: 20,
                       ),
-                      const SizedBox(height: 12),
-                      ImageInput(
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _categoryIdController,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        fillColor: colorScheme.secondary,
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(
+                            color: colorScheme.onSurface,
+                            width: 2.8,
+                          ),
+                        ),
+                        hintText: 'Category ID',
+                        hintStyle:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground
+                                      .withOpacity(0.4),
+                                ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the category ID';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Select an image',
+                      style: TextStyle(color: colorScheme.onSurface),
+                    ),
+                    Text(
+                      'Choose the most appropriate image',
+                      style: TextStyle(
+                        color: colorScheme.primary.withOpacity(0.7),
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      color: colorScheme.secondary,
+                      child: ImageInput(
                         onPickImage: (image) {
-                          _selectImage(image);
+                          _selectedImage = image;
                         },
                       ),
-                      const SizedBox(height: 16),
-                      Center(
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 55,
                         child: ElevatedButton(
                           onPressed: _handleService,
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Theme.of(context).colorScheme.primary,
-                          ),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20))),
                           child: Text(
-                            editingIndex != null ? 'Update Service' : 'Create Service',
-                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
+                              widget.editingService != null
+                                  ? 'Update Service'
+                                  : 'Create Service',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                      fontSize: 24)),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: services.length,
-                itemBuilder: (ctx, index) {
-                  final service = services[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      leading: service.image != null
-                          ? Image.file(File(service.image!))
-                          : const Icon(Icons.image),
-                      title: Text(service.title),
-                      subtitle: Text(service.description),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _handleEdit(index),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _handleDelete(index),
-                          ),
-                        ],
-                      ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
             ],
           ),

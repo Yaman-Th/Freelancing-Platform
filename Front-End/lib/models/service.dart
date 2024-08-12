@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 class Service {
+  int? id;
   final String title;
   final String description;
   final String image;
@@ -9,6 +8,7 @@ class Service {
   final int categoryId;
 
   Service({
+     this.id,
     required this.title,
     required this.description,
     required this.image,
@@ -19,6 +19,7 @@ class Service {
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
+      id: json['id'],
       title: json['title'],
       description: json['description'],
       image: json['image'],
@@ -30,6 +31,7 @@ class Service {
 
   Map<String, dynamic> toJson() {
     return {
+      'id':id,
       'title': title,
       'description': description,
       'image': image,

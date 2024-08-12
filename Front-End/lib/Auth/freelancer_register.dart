@@ -4,7 +4,6 @@ import 'package:freelancing/Auth/login.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Auth/register.dart';
 import 'package:freelancing/Server/auth_service.dart';
-import 'package:freelancing/tabs.dart';
 
 class FreelancerRegister2 extends StatefulWidget {
   const FreelancerRegister2({super.key});

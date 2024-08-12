@@ -20,6 +20,7 @@ class FreelancerDashboardState extends State<FreelancerDashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 20,),
               Container(
                 padding: const EdgeInsets.all(16),
                 width: 250,

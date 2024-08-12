@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:freelancing/models/service.dart';
 
 class ServiceService {
-  static const String _baseUrl = 'http://192.168.1.6:8000/api/services';
+  static const String _baseUrl = 'http://10.65.1.66:8000/api/services';
   Future<List<Service>> getAllServices() async {
     final url = Uri.parse(_baseUrl);
     final token = await TokenStorage.getToken();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freelancing/main.dart';
 import 'package:freelancing/models/notification.dart';
 import 'package:freelancing/widget/notification_item.dart';
 

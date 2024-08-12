@@ -1,8 +1,8 @@
 import 'package:freelancing/models/freelancer.dart';
 
 class Team {
-  final String name;
-  final List<Freelancer> freelancers;
+   String name;
+   List<Freelancer> freelancers;
 
   Team({
     required this.name,

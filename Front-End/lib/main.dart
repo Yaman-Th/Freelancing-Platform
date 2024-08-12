@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freelancing/Auth/login.dart';
 import 'package:freelancing/Provider/post_provider.dart';
 import 'package:freelancing/Provider/service_provider.dart';
 import 'package:freelancing/Provider/team_provider.dart';
 import 'package:freelancing/Server/post_service.dart';
 import 'package:freelancing/Server/team_service.dart';
-import 'package:freelancing/Server/service.dart';
-import 'package:provider/provider.dart';
+import 'package:freelancing/Server/service_service.dart';
+import 'package:freelancing/tabs.dart';
+import 'package:freelancing/team_management.dart';
+import 'package:freelancing/Server/team_service.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.light,
@@ -16,6 +19,7 @@ final colorScheme = ColorScheme.fromSeed(
   onSecondary: const Color(0xff6792BD),
   onBackground: const Color.fromARGB(255, 110, 110, 110),
   onSurface: const Color.fromARGB(255, 33, 66, 105),
+  secondary: const Color.fromARGB(255,240, 246, 255),
   primary: Colors.black,
 );
 final theme = ThemeData().copyWith(
@@ -53,19 +57,8 @@ final theme = ThemeData().copyWith(
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => ServiceProvider(ServiceService()),
-        ),
-        // ChangeNotifierProvider<TeamProvider>(
-        //   create: (_) => TeamProvider(TeamService()),
-        // ),
-        ChangeNotifierProvider<PostProvider>(
-          create: (context) => PostProvider(PostService()),
-        ),
-      ],
-      child: const App(),
+   const  ProviderScope(
+      child: App(),
     ),
   );
 }
@@ -76,9 +69,8 @@ class App extends StatelessWidget {
   @override
   Widget build(context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: theme,
-      home: const LoginPage(),
-    );
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        home:const TabsScreen());
   }
 }

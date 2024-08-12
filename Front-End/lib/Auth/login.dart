@@ -48,18 +48,26 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(context) {
     return Scaffold(
       backgroundColor: colorScheme.background,
       body: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,),
-            child: IntrinsicHeight(
-              child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
+        ),
+        child: IntrinsicHeight(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
               const SizedBox(
                 height: 20,
               ),
@@ -104,34 +112,39 @@ class _LoginPageState extends State<LoginPage> {
                           color: colorScheme.onBackground,
                         ),
                     decoration: InputDecoration(
-                     border: OutlineInputBorder(
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color:colorScheme.onPrimary, 
+                          color: colorScheme.onPrimary,
                           width: 2.0,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color:colorScheme.primary,
+                          color: colorScheme.primary,
                           width: 2.0,
                         ),
                       ),
                       labelText: ('Email Address'),
-                      labelStyle : Theme.of(context).textTheme.titleSmall!.copyWith(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                            ) ,
+                      labelStyle:
+                          Theme.of(context).textTheme.titleSmall!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.5),
+                              ),
                       hintText: ('email@domain.com'),
-                      hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onBackground
-                                .withOpacity(0.5),
-                          ),
+                      hintStyle:
+                          Theme.of(context).textTheme.titleMedium!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onBackground
+                                    .withOpacity(0.5),
+                              ),
                       prefixIcon: const Icon(CupertinoIcons.profile_circled),
                       prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
                     ),
@@ -144,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                           !value.contains('@')) {
                         return 'Please enter a valid email address.';
                       }
-              
+
                       return null;
                     },
                   ),
@@ -168,37 +181,46 @@ class _LoginPageState extends State<LoginPage> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color:colorScheme.onPrimary, 
+                          color: colorScheme.onPrimary,
                           width: 2.0,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color:colorScheme.primary,
+                          color: colorScheme.primary,
                           width: 2.0,
                         ),
                       ),
-                       labelText: 'Password',
-                       labelStyle:  Theme.of(context).textTheme.titleSmall!.copyWith(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                            ) ,
+                      labelText: 'Password',
+                      labelStyle:
+                          Theme.of(context).textTheme.titleSmall!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.5),
+                              ),
                       hintText: ('Password'),
-                      hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onBackground
-                                .withOpacity(0.5),
-                          ),
+                      hintStyle:
+                          Theme.of(context).textTheme.titleMedium!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onBackground
+                                    .withOpacity(0.5),
+                              ),
                       prefixIcon: const Icon(Icons.lock),
-                      prefixIconColor: Theme.of(context).colorScheme.onBackground,
+                      prefixIconColor:
+                          Theme.of(context).colorScheme.onBackground,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility : Icons.visibility_off,
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: _toggleVisibility,
                       ),
-                      suffixIconColor: Theme.of(context).colorScheme.onBackground,
+                      suffixIconColor:
+                          Theme.of(context).colorScheme.onBackground,
                     ),
                     validator: (value) {
                       if (value == null || value.trim().length < 8) {
@@ -220,11 +242,15 @@ class _LoginPageState extends State<LoginPage> {
                     child: ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10))),
                       child: Text('Login',
-                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
                                 color: Theme.of(context).colorScheme.background,
                               )),
                     ),
@@ -283,7 +309,8 @@ class _LoginPageState extends State<LoginPage> {
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium!
-                            .copyWith(color: Theme.of(context).colorScheme.primary),
+                            .copyWith(
+                                color: Theme.of(context).colorScheme.primary),
                       ),
                     ],
                   ),
@@ -301,7 +328,8 @@ class _LoginPageState extends State<LoginPage> {
                                   .textTheme
                                   .titleSmall!
                                   .copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   )),
                           const TextSpan(text: ' and '),
                           TextSpan(
@@ -310,7 +338,8 @@ class _LoginPageState extends State<LoginPage> {
                                   .textTheme
                                   .titleSmall!
                                   .copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   )),
                         ],
                       ),
@@ -340,18 +369,21 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {},
                       child: Text(
                         "Forgot Password",
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 18),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 18),
                       ),
                     ),
                   ),
                 ],
               )
-                      ],
-                    ),
-            ),
-          )),
+            ],
+          ),
+        ),
+      )),
     );
   }
 }
