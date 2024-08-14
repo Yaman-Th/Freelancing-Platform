@@ -277,7 +277,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/pusher/auth', [MessagesController::class, 'pusherAuth']);
 
-    Route::get('/index/{channel_id?}', [MessagesController::class, 'index']);
+    // Route::get('/index/{channel_id?}', [MessagesController::class, 'index']);
 
     Route::get('/getContacts', [MessagesController::class, 'getContacts']);
 
@@ -290,5 +290,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search', [MessagesController::class, 'search'])->name('api.search');
 
     Route::get('/pusherAuth', [MessagesController::class, 'pusherAuth']);
+
+    Route::post('/getChannelId', [MessagesController::class, 'getChannelId']);
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 });

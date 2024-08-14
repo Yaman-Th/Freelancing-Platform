@@ -238,5 +238,4 @@ class AuthController extends Controller
         $users = User::filter($filters)->get();
         return response()->json($users);
     }
-    
 }

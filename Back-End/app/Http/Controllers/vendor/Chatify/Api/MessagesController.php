@@ -54,7 +54,6 @@ class MessagesController extends Controller
             'channel_id' => $channel_id ?? 0,
             'channel' => $channel,
             'messengerColor' => $messenger_color ? $messenger_color : Chatify::getFallbackColor(),
-            'dark_mode' => Auth::user()->dark_mode < 1 ? 'light' : 'dark',
         ];
 
         return Response::json($response);
@@ -98,7 +97,7 @@ class MessagesController extends Controller
         ])->render();
 
         return Response::json([
-            'infoHtml' => $infoHtml,
+            // 'infoHtml' => $infoHtml,
             'favorite' => $favorite,
             'fetch' => $fetch ?? null,
             'channel_avatar' => $channel_avatar ?? null,
@@ -182,7 +181,7 @@ class MessagesController extends Controller
 
         // إرسال الرد
         return response()->json([
-            'status' => $error->status ? 400 : 200, // 400 في حالة الخطأ، 200 في حالة النجاح
+            // 'status' => $error->status ? 400 : 200, // 400 في حالة الخطأ، 200 في حالة النجاح
             'error' => $error->status ? $error->message : null,
             'message' => $error->status ? null : $request->message,
             'tempID' => $request['temporaryMsgId'],
@@ -391,14 +390,6 @@ public function search(Request $request)
     ], 200);
 }
 
-
-
-
-
-
-
-
-
     public function setActiveStatus(Request $request)
     {
         $activeStatus = $request['status'] > 0 ? 1 : 0;
@@ -446,12 +437,6 @@ public function search(Request $request)
         ], 200);
     }
 
-    /**
-     * Get favorites list
-     *
-     * @param Request $request
-     * @return void
-     */
     public function getFavorites(Request $request)
     {
         $favorites = Favorite::where('user_id', Auth::user()->id)->get();
