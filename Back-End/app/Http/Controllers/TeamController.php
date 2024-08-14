@@ -27,16 +27,23 @@ class TeamController extends Controller
     {
         // التحقق من صحة البيانات
         $data = $request->validate([
-            'team_id' => 'required|numeric',
-            'email' => 'required|email',
+            'team_name' => 'required|string',
+            // 'email' => 'required|email',
+            'name' => 'required|string',
             'message' => 'required|string'
         ]);
 
         // الحصول على المستخدم بواسطة البريد الإلكتروني
-        $user = User::where('email', 'like', $request->email)->first();
+        $user = User::where('name', 'like', $request->name)->first();
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
+        
+        $team = Team::where('name', 'like', '%'.$request->team_name.'%')->first();
+        if (!$team) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        
 
         // الحصول على معرّف الفريلانسر بواسطة معرّف المستخدم
         $freelancer = Freelancer::where('user_id', $user->id)->first();
@@ -46,7 +53,7 @@ class TeamController extends Controller
 
         // إنشاء طلب الفريق
         $teamRequest = Invitation::create([
-            'team_id' => $data['team_id'],
+            'team_id' => $team->id,
             'freelancer_id' => $freelancer->id,
             'message' => $data['message']
         ]);
@@ -119,12 +126,23 @@ class TeamController extends Controller
 
     }
     public function teamInvitation($name){
-        $team=Team::where('name','like',$name)->first();
-
-        $Invitation=Invitation::where('team_id','like',$team->id);
-        return response()->json(['team' => $Invitation]);
-
-
+        $team = Team::where('name', 'like', $name)->first();
+    
+        $invitations = Invitation::where('team_id', $team->id)
+            ->with('team:name') // قم بتحميل اسم الفريق
+            ->get()
+            ->map(function ($invitation) {
+                return [
+                    'id' => $invitation->id,
+                    // 'team_name' => $invitation->team->name, // قم بإرجاع اسم الفريق
+                    'name' => User::find(Freelancer::find($invitation->freelancer_id)->user_id)->name,
+                    'status' => $invitation->status,
+                    'created_at' => $invitation->created_at,
+                    'updated_at' => $invitation->updated_at,
+                ];
+            });
+    
+        return response()->json(['team' => $invitations]);
     }
    
 

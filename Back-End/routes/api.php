@@ -93,6 +93,9 @@ Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    Route::get('/team/myinvitation/{name}', [TeamController::class, 'teamInvitation']);
+
+
     Route::get('/myservices', [ServiceController::class, 'myservice']);
 
     // Logout
@@ -143,7 +146,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // ->can('updateStatus', 'serviceOrder');
         Route::get('/getorderfreelancer', [ServiceOrderController::class, 'getOrderFreelancer']);
 
-        Route::get('/team/myinvitation', [TeamController::class, 'getinvitation']);
 
 
 
