@@ -118,6 +118,14 @@ class TeamController extends Controller
         return response()->json(['message' => 'team deleted successfully']);
 
     }
+    public function teamInvitation($name){
+        $team=Team::where('name','like',$name)->first();
+
+        $Invitation=Invitation::where('team_id','like',$team->id);
+        return response()->json(['team' => $Invitation]);
+
+
+    }
    
 
 }
