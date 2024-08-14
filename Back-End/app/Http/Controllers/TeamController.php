@@ -88,7 +88,7 @@ class TeamController extends Controller
     public function getinvitation()
     {
         $freelancerId = auth()->user()->freelancer()->id;
-        $myinvitation = Invitation::where('freelancer_id', $freelancerId)->where('status', 'pending');
+        $myinvitation = Invitation::where('freelancer_id', $freelancerId);
         return response()->json(['myinvitation' => $myinvitation]);
     }
 
@@ -109,4 +109,15 @@ class TeamController extends Controller
             ]);
         }
     }
+    public function destroy($name){
+        $team=Team::where('name','like','%'.$name.'%')->first();
+        if (!$team) {
+            return response()->json(['message' => 'team not found'], 404);
+        }
+        $team->delete();
+        return response()->json(['message' => 'team deleted successfully']);
+
+    }
+   
+
 }

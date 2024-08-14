@@ -110,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('clients/myteams', [TeamController::class, 'getClientTeams']);
     Route::get('freelancer/myteams', [TeamController::class, 'getAuthenticatedFreelancerTeams']);
     Route::get('team/{teamId}/members', [TeamController::class, 'getmembers']);
+    Route::delete('team/{name}',[TeamController::class,'destroy']);
 
 
     /////////////
