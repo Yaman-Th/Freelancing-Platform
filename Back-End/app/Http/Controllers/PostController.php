@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auth\Client;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class PostController extends Controller
 
         try {
             $request->validate([
-                'category_id' => 'required|numeric',
+                'categoryName' => 'required',
                 'title' => 'required|string',
                 'description' => 'required|string',
                 'type' => 'required|string',
@@ -42,7 +43,7 @@ class PostController extends Controller
 
         $post = Post::create([
             'client_id' => $client->id,
-            'category_id' => request('category_id'),
+            'category_id' => Category::where('name','like',request('categoryName'))->first()->id,
             // 'team_id' => request('team_id'),
             'title' => request('title'),
             'description' => request('description'),
@@ -103,5 +104,10 @@ class PostController extends Controller
 
         $mypost = Post::where('client_id', $clientId)->get();
         return response()->json([$mypost]);
+    }
+    public function totalProject()
+    {
+        $count = DB::table('posts')->count('id');
+        return response()->json(["The total post" => $count]);
     }
 }

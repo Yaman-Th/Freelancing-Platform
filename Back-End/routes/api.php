@@ -37,7 +37,7 @@ Route::get('/translate/{type}/{lang}/{id}', [translateController::class, 'getTra
 // get  &  Search  are public
 Route::get('/users/search', [AuthController::class, 'Search']);
 
-Route::get('/services/search', [ServiceController::class, 'Search']);
+// Route::get('/services/search', [ServiceController::class, 'Search']);
 
 Route::get('/categories/search', [CategoryController::class, 'Search']);
 
@@ -75,9 +75,9 @@ Route::get('/subcategories', [CategoryController::class, 'getsubCategory']);
 Route::get('/Skill', [SkillController::class, 'index']);
 
 // return all service
-Route::get('services/', [ServiceController::class, 'index']);
+Route::get('services', [ServiceController::class, 'index']);
 // return one service by id
-Route::get('services/{service}', [ServiceController::class, 'show']);
+Route::get('service/{id}', [ServiceController::class, 'show']);
 
 // Get All Posts of Client
 Route::get('/allpost', [PostController::class, 'index']);
@@ -113,7 +113,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('clients/myteams', [TeamController::class, 'getClientTeams']);
     Route::get('freelancer/myteams', [TeamController::class, 'getAuthenticatedFreelancerTeams']);
     Route::get('team/{teamId}/members', [TeamController::class, 'getmembers']);
-    Route::delete('team/{name}',[TeamController::class,'destroy']);
+    Route::delete('team/{name}', [TeamController::class, 'destroy']);
 
 
     /////////////
@@ -262,11 +262,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //////////////Links///////////
 
-    Route::get('Links/mylinks',[LinksController::class,'index']);
-    
-    Route::post('Links/add',[LinksController::class,'create']);
+    Route::get('Links/mylinks', [LinksController::class, 'index']);
 
-    Route::delete('Links/{links}',[LinksController::class,'delete']);
+    Route::post('Links/add', [LinksController::class, 'create']);
+
+    Route::delete('Links/{links}', [LinksController::class, 'delete']);
     ////////////////////////////////////////
 
 
@@ -296,5 +296,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/getChannelId', [MessagesController::class, 'getChannelId']);
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    Route::get('/calculateMoney', [paymentController::class, 'calculateMoney']);
+
+    Route::get('/totalProject', [PostController::class, 'totalProject']);
+
+    Route::get('/totalService', [ServiceController::class, 'totalService']);
+
+    Route::get('/image/{getImageUrl}', [ServiceController::class, 'getImageData']);
+
+    Route::get('/my',[AuthController::class,'myprofile']);
 });

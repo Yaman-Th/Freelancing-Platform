@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\payment;
-use App\Models\Contract;
 use App\Models\Service;
+use App\Models\Contract;
 use App\Models\ServiceOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -64,5 +65,10 @@ class PaymentController extends Controller
         $contract->update(['payment_status' => 'paid']);
         $serviceOrder->update(['status'=>'active']);
         return response()->json(['message' => 'Payment successful!', 'payment' => $payment, 'contract' => $contract]);
+    }
+    public function calculateMoney(){
+        $sum = DB::table('payments')->sum('amount');
+        $ourMoney = $sum*0.1;
+        return response()->json(['money'=>$ourMoney]);
     }
 }

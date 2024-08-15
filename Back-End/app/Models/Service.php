@@ -41,7 +41,7 @@ class Service extends Model
       $query->where('title', 'like', '%' . $filters['title'] . '%');
     }
     if (isset($filters['description'])) {
-      $query->where('description','like', '%' . $filters['description'] . '%');
+      $query->where('description', 'like', '%' . $filters['description'] . '%');
     }
     if (isset($filters['price'])) {
       $query->where('price', '<=', $filters['price']);
@@ -60,5 +60,9 @@ class Service extends Model
     }
 
     return $query;
+  }
+  public function getImageUrlAttribute()
+  {
+    return url('storage/' . $this->attributes['image']);
   }
 }

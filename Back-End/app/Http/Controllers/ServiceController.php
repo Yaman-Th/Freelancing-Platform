@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use App\Models\Category;
+use App\Models\Auth\User;
 use Illuminate\Http\Request;
 use App\Models\Auth\Freelancer;
-use App\Models\Auth\User;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Illuminate\Validation\ValidationException;
 
 class ServiceController extends Controller
 {
@@ -46,8 +47,9 @@ class ServiceController extends Controller
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'delivery_dayes' => 'required|numeric',
                 'price' => 'required|numeric',
-                'category_id' => 'required|numeric',
+                'category_name' => 'required',
             ]);
+            $validatedData['category_id']=Category::where('name','like',$request->category_name)->first()->id;
 
 
             if ($request->hasFile('image')) {
@@ -143,7 +145,7 @@ class ServiceController extends Controller
     public function myservice(Request $request)
     {
         $user = auth()->user();
-        $freelancer=$user->freelancer;
+        $freelancer = $user->freelancer;
         // $myservice = Service::where('freelancer_id',$freelancer->id);
         return response()->json($freelancer);
     }
@@ -153,5 +155,11 @@ class ServiceController extends Controller
         $data = $request->only(['title', 'description', 'delivery_dayes', 'price', 'category', 'ratings']);
         $services = Service::filter($data)->get();
         return response()->json(["The Services" => $services]);
+    }
+
+    public function totalService()
+    {
+        $count = DB::table('services')->count('id');
+        return response()->json(["The total Services" => $count]);
     }
 }

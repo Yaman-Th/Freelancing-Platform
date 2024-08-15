@@ -238,4 +238,22 @@ class AuthController extends Controller
         $users = User::filter($filters)->get();
         return response()->json($users);
     }
+    public function myprofile(){
+        $h=auth()->user();
+        $user=User::find($h->id);
+        if ($user->type=='client'){
+            $client=$user->client()->first()->id;
+            $client= Client::find($client);
+            return response()->json(['data user'=> $user,'data else'=>$client]);
+        }
+        else if ($user->type==='freelancer') {
+            $freelancer=$user->freelancer()->first()->id;
+            $free= Freelancer::find($freelancer);
+            return response()->json(['data user'=> $user,'data else'=>$free]);
+        }
+        else {
+        return response()->json(['message '=> ' front are alwayes wrong']);
+    }
+    
+    }
 }
