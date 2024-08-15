@@ -97,7 +97,7 @@ class PostController extends Controller
         $client = auth()->user()->client()->first();
 
         $mypost = Post::where('client_id', $client->id)->get();
-        return response()->json([$mypost]);
+        return response()->json($mypost);
     }
     public function getpostsbyid($clientId)
     {
