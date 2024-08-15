@@ -20,20 +20,39 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
+        $services = Service::all()->map(function ($service) {
+            return [
+                'id' => $service->id,
+                'title' => $service->title,
+                'description' => $service->description,
+                'price' => $service->price,
+                'category' => Category::find($service->category_id)->name,
+                'image_url' => url('storage/' . $service->image),
+            ];
+        });
 
-        return response()->json(['services' => $services], 201);
+        return response()->json(['services' => $services], 200);
     }
 
     /**
      * Show one item by id
      */
-    public function show(Service $service)
+    public function show($id)
     {
-        $servic = Service::find($service);
-        $category = Category::find($service->category_id)->name;
-        return response()->json(['service' => $servic, 'category' => $category], 201);
+        $servic = Service::find($id);
+        if (!$servic) {
+            return response()->json(['message' => 'Service not found'], 404);
+        }
+
+        $category = Category::find($servic->category_id)->name;
+
+        return response()->json([
+            'service' => $servic,
+            'category' => $category,
+            'image_url' => url('storage/' . $servic->image),
+        ], 201);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -49,11 +68,11 @@ class ServiceController extends Controller
                 'price' => 'required|numeric',
                 'category_name' => 'required',
             ]);
-            $validatedData['category_id']=Category::where('name','like',$request->category_name)->first()->id;
+            $validatedData['category_id'] = Category::where('name', 'like', $request->category_name)->first()->id;
 
 
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('image');
+                $imagePath = $request->file('image')->store('images', 'public');
                 $validatedData['image'] = $imagePath;
             }
 
@@ -146,7 +165,7 @@ class ServiceController extends Controller
     {
         $user = auth()->user();
         $freelancer = $user->freelancer()->first();
-        $myservice = Service::where('freelancer_id','like',$freelancer->id)->get();
+        $myservice = Service::where('freelancer_id', 'like', $freelancer->id)->get();
         return response()->json($myservice);
     }
 

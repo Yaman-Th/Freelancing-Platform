@@ -41,14 +41,20 @@ class TeamController extends Controller
         
         $team = Team::where('name', 'like', '%'.$request->team_name.'%')->first();
         if (!$team) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => 'Team not found'], 404);
         }
         
 
         // الحصول على معرّف الفريلانسر بواسطة معرّف المستخدم
-        $freelancer = Freelancer::where('user_id', $user->id)->first();
+        $freelancer = Freelancer::where('user_id','like',$user->id)->first();
         if (!$freelancer) {
             return response()->json(['message' => 'Freelancer not found'], 404);
+        }
+
+        $thereis=Invitation::where('freelancer_id','like',$freelancer->id)->where('team_id','like',$team->id)->first();
+        if($thereis){
+            return response()->json(['message' => 'Freelancer alreafy  sent invention'], 404);
+
         }
 
         // إنشاء طلب الفريق
@@ -134,7 +140,6 @@ class TeamController extends Controller
             ->map(function ($invitation) {
                 return [
                     'id' => $invitation->id,
-                    // 'team_name' => $invitation->team->name, // قم بإرجاع اسم الفريق
                     'name' => User::find(Freelancer::find($invitation->freelancer_id)->user_id)->name,
                     'status' => $invitation->status,
                     'created_at' => $invitation->created_at,
@@ -142,7 +147,7 @@ class TeamController extends Controller
                 ];
             });
     
-        return response()->json(['team' => $invitations]);
+        return response()->json(['team name'=> $team->name,'team invintion' => $invitations ]);
     }
    
 

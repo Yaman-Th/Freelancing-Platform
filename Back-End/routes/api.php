@@ -21,6 +21,8 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\translateController;
 use App\Http\Controllers\vendor\Chatify\Api\MessagesController;
+use Google\Client as GoogleClient;
+use Illuminate\Support\Facades\Http;
 
 // Public Routes
 
@@ -306,5 +308,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/image/{getImageUrl}', [ServiceController::class, 'getImageData']);
 
-    Route::get('/my',[AuthController::class,'myprofile']);
+    Route::get('/my', [AuthController::class, 'myprofile']);
+
+   
+
+      
 });

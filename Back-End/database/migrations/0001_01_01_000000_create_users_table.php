@@ -24,6 +24,7 @@ return new class extends Migration
             $table->date('birthdate');
             $table->boolean('is_active')->default(true);
             $table->string('password_reset_code', 6)->nullable();
+            $table->text('fcm_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
