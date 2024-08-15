@@ -145,9 +145,9 @@ class ServiceController extends Controller
     public function myservice(Request $request)
     {
         $user = auth()->user();
-        $freelancer = $user->freelancer;
-        // $myservice = Service::where('freelancer_id',$freelancer->id);
-        return response()->json($freelancer);
+        $freelancer = $user->freelancer()->first();
+        $myservice = Service::where('freelancer_id','like',$freelancer->id)->get();
+        return response()->json($myservice);
     }
 
     public function search(Request $request)
