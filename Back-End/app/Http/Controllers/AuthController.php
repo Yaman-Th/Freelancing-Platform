@@ -77,7 +77,7 @@ class AuthController extends Controller
 
             EmailVerfcation::create([
                 'email' => $user->email,
-                'token' => $token,
+                'code' => $token,
             ]);
 
             // إرسال الرمز عبر البريد الإلكتروني
@@ -168,11 +168,11 @@ class AuthController extends Controller
     public function verfiyEmail(Request $request)
     {
         $request->validate([
-            'token' => 'required|string',
+            'code' => 'required|string',
         ]);
 
         $verification = EmailVerfcation::where('email', auth()->user()->email)
-            ->where('token', $request->token)
+            ->where('code', $request->code)
             ->first();
 
         if ($verification) {

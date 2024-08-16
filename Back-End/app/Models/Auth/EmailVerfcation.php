@@ -9,5 +9,5 @@ class EmailVerfcation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['email', 'token'];
+    protected $fillable = ['email', 'code'];
 }
