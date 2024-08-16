@@ -60,4 +60,18 @@ class ContractController extends Controller
 
         return response()->json($contracts);
     }
+    public function mycontract()
+    {
+        $user = auth()->user();
+        if ($user->type == 'client') {
+            $client = $user->client()->first()->id;
+            $contract = Contract::where('client_id', 'like', $client)->get();
+            return response()->json($contract);
+            if ($user->type == 'freelancer') {
+                $freelancer = $user->freelancer()->first()->id;
+                $contract = Contract::where('freelancer_id', 'like', $freelancer)->get();
+                return response()->json($contract);
+            }
+        }
+    }
 }

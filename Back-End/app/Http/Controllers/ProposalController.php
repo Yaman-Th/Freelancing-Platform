@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auth\Freelancer;
-use App\Models\Auth\User;
+use App\Models\Contract;
 use App\Models\Proposal;
+use App\Models\Auth\User;
 use Illuminate\Http\Request;
+use App\Models\Auth\Freelancer;
+use App\Models\Post;
+use Dotenv\Exception\ValidationException;
 
 class ProposalController extends Controller
 {
@@ -20,7 +23,8 @@ class ProposalController extends Controller
     // Store New Proposal
     public function store(Request $request)
     {
-        $freelancer = auth()->user()->freelancer()->first();
+        $user = auth()->user();
+        $freelancer = $user->freelancer;
         try {
             $request->validate([
                 'post_id' => 'required|numeric',
@@ -56,16 +60,31 @@ class ProposalController extends Controller
 
 
     // Accept Proposal
-    public function acceptProposal(Proposal $proposal)
+    public function acceptProposal(Request $request)
     {
+        $proposal=Proposal::find($request->proposal_id);
         $proposal->update([
             'status' => 'accepted',
         ]);
+        $proposal->save();
+        $post = Post::find($proposal->post_id);
+        $client = auth()->user()->client()->first()->id;
+        $contract = Contract::create([
+            'post_id' => $post->id,
+            'client_id' => $post->client_id,
+            'freelancer_id'=> $proposal->freelancer_id,
+            'status' => 'active',
+            'end_date' => '2002-5-2',
+            'payment_status' => 'pending',
+            'payment_amount' => 100
+        ]);
+        return response()->json(['proposel' => $proposal,'contract'=>$contract]);;
     }
 
     // Reject Proposal
-    public function rejectProposal(Proposal $proposal)
+    public function rejectProposal(Request $request)
     {
+        $proposal=Proposal::find($id)->first();
         $proposal->update([
             'status' => 'rejected',
         ]);

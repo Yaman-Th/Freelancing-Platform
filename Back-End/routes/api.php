@@ -21,6 +21,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\translateController;
 use App\Http\Controllers\vendor\Chatify\Api\MessagesController;
+use App\Models\Contract;
 use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\Http;
 
@@ -174,21 +175,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('orders/{orderId}/approve', [ServiceOrderController::class, 'approve']);
 
         /* Proposal Routes */
-        Route::prefix('proposals')->group(function () {
-            // Get All Proposals of Freelacner
-            Route::get('/', [ProposalController::class, 'index']);
-            // Store New Proposal
-            Route::post('/', [ProposalController::class, 'store']);
-            // ->middleware('can:proposal.create');
-            // Get Proposal By id
-            Route::get('/{proposal}', [ProposalController::class, 'show']);
-            // Update Proposal
-            Route::put('/{proposal}', [ProposalController::class, 'update']);
-            // ->can('update', 'proposal');
-            // Destroy Proposal
-            Route::delete('/{proposal}', [ProposalController::class, 'destroy']);
-            // ->can('delete', 'proposal');
-        });
     });
 
     // ClientRoutes 
@@ -223,10 +209,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         /* Proposal Routes */
         // Accept Proposal
-        Route::put('/proposals/{proposal}/accept', [ProposalController::class, 'acceptProposal']);
+        Route::post('/proposals/accept', [ProposalController::class, 'acceptProposal']);
         // ->can('updateStatus', 'proposal');
         // Reject Proposal
-        Route::put('/proposals/{proposal}/reject', [ProposalController::class, 'rejectProposal']);
+        Route::post('/proposals/reject/{id}', [ProposalController::class, 'rejectProposal']);
         // ->can('updateStatus', 'proposal');
 
         // payments Route
@@ -260,6 +246,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/categories', [CategoryController::class, 'store']);
         // Delete Category
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+    });
+
+    Route::prefix('proposals')->group(function () {
+        // Get All Proposals of Freelacner
+        Route::get('/', [ProposalController::class, 'index']);
+        // Store New Proposal
+        Route::post('/', [ProposalController::class, 'store']);
+        // ->middleware('can:proposal.create');
+        // Get Proposal By id
+        Route::get('/{proposal}', [ProposalController::class, 'show']);
+        // Update Proposal
+        Route::put('/{proposal}', [ProposalController::class, 'update']);
+        // ->can('update', 'proposal');
+        // Destroy Proposal
+        Route::delete('/{proposal}', [ProposalController::class, 'destroy']);
+        // ->can('delete', 'proposal');
     });
 
     //////////////Links///////////
@@ -310,7 +312,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/my', [AuthController::class, 'myprofile']);
 
-   
-
-      
+    Route::get('/mycontract', [ContractController::class, 'mycontract']);
 });
