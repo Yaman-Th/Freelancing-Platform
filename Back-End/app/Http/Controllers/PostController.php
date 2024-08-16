@@ -103,7 +103,7 @@ class PostController extends Controller
     {
 
         $mypost = Post::where('client_id', $clientId)->get();
-        return response()->json([$mypost]);
+        return response()->json($mypost);
     }
     public function totalProject()
     {
