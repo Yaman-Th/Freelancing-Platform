@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:freelancing/Screens/profile.dart';
 import 'package:freelancing/Server/auth_service.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Auth/register.dart';
-import 'package:freelancing/tabs.dart';
+import 'package:freelancing/Screens/tabs.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -112,6 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                           color: colorScheme.onBackground,
                         ),
                     decoration: InputDecoration(
+                      fillColor: colorScheme.secondary,
+                      filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -175,6 +178,8 @@ class _LoginPageState extends State<LoginPage> {
                           color: Theme.of(context).colorScheme.onBackground,
                         ),
                     decoration: InputDecoration(
+                      fillColor: colorScheme.secondary,
+                      filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),

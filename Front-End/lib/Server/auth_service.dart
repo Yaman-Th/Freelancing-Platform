@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:freelancing/utils/token.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
-  static const String Url = 'http://10.65.1.66:8000/api';
+  static const String Url = 'http://localhost:8000/api';
 
   Future<bool> register(
       String firstName,
@@ -54,6 +55,8 @@ class AuthService {
       final responseBody = json.decode(response.body);
       final token = responseBody['token'];
       await TokenStorage.saveToken(token);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
       print('Login successful. Token: $token');
       return true;
     } else {
@@ -62,4 +65,5 @@ class AuthService {
       return false;
     }
   }
+  
 }

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:freelancing/constant/colors.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class ChatScreen extends StatelessWidget {
+  void setupPushNotifications() async {
+    final fcm = FirebaseMessaging.instance;
+
+    await fcm.requestPermission();
+
+    final token = await fcm.getToken();
+    print(token);
+  }
+
   final List<Map<String, dynamic>> messages = [
     {"isSentByMe": false, "text": "hi how are u", "time": "09:30 PM"},
     {"isSentByMe": true, "text": "fine and u?", "time": "09:31 PM"},
@@ -23,7 +31,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             CircleAvatar(
               backgroundImage: NetworkImage('https://via.placeholder.com/150'),
@@ -41,7 +49,7 @@ class ChatScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             onPressed: () {},
           ),
         ],
@@ -50,7 +58,7 @@ class ChatScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
@@ -59,10 +67,12 @@ class ChatScreen extends StatelessWidget {
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5.0),
-                    padding: EdgeInsets.all(10.0),
+                    margin: const EdgeInsets.symmetric(vertical: 5.0),
+                    padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color: message['isSentByMe'] ? IndigoDye : Silver,
+                      color: message['isSentByMe']
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onTertiary,
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     child: Column(
@@ -70,7 +80,7 @@ class ChatScreen extends StatelessWidget {
                       children: [
                         if (message.containsKey('image'))
                           Container(
-                            margin: EdgeInsets.only(bottom: 5.0),
+                            margin: const EdgeInsets.only(bottom: 5.0),
                             child: Image.network(message['image']),
                           ),
                         Text(
@@ -81,7 +91,7 @@ class ChatScreen extends StatelessWidget {
                                 : Colors.black,
                           ),
                         ),
-                        SizedBox(height: 5.0),
+                        const SizedBox(height: 5.0),
                         Text(
                           message['time'],
                           style: TextStyle(
@@ -110,16 +120,18 @@ class ChatScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       filled: true,
-                      fillColor: Silver,
+                      fillColor: Theme.of(context).colorScheme.onTertiary,
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: BlueGray),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.onSecondary),
                       ),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: IndigoDye),
+                  icon: Icon(Icons.send,
+                      color: Theme.of(context).colorScheme.onSurface),
                   onPressed: () {},
                 ),
               ],

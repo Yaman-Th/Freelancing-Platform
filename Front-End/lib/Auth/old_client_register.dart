@@ -1,27 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:freelancing/Auth/old_client_register.dart';
-import 'package:freelancing/Auth/login.dart';
+import 'package:freelancing/Server/auth_service.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Auth/register.dart';
-import 'package:freelancing/Server/auth_service.dart';
+import 'package:freelancing/Screens/tabs.dart';
 
-class FreelancerRegister2 extends StatefulWidget {
-  const FreelancerRegister2({super.key});
+class ClientRegister extends StatefulWidget {
+  const ClientRegister({super.key});
 
   @override
-  State<FreelancerRegister2> createState() => _FreelancerRegisterState();
+  State<ClientRegister> createState() => _ClientRegisterState();
 }
 
-class _FreelancerRegisterState extends State<FreelancerRegister2> {
-  final firstNameController = TextEditingController();
+class _ClientRegisterState extends State<ClientRegister> {
+final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final rePasswordController = TextEditingController();
+  final typeController = TextEditingController();
   final birthdayController = TextEditingController();
   final AuthService authService = AuthService();
-  String userType = 'Freelancer';
   bool _obscureText = true;
   void _toggleVisibility() {
     setState(() {
@@ -31,32 +30,15 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
 
   void _signUp() async {
     if (passwordController.text == rePasswordController.text) {
-      bool success = await authService.register(
+      await authService.register(
         firstNameController.text,
-        lastNameController.text,
-        userType,
-        emailController.text,
-        passwordController.text,
-        rePasswordController.text,
-        birthdayController.text,
+       lastNameController.text,
+       typeController.text,
+       emailController.text,
+       passwordController.text,
+       rePasswordController.text,
+       birthdayController.text
       );
-
-      if (success) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to register user',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
-            ),
-          ),
-        );
-      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -71,47 +53,6 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final now = DateTime.now();
-    final firstDate = DateTime(now.year - 100, now.month, now.day);
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: now,
-      firstDate: firstDate,
-      lastDate: now,
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).colorScheme.primary,
-              onPrimary: Colors.white,
-              surface: Theme.of(context).colorScheme.surface,
-              onSurface: Theme.of(context).colorScheme.onSurface,
-            ),
-            dialogBackgroundColor: Theme.of(context).colorScheme.background,
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      setState(() {
-        birthdayController.text = "${picked.toLocal()}".split(' ')[0];
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    passwordController.dispose();
-    rePasswordController.dispose();
-    emailController.dispose();
-    birthdayController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(context) {
     return Scaffold(
@@ -120,7 +61,7 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const ClientRegister()));
+                MaterialPageRoute(builder: (context) => const Register()));
           },
           icon: Icon(
             Icons.arrow_back_ios_new,
@@ -130,7 +71,6 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
         toolbarHeight: 30,
       ),
       body: SingleChildScrollView(
-          child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,7 +97,7 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
               height: 10,
             ),
             Text(
-              'Create an freelancer account',
+              'Create an client account',
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
@@ -188,157 +128,6 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
                       )
                     ]),
                 child: TextField(
-                  controller: firstNameController,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: colorScheme.onBackground,
-                      ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: ('First Name'),
-                    hintStyle:
-                        Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(0.5),
-                            ),
-                    prefixIcon: const Icon(CupertinoIcons.profile_circled),
-                    prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    color: colorScheme.background,
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.onBackground.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      )
-                    ]),
-                child: TextField(
-                  controller: lastNameController,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: colorScheme.onBackground,
-                      ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: ('Last Name'),
-                    hintStyle:
-                        Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(0.5),
-                            ),
-                    prefixIcon: const Icon(CupertinoIcons.profile_circled),
-                    prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onBackground
-                          .withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  child: DropdownButtonFormField<String>(
-                    value: userType,
-                    decoration: InputDecoration(
-                      labelText: 'User Type',
-                      labelStyle: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.5), // Label color
-                      ),
-                      hintStyle: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                      prefixIcon: const Icon(Icons.supervised_user_circle),
-                      prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
-                      border: InputBorder.none,
-                    ),
-                    items: <String>['freelancer', 'client'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary, // Customize text color here
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        userType = newValue!;
-                      });
-                    },
-                    style: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onBackground, // Selected item color
-                    ),
-                    dropdownColor: Theme.of(context)
-                        .colorScheme
-                        .onSecondary, // Background color of the dropdown
-                    iconEnabledColor: Theme.of(context)
-                        .colorScheme
-                        .onBackground, // Arrow icon color
-                    iconDisabledColor: Theme.of(context)
-                        .colorScheme
-                        .onBackground, // Disabled icon color
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    color: colorScheme.background,
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.onBackground.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      )
-                    ]),
-                child: TextField(
                   controller: emailController,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: colorScheme.onBackground,
@@ -346,6 +135,43 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: ('email@domain.com'),
+                    hintStyle:
+                        Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.5),
+                            ),
+                    prefixIcon: const Icon(CupertinoIcons.profile_circled),
+                    prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    color: colorScheme.background,
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.onBackground.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      )
+                    ]),
+                child: TextField(
+                  controller: firstNameController,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: colorScheme.onBackground,
+                      ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: ('username'),
                     hintStyle:
                         Theme.of(context).textTheme.titleMedium!.copyWith(
                               color: Theme.of(context)
@@ -449,53 +275,6 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    color: colorScheme.background,
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.onBackground.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      )
-                    ]),
-                child: TextField(
-                  controller: birthdayController,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: colorScheme.onBackground,
-                      ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: ('Birthday'),
-                    hintStyle:
-                        Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(0.5),
-                            ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        Icons.calendar_today_outlined,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.9),
-                      ),
-                      onPressed: () => _selectDate(context),
-                    ),
-                    prefixIconColor: const Color.fromARGB(255, 110, 110, 110),
-                  ),
-                  readOnly: true,
-                ),
-              ),
-            ),
             const SizedBox(
               height: 15,
             ),
@@ -505,7 +284,10 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
                   width: 370,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: _signUp,
+                    onPressed:() {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const TabsScreen()));
+                    },
                     style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Theme.of(context).colorScheme.onPrimary,
@@ -605,7 +387,7 @@ class _FreelancerRegisterState extends State<FreelancerRegister2> {
             ),
           ],
         ),
-      )),
+      ),
     );
   }
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:freelancing/chat/inside_chat.dart';
-import 'package:freelancing/constant/colors.dart';
-
 
 class ChatListScreen extends StatelessWidget {
   final List<Map<String, String>> chats = [
@@ -54,7 +52,7 @@ class ChatListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chat'),
+        title: const Text('Chat'),
         // actions: [
         //   IconButton(
         //     icon: Icon(Icons.settings),
@@ -69,16 +67,16 @@ class ChatListScreen extends StatelessWidget {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
-                hintStyle: TextStyle(color: White),
+                hintStyle: TextStyle(color: Theme.of(context).colorScheme.background),
                 prefixIcon: Icon(
                   Icons.search,
-                  color: White,
+                  color: Theme.of(context).colorScheme.background,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 filled: true,
-                fillColor: Aquamarine,
+                fillColor: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),
@@ -99,9 +97,9 @@ class ChatListScreen extends StatelessWidget {
                           radius: 30.0,
                           backgroundImage: NetworkImage(favorite["avatarUrl"]!),
                         ),
-                        SizedBox(height: 5.0),
+                        const SizedBox(height: 5.0),
                         Text(favorite["name"]!,
-                            style: TextStyle(fontSize: 12.0)),
+                            style: const TextStyle(fontSize: 12.0)),
                       ],
                     ),
                   );
@@ -120,11 +118,11 @@ class ChatListScreen extends StatelessWidget {
           // ),
           ListTile(
             onTap: () {},
-            leading: Icon(Icons.bookmark, color: IndigoDye),
-            title: Text('Saved Messages'),
-            subtitle: Text('project1.dart'),
+            leading: Icon(Icons.bookmark, color: Theme.of(context).colorScheme.onSurface),
+            title: const Text('Saved Messages'),
+            subtitle: const Text('project1.dart'),
           ),
-          Divider(),
+          const Divider(),
           Expanded(
             child: ListView.builder(
               itemCount: chats.length,
@@ -154,11 +152,11 @@ class ChatListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
+        backgroundColor: Theme.of(context).colorScheme.onSurface,
         child: Icon(
           Icons.add,
-          color: White,
+          color: Theme.of(context).colorScheme.background,
         ),
-        backgroundColor: IndigoDye,
       ),
     );
   }

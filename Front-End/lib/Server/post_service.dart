@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:freelancing/models/post.dart';
 
 class PostService {
-  static const String _baseUrl = 'http://10.65.1.66:8000/api/posts';
+  static const String _baseUrl = 'http://localhost:8000/api/posts';
   
   Future<List<Post>> fetchPosts() async {
     final token = await TokenStorage.getToken();
