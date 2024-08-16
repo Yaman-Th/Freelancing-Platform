@@ -147,4 +147,5 @@ class ServiceOrderController extends Controller
         // Return a success response
         return response()->json(['message' => 'Order completed successfully']);
     }
+  
 }

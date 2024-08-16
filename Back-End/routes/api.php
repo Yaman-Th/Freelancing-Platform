@@ -94,8 +94,11 @@ Route::get('/order/{serviceOrder}', [ServiceOrderController::class, 'show']);
 Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
 
-Route::middleware('auth:sanctum')->group(function () {
 
+Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::get('/allorder', [ServiceOrderController::class, 'index']);
+    
     Route::get('/team/myinvitation/{name}', [TeamController::class, 'teamInvitation']);
 
 
@@ -153,7 +156,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         // مسارات لإضافة وإزالة مهارات الفريلانسر
+        
         Route::post('/freelancers/skills', [SkillController::class, 'addSkill']); // إضافة مهارة لفريلانسر
+
         Route::delete('/freelancers/{freelancerId}/skills', [SkillController::class, 'removeSkill']); // إزالة مهارة من فريلانسر
         //////////////////////
 
@@ -211,6 +216,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Accept Proposal
         Route::post('/proposals/accept', [ProposalController::class, 'acceptProposal']);
         // ->can('updateStatus', 'proposal');
+        
         // Reject Proposal
         Route::post('/proposals/reject/{id}', [ProposalController::class, 'rejectProposal']);
         // ->can('updateStatus', 'proposal');
@@ -223,7 +229,6 @@ Route::middleware('auth:sanctum')->group(function () {
         /* ServiceOrder Routes */
         Route::prefix('orders')->group(function () {
             // Get All Service Orders
-            Route::get('/', [ServiceOrderController::class, 'index']);
             // Create New Service Order
             Route::post('/', [ServiceOrderController::class, 'create'])
                 ->middleware('can:order.create');
@@ -313,4 +318,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my', [AuthController::class, 'myprofile']);
 
     Route::get('/mycontract', [ContractController::class, 'mycontract']);
+
+    // Route::get('/allorder',[ServiceOrderController::class,'allOrder']);
+
+
 });
