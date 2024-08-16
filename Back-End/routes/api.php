@@ -96,9 +96,9 @@ Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     Route::get('/alluser', [AuthController::class, 'alluser']);
-    
+
     Route::get('/allorder', [ServiceOrderController::class, 'index']);
 
     Route::get('/team/myinvitation/{name}', [TeamController::class, 'teamInvitation']);
@@ -158,7 +158,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         // مسارات لإضافة وإزالة مهارات الفريلانسر
-        
+
         Route::post('/freelancers/skills', [SkillController::class, 'addSkill']); // إضافة مهارة لفريلانسر
 
         Route::delete('/freelancers/{freelancerId}/skills', [SkillController::class, 'removeSkill']); // إزالة مهارة من فريلانسر
@@ -218,7 +218,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Accept Proposal
         Route::post('/proposals/accept', [ProposalController::class, 'acceptProposal']);
         // ->can('updateStatus', 'proposal');
-        
+
         // Reject Proposal
         Route::post('/proposals/reject/{id}', [ProposalController::class, 'rejectProposal']);
         // ->can('updateStatus', 'proposal');
@@ -249,10 +249,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
 
         /* Category Routes */
-        // Add Category or Sub-Category
-        Route::post('/categories', [CategoryController::class, 'store']);
-        // Delete Category
-        Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
 
     Route::prefix('proposals')->group(function () {
@@ -324,4 +320,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/allorder',[ServiceOrderController::class,'allOrder']);
 
 
+    // Add Category or Sub-Category
+    Route::post('/categories', [CategoryController::class, 'store']);
+    // Delete Category
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 });
