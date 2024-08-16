@@ -97,8 +97,10 @@ Route::post('/addOrder', [ServiceOrderController::class, 'create']);
 
 Route::middleware('auth:sanctum')->group(function () {
     
-    Route::get('/allorder', [ServiceOrderController::class, 'index']);
+    Route::get('/alluser', [AuthController::class, 'alluser']);
     
+    Route::get('/allorder', [ServiceOrderController::class, 'index']);
+
     Route::get('/team/myinvitation/{name}', [TeamController::class, 'teamInvitation']);
 
 

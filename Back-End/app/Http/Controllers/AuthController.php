@@ -262,5 +262,7 @@ class AuthController extends Controller
             return response()->json(['message ' => ' front are alwayes wrong']);
         }
     }
-   
+    public function alluser(){
+    return response()->json(['users'=>User::all()]);        
+    }
 }
