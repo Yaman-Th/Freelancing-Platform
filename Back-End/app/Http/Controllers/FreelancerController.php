@@ -27,7 +27,7 @@ class FreelancerController extends Controller
             ]);
 
             if ($request->hasFile('personal_image')) {
-                $personal_image = $request->file('personal_image')->store('personal_image');
+                $personal_image = $request->file('personal_image')->store('personal_image', 'public');
 
                 $freelancer->update([
                     'personal_image' => $personal_image,
@@ -63,7 +63,12 @@ class FreelancerController extends Controller
             ->where('freelancers.id', $user->freelancer->id)
             ->first();
         // $Skill
-        return response()->json($freelancerinfo);
+        return response()->json(
+            [
+                'info' => $freelancerinfo,
+                'image_url' => url('storage/' . $freelancerinfo->personal_image)
+            ]
+        );
     }
 
     public function show($id)

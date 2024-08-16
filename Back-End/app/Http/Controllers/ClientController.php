@@ -27,7 +27,7 @@ class ClientController extends Controller
             ]);
 
             if ($request->hasFile('personal_image')) {
-                $personal_image = $request->file('personal_image')->store('personal_image');
+                $personal_image = $request->file('personal_image')->store('personal_image', 'public');
                 $client->update([
                     'personal_image' => $personal_image,
                     'personal_overview' => $request->personal_overview,
@@ -60,7 +60,10 @@ class ClientController extends Controller
             ->where('clients.id', $id)
             ->first();
         // $Skill
-        return response()->json($clientinfo);
+        return response()->json([
+            'info' => $clientinfo,
+            'image_url' => url('storage/' . $clientinfo->personal_image),
+        ]);
     }
 
     // Get All Clients

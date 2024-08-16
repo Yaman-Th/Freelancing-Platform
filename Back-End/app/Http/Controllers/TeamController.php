@@ -139,9 +139,10 @@ class TeamController extends Controller
             ->get()
             ->map(function ($invitation) {
                 return [
-                    'id' => $invitation->id,
-                    'name' => User::find(Freelancer::find($invitation->freelancer_id)->user_id)->name,
-                    'status' => $invitation->status,
+                    'Invitation_id' => $invitation->id,
+                    'freelancer_id' => $invitation->freelancer_id,
+                    'freelancer_name' => User::find(Freelancer::find($invitation->freelancer_id)->user_id)->name,
+                    'freelancer_status' => $invitation->status,
                     'created_at' => $invitation->created_at,
                     'updated_at' => $invitation->updated_at,
                 ];

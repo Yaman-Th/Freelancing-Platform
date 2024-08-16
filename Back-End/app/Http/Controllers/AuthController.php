@@ -232,28 +232,35 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Password has been reset']);
     }
-     public function Search(Request $request)
+    public function Search(Request $request)
     {
         $filters = $request->only(['name', 'type', 'rating']);
         $users = User::filter($filters)->get();
         return response()->json($users);
     }
-    public function myprofile(){
-        $h=auth()->user();
-        $user=User::find($h->id);
-        if ($user->type=='client'){
-            $client=$user->client()->first()->id;
-            $client= Client::find($client);
-            return response()->json(['data user'=> $user,'data else'=>$client]);
+    public function myprofile()
+    {
+        $h = auth()->user();
+        $user = User::find($h->id);
+        if ($user->type == 'client') {
+            $client = $user->client()->first()->id;
+            $client = Client::find($client);
+            return response()->json([
+                'data user' => $user,
+                'data else' => $client,
+                'image_url' => url('storage/' . $client->personal_image),
+            ]);
+        } else if ($user->type === 'freelancer') {
+            $freelancer = $user->freelancer()->first()->id;
+            $free = Freelancer::find($freelancer);
+            return response()->json([
+                'data user' => $user,
+                'data else' => $free,
+                'image_url' => url('storage/'.$free->personal_image),
+            ]);
+        } else {
+            return response()->json(['message ' => ' front are alwayes wrong']);
         }
-        else if ($user->type==='freelancer') {
-            $freelancer=$user->freelancer()->first()->id;
-            $free= Freelancer::find($freelancer);
-            return response()->json(['data user'=> $user,'data else'=>$free]);
-        }
-        else {
-        return response()->json(['message '=> ' front are alwayes wrong']);
     }
-    
-    }
+   
 }

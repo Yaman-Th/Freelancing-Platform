@@ -37,15 +37,15 @@ Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::get('/translate/{type}/{lang}/{id}', [translateController::class, 'getTranslatedData']);
 
 // get  &  Search  are public
-Route::get('/users/search', [AuthController::class, 'Search']);
+// Route::get('/users/search', [AuthController::class, 'Search']);
 
 // Route::get('/services/search', [ServiceController::class, 'Search']);
 
 Route::get('/categories/search', [CategoryController::class, 'Search']);
 
-Route::get('/freelancers/search-by-skills', [FreelancerController::class, 'searchBySkills']);
+// Route::get('/freelancers/search-by-skills', [FreelancerController::class, 'searchBySkills']);
 
-Route::get('/skill/search', [SkillController::class, 'Search']);
+// Route::get('/skill/search', [SkillController::class, 'Search']);
 
 // return profile client by id
 Route::get('/client/profile/{id}', [ClientController::class, 'profile']);
@@ -136,7 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:freelancer')->group(function () {
 
         // return own profile 
-        Route::get('/freelancer/myprofile', [FreelancerController::class, 'myprofile']);
+        // Route::get('/freelancer/myprofile', [FreelancerController::class, 'myprofile']);
 
         // update profile
         Route::post('/freelancer/updateProfile', [FreelancerController::class, 'update']);
@@ -197,7 +197,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //update profile
         Route::post('/client/updateProfile', [ClientController::class, 'updateProfile']);
 
-        Route::get('/client/myprofile', [ClientController::class, 'myProfile']);
+        // Route::get('/client/myprofile', [ClientController::class, 'myProfile']);
 
         Route::get('/client/myorders', [ServiceOrderController::class, 'getOrderClient']);
 
