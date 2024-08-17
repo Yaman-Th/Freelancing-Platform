@@ -53,7 +53,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to approve the order')),
+        const SnackBar(content: Text('Failed to approve the order')),
       );
     }
   }
@@ -81,7 +81,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to reject the order')),
+        const SnackBar(content: Text('Failed to reject the order')),
       );
     }
   }
@@ -98,54 +98,57 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Orders'),
+        title: const Text('Orders'),
         centerTitle: true,
+        actions: [
+          
+        ],
       ),
       body: FutureBuilder<List<Order>>(
         future: futureOrders,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No orders found.'));
+            return const Center(child: Text('No orders found.'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final order = snapshot.data![index];
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Center(
                           child: Text(
                             'Order: ${order.id}',
-                            style: TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 20),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
                           'Status: ${order.status}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           order.details,
-                          style: TextStyle(fontSize: 20),
+                          style: const TextStyle(fontSize: 20),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           'Quantity: ${order.quantity}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -157,7 +160,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               onPressed: () {
                                 approveOrder(order.id);
                               },
-                              child: Text(
+                              child: const Text(
                                 'Accept',
                                 style: TextStyle(color: Colors.green),
                               ),
@@ -166,7 +169,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               onPressed: () {
                                 rejectOrder(order.id);
                               },
-                              child: Text(
+                              child: const Text(
                                 'Reject',
                                 style: TextStyle(color: Colors.red),
                               ),

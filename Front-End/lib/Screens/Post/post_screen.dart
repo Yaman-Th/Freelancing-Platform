@@ -14,7 +14,7 @@ class PostScreen extends StatefulWidget {
   State<PostScreen> createState() => _PostScreenState();
 }
 
-Future _post(String id, String title, String description, String deadline,
+Future _post(String categoryName, String title, String description, String deadline,
     String budget, String type, BuildContext context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('token');
@@ -24,7 +24,7 @@ Future _post(String id, String title, String description, String deadline,
       'Authorization': 'Bearer $token',
     },
     body: <String, String>{
-      'category_id': id,
+      'categoryName': categoryName,
       'title': title,
       'description': description,
       'budget': budget,
@@ -39,17 +39,18 @@ Future _post(String id, String title, String description, String deadline,
       context,
       MaterialPageRoute(
         builder: (context) {
-          return PostsScreen();
+          return HomeScreen();
         },
       ),
     );
   } else {
+    print(response.body);
     print('sorry');
   }
 }
 
 final TextEditingController _titleController = TextEditingController();
-final TextEditingController _idController = TextEditingController();
+final TextEditingController _categoryController = TextEditingController();
 final TextEditingController _descriptionController = TextEditingController();
 final TextEditingController _budgetController = TextEditingController();
 final TextEditingController _typeController = TextEditingController();
@@ -59,12 +60,13 @@ class _PostScreenState extends State<PostScreen> {
   String? selectedType;
   DateTime? selectedDate;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-   void _navigateToManagePosts(BuildContext context) {
+  void _navigateToManagePosts(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const myPost()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -86,9 +88,7 @@ class _PostScreenState extends State<PostScreen> {
               size: 30,
               color: colorScheme.primary,
             ),
-            onPressed: () 
-            => _navigateToManagePosts(context),
-            
+            onPressed: () => _navigateToManagePosts(context),
           ),
         ],
       ),
@@ -129,12 +129,13 @@ class _PostScreenState extends State<PostScreen> {
                       ),
                     ),
                     hintText: 'Ex: Flutter Front-End',
-                    hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onBackground
-                              .withOpacity(0.4),
-                        ),
+                    hintStyle:
+                        Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.4),
+                            ),
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(10),
@@ -182,12 +183,13 @@ class _PostScreenState extends State<PostScreen> {
                       cursorColor: Colors.black,
                       decoration: InputDecoration(
                         hintText: 'Description',
-                        hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(0.4),
-                            ),
+                        hintStyle:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground
+                                      .withOpacity(0.4),
+                                ),
                         border: InputBorder.none,
                       ),
                       validator: (value) {
@@ -217,9 +219,10 @@ class _PostScreenState extends State<PostScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _budgetController,
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                         cursorColor: Colors.white,
                         decoration: InputDecoration(
                           fillColor: colorScheme.secondary,
@@ -232,15 +235,13 @@ class _PostScreenState extends State<PostScreen> {
                             ),
                           ),
                           hintText: 'Budget',
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onBackground
-                                    .withOpacity(0.4),
-                              ),
+                          hintStyle:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.4),
+                                  ),
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(
                               Radius.circular(10),
@@ -264,9 +265,10 @@ class _PostScreenState extends State<PostScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _dateController,
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                         cursorColor: Colors.white,
                         readOnly: true,
                         decoration: InputDecoration(
@@ -280,15 +282,13 @@ class _PostScreenState extends State<PostScreen> {
                             ),
                           ),
                           hintText: 'Deadline',
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onBackground
-                                    .withOpacity(0.4),
-                              ),
+                          hintStyle:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.4),
+                                  ),
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(
                               Radius.circular(10),
@@ -300,12 +300,32 @@ class _PostScreenState extends State<PostScreen> {
                           ),
                         ),
                         onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2101),
-                          );
+                          final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2101),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData().copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Theme.of(context).colorScheme.onSecondary,
+                onPrimary: Theme.of(context).colorScheme.background,
+                surface: Theme.of(context).colorScheme.onSurface,
+                onSurface: Theme.of(context).colorScheme.background,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              dialogBackgroundColor: Theme.of(context).colorScheme.background,
+            ),
+            child: child!,
+          );
+        },
+      );
+
                           if (pickedDate != null) {
                             _dateController.text =
                                 "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
@@ -321,6 +341,50 @@ class _PostScreenState extends State<PostScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 15),
+                Text(
+                  'Category',
+                  style: TextStyle(color: colorScheme.onSurface),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _categoryController,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    fillColor: colorScheme.secondary,
+                    filled: true,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: colorScheme.onSurface,
+                        width: 2.8,
+                      ),
+                    ),
+                    hintText: 'Ex:Programming',
+                    hintStyle:
+                        Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.4),
+                            ),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                  ),
+                  keyboardType: TextInputType.text,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a category';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 20),
 
                 // "Select Type" Section
@@ -328,12 +392,14 @@ class _PostScreenState extends State<PostScreen> {
                   'Select Type',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 18,
-                    color: colorScheme.secondary,
+                    fontSize: 25,
+                    color: colorScheme.onSurface,
                   ),
                 ),
+                const SizedBox(height: 10,),
                 Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, bottom: 8),
+                  padding:
+                      const EdgeInsets.only(left: 15, right: 15, bottom: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -367,7 +433,7 @@ class _PostScreenState extends State<PostScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _post(
-                          _idController.text,
+                          _categoryController.text,
                           _titleController.text,
                           _descriptionController.text,
                           _dateController.text,
@@ -378,12 +444,15 @@ class _PostScreenState extends State<PostScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
+                      foregroundColor: colorScheme.background,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
                     ),
-                    child: const Text('Post'),
+                    child: Text('Post', style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.background,
+                        ),),
                   ),
                 ),
               ],
@@ -415,12 +484,12 @@ class TypeSelectionButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primary
+              ? Theme.of(context).colorScheme.onSurface
               : Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
-                ? Theme.of(context).colorScheme.primary
+                ? Theme.of(context).colorScheme.onSurface
                 : Theme.of(context).colorScheme.onSurface,
             width: 2.0,
           ),

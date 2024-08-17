@@ -6,12 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:freelancing/Screens/Post/post_screen.dart';
 
-class PostsScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _PostsScreenState createState() => _PostsScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _PostsScreenState extends State<PostsScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   List<Home> posts = [];
   List<Category> categories = [];
   bool isLoading = true;

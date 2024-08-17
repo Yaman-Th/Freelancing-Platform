@@ -65,5 +65,39 @@ class AuthService {
       return false;
     }
   }
+    Future<void> logoutUser() async {
+    final String apiUrl = '$Url/logout';
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token != null) {
+      try {
+        final response = await http.post(
+          Uri.parse(apiUrl),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          print('Logout successful');
+
+          // Clear token and other relevant data
+          await prefs.remove('token');
+          await prefs.setBool('isLoggedIn', false);
+        } else {
+          print('Logout failed with status code: ${response.statusCode}');
+          print('Response body: ${response.body}');
+        }
+      } catch (e) {
+        print('Logout error: $e');
+        throw e; // Optionally, you can throw the error to be handled by the caller
+      }
+    } else {
+      print('No token found');
+    }
+  }
   
 }

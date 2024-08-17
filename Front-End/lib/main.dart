@@ -90,6 +90,6 @@ class App extends StatelessWidget {
   @override
   Widget build(context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false, theme: theme, home:TabsScreen());
+        debugShowCheckedModeBanner: false, theme: theme, home:const LoginPage());
   }
 }

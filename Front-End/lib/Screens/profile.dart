@@ -99,7 +99,7 @@ class _ClientProfileState extends State<ClientProfile> {
           Padding(
             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
             child: avatarUrl != null
-                ? Image.network(
+                ? Image.asset(
                     avatarUrl!,
                     height: 100,
                     width: 100,

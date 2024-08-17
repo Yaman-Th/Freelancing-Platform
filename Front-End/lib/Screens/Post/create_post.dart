@@ -39,7 +39,7 @@ Future _post(String id, String title, String description, String deadline,
       context,
       MaterialPageRoute(
         builder: (context) {
-          return PostsScreen();
+          return HomeScreen();
         },
       ),
     );
