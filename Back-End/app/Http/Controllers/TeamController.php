@@ -38,23 +38,22 @@ class TeamController extends Controller
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        
-        $team = Team::where('name', 'like', '%'.$request->team_name.'%')->first();
+
+        $team = Team::where('name', 'like', '%' . $request->team_name . '%')->first();
         if (!$team) {
             return response()->json(['message' => 'Team not found'], 404);
         }
-        
+
 
         // الحصول على معرّف الفريلانسر بواسطة معرّف المستخدم
-        $freelancer = Freelancer::where('user_id','like',$user->id)->first();
+        $freelancer = Freelancer::where('user_id', 'like', $user->id)->first();
         if (!$freelancer) {
             return response()->json(['message' => 'Freelancer not found'], 404);
         }
 
-        $thereis=Invitation::where('freelancer_id','like',$freelancer->id)->where('team_id','like',$team->id)->first();
-        if($thereis){
+        $thereis = Invitation::where('freelancer_id', 'like', $freelancer->id)->where('team_id', 'like', $team->id)->first();
+        if ($thereis) {
             return response()->json(['message' => 'Freelancer alreafy  sent invention'], 404);
-
         }
 
         // إنشاء طلب الفريق
@@ -108,12 +107,13 @@ class TeamController extends Controller
     public function getmembers($teamId)
     {
         // $client = auth()->user()->client()->id;
-        $members = Invitation::where('team_id', $teamId)->where('status', 'accepted')->get();
+        $team = Team::where('name', 'like', '%'.$teamId.'%')->first();
+        $members = Invitation::where('team_id', $team->id)->where('status', 'accepted')->get();
         if (!$members)
             return response()->json(['message' => 'there is no members yet']);
         else {
-            $nameTeam = Team::find($teamId);
-            $owner_id = Client::find($nameTeam->client_id);
+            $nameTeam = $team->name;
+            $owner_id = Client::find($team->client_id);
             $owner = User::find($owner_id->user_id);
             return response()->json([
                 'Team Name' => $nameTeam->name,
@@ -122,18 +122,19 @@ class TeamController extends Controller
             ]);
         }
     }
-    public function destroy($name){
-        $team=Team::where('name','like','%'.$name.'%')->first();
+    public function destroy($name)
+    {
+        $team = Team::where('name', 'like', '%' . $name . '%')->first();
         if (!$team) {
             return response()->json(['message' => 'team not found'], 404);
         }
         $team->delete();
         return response()->json(['message' => 'team deleted successfully']);
-
     }
-    public function teamInvitation($name){
+    public function teamInvitation($name)
+    {
         $team = Team::where('name', 'like', $name)->first();
-    
+
         $invitations = Invitation::where('team_id', $team->id)
             ->with('team:name') // قم بتحميل اسم الفريق
             ->get()
@@ -147,9 +148,7 @@ class TeamController extends Controller
                     'updated_at' => $invitation->updated_at,
                 ];
             });
-    
-        return response()->json(['team name'=> $team->name,'team invintion' => $invitations ]);
-    }
-   
 
+        return response()->json(['team name' => $team->name, 'team invintion' => $invitations]);
+    }
 }

@@ -60,9 +60,9 @@ class ProposalController extends Controller
 
 
     // Accept Proposal
-    public function acceptProposal(Request $request)
+    public function acceptProposal($proposal)
     {
-        $proposal=Proposal::find($request->proposal_id);
+        $proposal=Proposal::find($proposal);
         $proposal->update([
             'status' => 'accepted',
         ]);
@@ -82,12 +82,13 @@ class ProposalController extends Controller
     }
 
     // Reject Proposal
-    public function rejectProposal(Request $request)
+    public function rejectProposal($proposal)
     {
-        $proposal=Proposal::find($id)->first();
+        $proposal=Proposal::find($proposal)->first();
         $proposal->update([
             'status' => 'rejected',
         ]);
+        return response()->json(['message'=>'rejected']);
     }
 
     // Update Proposal

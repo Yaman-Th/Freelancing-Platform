@@ -120,7 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('freelancer/team/responseinvintation/{id}', [TeamController::class, 'handleRequest']);
     Route::get('clients/myteams', [TeamController::class, 'getClientTeams']);
     Route::get('freelancer/myteams', [TeamController::class, 'getAuthenticatedFreelancerTeams']);
-    Route::get('team/{teamId}/members', [TeamController::class, 'getmembers']);
+    Route::get('team/members/{teamId}', [TeamController::class, 'getmembers']);
     Route::delete('team/{name}', [TeamController::class, 'destroy']);
 
 
@@ -216,11 +216,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         /* Proposal Routes */
         // Accept Proposal
-        Route::post('/proposals/accept', [ProposalController::class, 'acceptProposal']);
+        Route::put('/proposals/accept/{proposal}', [ProposalController::class, 'acceptProposal']);
         // ->can('updateStatus', 'proposal');
 
         // Reject Proposal
-        Route::post('/proposals/reject/{id}', [ProposalController::class, 'rejectProposal']);
+        Route::put('/proposals/reject/{proposal}', [ProposalController::class, 'rejectProposal']);
         // ->can('updateStatus', 'proposal');
 
         // payments Route
