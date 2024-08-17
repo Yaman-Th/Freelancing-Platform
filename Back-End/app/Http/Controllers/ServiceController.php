@@ -99,7 +99,7 @@ class ServiceController extends Controller
             $data = $request->validate([
                 'title' => 'sometimes|max:255',
                 'description' => 'sometimes|max:255',
-                'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                // 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'delivery_days' => 'sometimes|numeric',
                 'price' => 'sometimes|numeric',
                 'category_id' => 'sometimes|numeric',
