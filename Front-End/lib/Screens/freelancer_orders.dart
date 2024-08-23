@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freelancing/Screens/tabs.dart';
+import 'package:freelancing/main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,9 +102,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
       appBar: AppBar(
         title: const Text('Orders'),
         centerTitle: true,
-        actions: [
-          
-        ],
+        actions: [IconButton(onPressed: () {
+            Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const TabsScreen()),
+      );
+        }, icon: Icon(Icons.arrow_back))],
       ),
       body: FutureBuilder<List<Order>>(
         future: futureOrders,
@@ -119,7 +123,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
               itemBuilder: (context, index) {
                 final order = snapshot.data![index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  color: Theme.of(context).colorScheme.secondary,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
@@ -129,29 +135,31 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         Center(
                           child: Text(
                             'Order: ${order.id}',
-                            style: const TextStyle(fontSize: 20),
+                            style: TextStyle(
+                                fontSize: 20, color: colorScheme.primary),
                           ),
                         ),
                         const SizedBox(height: 10),
                         Text(
                           'Status: ${order.status}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           order.details,
-                          style: const TextStyle(fontSize: 20),
+                          style: TextStyle(
+                              fontSize: 20, color: colorScheme.primary),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           'Quantity: ${order.quantity}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,

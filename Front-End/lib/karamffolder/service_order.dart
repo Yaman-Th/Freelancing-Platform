@@ -14,7 +14,7 @@ class _OScreenState extends State<OScreen> {
     String? token = prefs.getString('token');
 
     final response = await http.get(
-      Uri.parse('http://192.168.210.21:8000/api/proposals'),
+      Uri.parse('http://localhost:8000/api/proposals'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -42,7 +42,7 @@ class _OScreenState extends State<OScreen> {
     String? token = prefs.getString('token');
 
     final response = await http.put(
-      Uri.parse('http://192.168.210.21:8000/api/proposals/accept/$postId'),
+      Uri.parse('http://localhost:8000/api/proposals/accept/$postId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ class _OScreenState extends State<OScreen> {
     String? token = prefs.getString('token');
 
     final response = await http.put(
-      Uri.parse('http://192.168.210.21:8000/api/proposals/reject/$postId'),
+      Uri.parse('http://localhost:8000/api/proposals/reject/$postId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

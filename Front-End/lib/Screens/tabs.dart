@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freelancing/Screens/DashboardScreens/freelancer_dashboard.dart';
+import 'package:freelancing/Screens/Post/my_post.dart';
 import 'package:freelancing/Screens/Post/post_screen.dart';
 import 'package:freelancing/Screens/Service/create_a_service.dart';
+import 'package:freelancing/Screens/Service/get_service.dart';
+import 'package:freelancing/Screens/Service/my_service.dart';
 import 'package:freelancing/Screens/home.dart';
 import 'package:freelancing/main.dart';
 import 'package:freelancing/Screens/Post/post_management.dart';
@@ -29,8 +32,9 @@ class TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     List<Widget> pages = [
       HomeScreen(),
-      const ServiceScreen(),
-      const PostScreen(),
+      getMyServiceScreen(),
+      const myPost(),
+      GetServiceScreen(),
       const TeamManagement(),
     ];
 
@@ -38,6 +42,7 @@ class TabsScreenState extends State<TabsScreen> {
       'Home',
       'Service Management',
       'Post Management',
+      'Get Services',
       'Team Management',
     ];
 
@@ -73,7 +78,7 @@ class TabsScreenState extends State<TabsScreen> {
           ),
         ],
       ),
-      drawer:NavBar(),
+      drawer: NavBar(),
       body: pages[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
@@ -89,11 +94,15 @@ class TabsScreenState extends State<TabsScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.supervised_user_circle),
-            label: 'Service',
+            label: 'My Service',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.post_add),
-            label: 'Post',
+            label: ' My Post',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.supervised_user_circle),
+            label: ' Services',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.groups_2_rounded),

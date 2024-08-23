@@ -21,17 +21,16 @@ Future<void> verification(String code, BuildContext context) async {
     Uri.parse('http://localhost:8000/api/verify-email'),
     headers: {
       'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
     },
     body: <String, String>{
-      'token': code,
+      'code': code,
     },
   );
 
   if (response.statusCode == 200) {
     var js = jsonDecode(response.body);
-    String token1 = js['token'];
-    print('The token is $token1');
+    String token = js['token'];
+    print('The token is $token');
 
     // Save the token to shared preferences
 
@@ -39,15 +38,23 @@ Future<void> verification(String code, BuildContext context) async {
     // Navigator.push(context, MaterialPageRoute(builder: (context) {
     //   return Login();
     // }));
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return const LoginPage();
-        },
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) {
+    //       return LoginScreen();
+    //     },
+    //   ),
+    // );
   } else {
+    print(
+      first.text +
+          second.text +
+          third.text +
+          fourth.text +
+          fifth.text +
+          sixth.text,
+    );
     print('Verification failed');
   }
 }
@@ -262,7 +269,7 @@ class _FreelancerEmailVerificationState
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return const LoginPage();
+                      return LoginPage();
                     },
                   ),
                 );

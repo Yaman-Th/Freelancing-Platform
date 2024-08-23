@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freelancing/Screens/Service/my_service.dart';
 import 'package:freelancing/constant/colors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -17,26 +16,22 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _categoryIdController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _deliveryDaysController = TextEditingController();
   File? image;
-  final _picker = ImagePicker();
-  final FocusNode _focusNode = FocusNode();
+  final _piker = ImagePicker();
 
   Future getImage() async {
-    final pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final pickedfile =
+        await _piker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
-    if (pickedFile != null) {
-      setState(() {
-        image = File(pickedFile.path);
-      });
+    if (pickedfile != null) {
+      image = File(pickedfile.path);
     } else {
-      print("No image selected");
+      print("no image");
     }
   }
 
@@ -45,8 +40,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
     String description,
     String deliveryDays,
     String price,
-    String categoryId,
-    File? image, 
+    String categoryname,
+    File? image, // Accept the image file
     BuildContext context,
   ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -62,7 +57,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
       'description': description,
       'delivery_dayes': deliveryDays,
       'price': price,
-      'category_name': categoryId,
+      'category_name': categoryname,
     });
     request.files.add(await http.MultipartFile.fromPath('image', image!.path));
     request.headers.addAll(headers);
@@ -84,341 +79,215 @@ class _ServiceScreenState extends State<ServiceScreen> {
       print(response.statusCode);
     }
   }
-   void _navigateToManageServices(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>  getMyServiceScreen()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create a Service'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.manage_search, size: 30),
-            onPressed: () =>_navigateToManageServices,
-          ),
-        ],
+        title: const Text('Create a Service'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Service Title',
-                style: TextStyle(color: colorScheme.onSurface),
+      body: Container(
+        child: ListView(
+          children: [
+            const SizedBox(height: 20),
+            const Center(
+              child: Text(
+                'Title',
+                style: TextStyle(fontSize: 18),
               ),
-              Text(
-                'Make your title clean and short',
-                style: TextStyle(
-                  color: colorScheme.primary.withOpacity(0.7),
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15, bottom: 15),
+              child: TextFormField(
                 controller: _titleController,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: colorScheme.primary),
-                cursorColor: Colors.black,
                 decoration: InputDecoration(
-                  fillColor: colorScheme.secondary,
-                  filled: true,
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(
-                      color: colorScheme.onSurface,
-                      width: 2.8,
-                    ),
+                  focusColor: Silver,
+                  hintText: 'Title',
+                  hintStyle: TextStyle(fontSize: 15, color: Silver),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: BlueGray),
                   ),
-                  hintText: 'Ex: Graphic Design Service',
-                  hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: colorScheme.onBackground.withOpacity(0.4),
-                      ),
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: BlueGray),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 12),
-              Text(
+            ),
+            const Center(
+              child: Text(
                 'Description',
-                style: TextStyle(color: colorScheme.onSurface),
+                style: TextStyle(fontSize: 18),
               ),
-              Text(
-                'Brief your description clear',
-                style: TextStyle(
-                  color: colorScheme.primary.withOpacity(0.7),
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: colorScheme.secondary,
-                  border: Border.all(
-                    color: _focusNode.hasFocus
-                        ? colorScheme.onSurface
-                        : colorScheme.primary,
-                    width: _focusNode.hasFocus ? 2.8 : 1.0,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: TextFormField(
-                    focusNode: _focusNode,
-                    controller: _descriptionController,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: colorScheme.primary),
-                    cursorColor: Colors.black,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: 'Description',
-                      hintStyle: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(
-                            color: colorScheme.onBackground.withOpacity(0.4),
-                          ),
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a description';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Delivery Days & Price',
-                style: TextStyle(color: colorScheme.onSurface),
-              ),
-              Text(
-                'Delivery days & price by your service',
-                style: TextStyle(
-                  color: colorScheme.primary.withOpacity(0.7),
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _deliveryDaysController,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(color: colorScheme.primary),
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        fillColor: colorScheme.secondary,
-                        filled: true,
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
-                            color: colorScheme.onSurface,
-                            width: 2.8,
-                          ),
-                        ),
-                        hintText: 'Delivery Days',
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: colorScheme.onBackground.withOpacity(0.4),
-                            ),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        suffixIcon: Icon(
-                          Icons.calendar_today,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter the number of delivery days';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _priceController,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(color: colorScheme.primary),
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        fillColor: colorScheme.secondary,
-                        filled: true,
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
-                            color: colorScheme.onSurface,
-                            width: 2.8,
-                          ),
-                        ),
-                        hintText: 'Price',
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: colorScheme.onBackground.withOpacity(0.4),
-                            ),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        suffixIcon: Icon(
-                          Icons.attach_money_outlined,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a price';
-                        }
-                        if (double.tryParse(value) == null) {
-                          return 'Please enter a valid price';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Category ID',
-                style: TextStyle(color: colorScheme.onSurface),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _categoryIdController,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: colorScheme.primary),
-                cursorColor: Colors.black,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15, bottom: 15),
+              child: TextFormField(
+                controller: _descriptionController,
                 decoration: InputDecoration(
-                  fillColor: colorScheme.secondary,
-                  filled: true,
+                  focusColor: Silver,
+                  hintText: 'Description',
+                  hintStyle: TextStyle(fontSize: 15, color: Silver),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: BlueGray),
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(
-                      color: colorScheme.onSurface,
-                      width: 2.8,
-                    ),
-                  ),
-                  hintText: 'Enter Category ID',
-                  hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: colorScheme.onBackground.withOpacity(0.4),
-                      ),
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: BlueGray),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a category ID';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Upload Image',
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                ),
+            ),
+            const Center(
+              child: Text(
+                'Price',
+                style: TextStyle(fontSize: 18),
               ),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add_photo_alternate, size: 24),
-                label: Text(
-                  'Upload',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15, bottom: 15),
+              child: TextFormField(
+                controller: _priceController,
+                decoration: InputDecoration(
+                  focusColor: Silver,
+                  hintText: 'Budget',
+                  hintStyle: TextStyle(fontSize: 15, color: Silver),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: BlueGray),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 12.0),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: BlueGray),
+                  ),
                 ),
-                onPressed: getImage,
               ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _service(
-                        _titleController.text,
-                        _descriptionController.text,
-                        _deliveryDaysController.text,
-                        _priceController.text,
-                        _categoryIdController.text,
-                        image,
-                        context,
-                      );
-                    }
+            ),
+            const Center(
+              child: Text(
+                'Category',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15, bottom: 15),
+              child: TextFormField(
+                controller: _categoryIdController,
+                decoration: InputDecoration(
+                  focusColor: Silver,
+                  hintText: 'Name',
+                  hintStyle: TextStyle(fontSize: 15, color: Silver),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: BlueGray),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: BlueGray),
+                  ),
+                ),
+              ),
+            ),
+            const Center(
+              child: Text(
+                'Delivery Days',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15, bottom: 15),
+              child: TextFormField(
+                controller: _deliveryDaysController,
+                decoration: InputDecoration(
+                  focusColor: Silver,
+                  hintText: 'Delivery Days',
+                  hintStyle: TextStyle(fontSize: 15, color: Silver),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: BlueGray),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: BlueGray),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Image',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                color: Silver,
+              ),
+            ),
+            Center(
+              child: GestureDetector(
+                  onTap: () {
+                    getImage();
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32.0, vertical: 16.0),
-                    backgroundColor: colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                  child: Stack(children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(width: 5, color: Colors.white),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 20,
+                            offset: Offset(5, 5),
+                          ),
+                        ],
+                      ),
+                      child: image != null
+                          ? ClipOval(
+                              child: Image.file(
+                                image!,
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 100,
+                              ),
+                            )
+                          : Icon(
+                              Icons.image,
+                              color: Colors.grey.shade300,
+                              size: 80.0,
+                            ),
                     ),
-                  ),
-                  child: Text(
-                    'Submit',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                  ])),
+            ),
+            const SizedBox(
+              height: 25,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              child: FloatingActionButton(
+                onPressed: () {
+                  _service(
+                    _titleController.text,
+                    _descriptionController.text,
+                    _deliveryDaysController.text,
+                    _priceController.text,
+                    _categoryIdController.text,
+                    image!,
+                    context,
+                  );
+                },
+                backgroundColor: Aquamarine,
+                child: const Text(
+                  'Post',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+          ],
         ),
       ),
     );

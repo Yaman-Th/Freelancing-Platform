@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:freelancing/constant/colors.dart';
+import 'package:freelancing/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:freelancing/Screens/Service/create_a_service.dart';
 import 'package:freelancing/Screens/Post/post_screen.dart';
+import 'package:freelancing/Screens/Service/create_a_service.dart';
 
 class GetServiceScreen extends StatefulWidget {
   @override
@@ -136,13 +137,13 @@ class _GetServiceScreenState extends State<GetServiceScreen> {
       print('Order placed successfully');
     } else {
       print('Failed to place order, status code: ${response.statusCode}');
+      print(response.body);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text('Home')),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -188,7 +189,14 @@ class _GetServiceScreenState extends State<GetServiceScreen> {
                               const SizedBox(height: 5),
                               Text(
                                 category.name!,
-                                style: const TextStyle(fontSize: 8),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontSize: 10,
+                                    ),
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -204,33 +212,37 @@ class _GetServiceScreenState extends State<GetServiceScreen> {
                     itemBuilder: (context, index) {
                       final service = services[index];
                       return Card(
-                        margin:
-                            const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        color: Theme.of(context).colorScheme.secondary,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Check if imageUrl is not null
-                              Center(
-                                child: Image.network(
-                                  '${service.imageUrl}',
-                                  height: 150, // Set desired height
-                                  width: double.infinity, // Occupy full width
-                                  fit: BoxFit.cover, // Maintain aspect ratio
-                                ),
-                              ),
+                              // // Check if imageUrl is not null
+                              // Center(
+                              //   child: Image.network(
+                              //     '${service.imageUrl}',
+                              //     height: 150, // Set desired height
+                              //     width: double.infinity, // Occupy full width
+                              //     fit: BoxFit.cover, // Maintain aspect ratio
+                              //   ),
+                              // ),
                               const SizedBox(
                                   height: 10), // Space between image and text
                               Text(
                                 service.title ?? 'No Title',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSecondary),
                               ),
                               const SizedBox(height: 5),
-                              Text(service.description ?? 'No Description'),
+                              Text(
+                                service.description ?? 'No Description',
+                                style: TextStyle(color: colorScheme.primary),
+                              ),
                               const SizedBox(height: 5),
                               Text(
                                 '\$${service.price ?? 'N/A'}',
@@ -248,81 +260,98 @@ class _GetServiceScreenState extends State<GetServiceScreen> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: const Text('Make An Order'),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              TextFormField(
-                                                controller:
-                                                    orderQuantityController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Quantity',
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    borderSide: BorderSide(
-                                                        color: BlueGray),
-                                                  ),
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                    borderSide: BorderSide(
-                                                        color: BlueGray),
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              TextFormField(
-                                                controller: detailsController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Details',
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    borderSide: BorderSide(
-                                                        color: BlueGray),
-                                                  ),
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                    borderSide: BorderSide(
-                                                        color: BlueGray),
+                                          backgroundColor:
+                                              colorScheme.background,
+                                          title: Text(
+                                            'Make An Order',
+                                            style: TextStyle(
+                                                color: colorScheme.onSecondary),
+                                          ),
+                                          content: SingleChildScrollView(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextFormField(
+                                                  style: TextStyle(
+                                                      color:
+                                                          colorScheme.primary),
+                                                  controller:
+                                                      orderQuantityController,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Quantity',
+                                                    enabledBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      borderSide: BorderSide(
+                                                          color: BlueGray),
+                                                    ),
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30),
+                                                      borderSide: BorderSide(
+                                                          color: BlueGray),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              TextFormField(
-                                                controller:
-                                                    deliveryDateController,
-                                                decoration: InputDecoration(
-                                                  hintText: 'Delivery Date',
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    borderSide: BorderSide(
-                                                        color: BlueGray),
-                                                  ),
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                    borderSide: BorderSide(
-                                                        color: BlueGray),
+                                                const SizedBox(height: 20),
+                                                TextFormField(
+                                                  style: TextStyle(
+                                                      color:
+                                                          colorScheme.primary),
+                                                  controller: detailsController,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Details',
+                                                    enabledBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      borderSide: BorderSide(
+                                                          color: BlueGray),
+                                                    ),
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30),
+                                                      borderSide: BorderSide(
+                                                          color: BlueGray),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                                const SizedBox(height: 20),
+                                                TextFormField(
+                                                  style: TextStyle(
+                                                      color:
+                                                          colorScheme.primary),
+                                                  controller:
+                                                      deliveryDateController,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Delivery Date',
+                                                    enabledBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      borderSide: BorderSide(
+                                                          color: BlueGray),
+                                                    ),
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30),
+                                                      borderSide: BorderSide(
+                                                          color: BlueGray),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                           actions: [
                                             TextButton(
@@ -335,7 +364,7 @@ class _GetServiceScreenState extends State<GetServiceScreen> {
                                                 );
                                                 Navigator.of(context).pop();
                                               },
-                                              child: const Text('Submit'),
+                                              child: Text('Submit',style: TextStyle(color: colorScheme.onSecondary),),
                                             ),
                                           ],
                                         );

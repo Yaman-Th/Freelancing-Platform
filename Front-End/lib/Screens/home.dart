@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:freelancing/constant/colors.dart';
+import 'package:freelancing/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:freelancing/Screens/Post/post_screen.dart';
@@ -106,6 +107,32 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } else {
       print('Failed to load categories, status code: ${response.statusCode}');
+      print(response.body);
+    }
+  }
+
+  final commentController = TextEditingController();
+
+  Future<void> _proposal(
+    String post_id,
+    String comment,
+  ) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    var response = await http.post(
+      Uri.parse('http://localhost:8000/api/proposals'),
+      headers: {'Authorization': 'Bearer $token'},
+      body: {
+        'post_id': post_id,
+        'comment': comment,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Order placed successfully');
+    } else {
+      print('Failed to place order, status code: ${response.statusCode}');
+      print(response.body);
     }
   }
 
@@ -113,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _pageController.dispose();
     _timer?.cancel();
+    commentController.dispose();
     super.dispose();
   }
 
@@ -121,6 +149,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+          actions: [IconButton(onPressed: () {
+          Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return const PostScreen();
+        },
+      ),
+    );
+        }, icon: const Icon(Icons.add))],
         title: const Text('Home'),
       ),
       body: isLoading
@@ -171,7 +209,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(height: 5),
                                 Text(
                                   category.name!,
-                                  style: const TextStyle(fontSize: 8),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                            fontSize: 10,
+                                      ),
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -188,8 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final post = posts[index];
                       return Card(
-                        margin:
-                            const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        color: Theme.of(context).colorScheme.secondary,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
@@ -197,13 +244,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Text(
                                 post.title ?? 'No Title',
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSecondary
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Text(post.description ?? 'No Description'),
+                              Text(post.description ?? 'No Description',style: TextStyle(color:colorScheme.primary ),),
                               const SizedBox(height: 5),
                               Text(
                                 '\$${post.budget ?? 'N/A'}',
@@ -231,7 +279,54 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Center(
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Make An Order'),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              TextFormField(
+                                                controller: commentController,
+                                                decoration: InputDecoration(
+                                                  hintText: 'Comment',
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    borderSide: BorderSide(
+                                                        color: BlueGray),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30),
+                                                    borderSide: BorderSide(
+                                                        color: BlueGray),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () async {
+                                                await _proposal(
+                                                    post.id.toString(),
+                                                    commentController.text);
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Submit'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
                                   child: Text(
                                     'submit',
                                     style: TextStyle(

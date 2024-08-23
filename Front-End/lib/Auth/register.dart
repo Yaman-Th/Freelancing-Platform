@@ -13,53 +13,164 @@ class Register extends StatefulWidget {
   State<Register> createState() => _ClientRegisterState();
 }
 
-Future Signup(
-  String first_name,
-  String last_name,
+Future<void> signup(
+  String firstName,
+  String lastName,
   String type,
   String email,
   String password,
-  String password_confirmation,
+  String passwordConfirmation,
   String birthdate,
   BuildContext context,
 ) async {
-  var response = await http.post(
-    Uri.parse('http://localhost:8000/api/register'),
-    body: <String, String>{
-      'first_name': first_name,
-      'last_name': last_name,
-      'type': type,
-      'email': email,
-      'password': password,
-      'password_confirmation': password_confirmation,
-      'birthdate': birthdate,
+  try {
+    var response = await http.post(
+      Uri.parse('http://localhost:8000/api/register'),
+      body: <String, String>{
+        'first_name': firstName,
+        'last_name': lastName,
+        'type': type,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+        'birthdate': birthdate,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var js = jsonDecode(response.body);
+      String token = js['token'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+      print('The token is $token');
+      _showVerificationDialog(context);
+    } else {
+      print('Signup failed: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      // Handle other status codes
+    }
+  } catch (e) {
+    print('Error occurred during signup: $e');
+  }
+}
+
+Future<void> verifyEmail(String code, BuildContext context) async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token'); // The token might be null
+
+    if (token == null) {
+      // Handle the case when token is null
+      print('Token is null. User might not be authenticated.');
+      // Optionally, show an error message or redirect to login
+      return;
+    }
+
+    var response = await http.post(
+      Uri.parse('http://localhost:8000/api/verify-email'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'code': code,
+      }),
+    );
+
+    print('Response Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      var js = jsonDecode(response.body);
+
+      if (js.containsKey('token')) {
+        String? newToken = js['token'];
+
+        if (newToken != null) {
+          await prefs.setString('token', newToken);
+
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) {
+          //       return FreelancerEmailVerification();
+          //     },
+          //   ),
+          // );
+        } else {
+          print('New token is null, something went wrong.');
+          // Handle the error appropriately
+        }
+      }
+    } else {
+      print('Verification failed: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      // Handle verification error
+    }
+  } catch (e) {
+    print('Error occurred during verification: $e');
+  }
+}
+
+void _showVerificationDialog(BuildContext context) {
+  TextEditingController verificationCodeController = TextEditingController();
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+        title: Text(
+          'Email Verification',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).colorScheme.background,
+              ),
+        ),
+        content: TextField(
+          controller: verificationCodeController,
+          decoration: InputDecoration(
+            hintText: 'Enter verification code',
+            hintStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.background,
+                ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Cancel',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.background,
+                  ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await verifyEmail(verificationCodeController.text, context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const LoginPage();
+                  },
+                ),
+              );
+            },
+            child: Text(
+              'Verify',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+          ),
+        ],
+      );
     },
   );
-
-  if (response.statusCode == 200) {
-    var js = jsonDecode(response.body);
-     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return const LoginPage();
-        },
-      ),
-    );
-    String token = js['token'];
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return const LoginPage();
-        },
-      ),
-    );
-
-    print('the token is $token');
-  }
 }
 
 final registerTypeController = TextEditingController();
@@ -167,7 +278,7 @@ class _ClientRegisterState extends State<Register> {
                         if (selectedType != null) {
                           registerTypeController.text = selectedType!;
                         }
-                        Signup(
+                        signup(
                           registerFirstNameController.text,
                           registerLastNameController.text,
                           registerTypeController.text,
@@ -251,55 +362,55 @@ class _ClientRegisterState extends State<Register> {
     );
   }
 
- Widget _buildDatePickerField({
-  required TextEditingController controller,
-  required String label,
-  required BuildContext context,
-}) {
-  return GestureDetector(
-    onTap: () async {
-      final DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2101),
-        builder: (BuildContext context, Widget? child) {
-          return Theme(
-            data: ThemeData().copyWith(
-              colorScheme: ColorScheme.light(
-                primary: Theme.of(context).colorScheme.onSecondary,
-                onPrimary: Theme.of(context).colorScheme.background,
-                surface: Theme.of(context).colorScheme.onSurface,
-                onSurface: Theme.of(context).colorScheme.background,
-              ),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
+  Widget _buildDatePickerField({
+    required TextEditingController controller,
+    required String label,
+    required BuildContext context,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        final DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2101),
+          builder: (BuildContext context, Widget? child) {
+            return Theme(
+              data: ThemeData().copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Theme.of(context).colorScheme.onSecondary,
+                  onPrimary: Theme.of(context).colorScheme.background,
+                  surface: Theme.of(context).colorScheme.onSurface,
+                  onSurface: Theme.of(context).colorScheme.background,
                 ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                dialogBackgroundColor: Theme.of(context).colorScheme.background,
               ),
-              dialogBackgroundColor: Theme.of(context).colorScheme.background,
-            ),
-            child: child!,
-          );
-        },
-      );
+              child: child!,
+            );
+          },
+        );
 
-      if (pickedDate != null && pickedDate != selectedDate) {
-        setState(() {
-          selectedDate = pickedDate;
-          controller.text = "${pickedDate.toLocal()}".split(' ')[0];
-        });
-      }
-    },
-    child: AbsorbPointer(
-      child: _buildTextField(
-        controller: controller,
-        label: label,
-        context: context,
+        if (pickedDate != null && pickedDate != selectedDate) {
+          setState(() {
+            selectedDate = pickedDate;
+            controller.text = "${pickedDate.toLocal()}".split(' ')[0];
+          });
+        }
+      },
+      child: AbsorbPointer(
+        child: _buildTextField(
+          controller: controller,
+          label: label,
+          context: context,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildTypeSelectionRow() {
     return Padding(

@@ -44,45 +44,7 @@ class NavBar extends StatelessWidget {
                           fit: BoxFit.cover,
                           image: AssetImage("assets/images/Avatar.png"))),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.email),
-                  title: Text(
-                    'email',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                  ),
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
-                          height: 200,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Email: $email',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                ),
-                                // Replace with the actual email variable
-                                // Display other login information as needed
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                
                 ListTile(
                   leading: const Icon(Icons.shopping_basket),
                   title: Text(

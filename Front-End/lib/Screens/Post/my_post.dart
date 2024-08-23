@@ -77,27 +77,6 @@ class _myPostState extends State<myPost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
-        backgroundColor: colorScheme.background,
-        elevation: 0.0,
-        toolbarHeight: 70.0,
-        title: Text(
-          'Manage Posts',
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: Theme.of(context).colorScheme.background, fontSize: 24),
-        ),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20)),
-              gradient: LinearGradient(colors: [
-                colorScheme.onSecondary,
-                colorScheme.onSurface,
-              ], begin: Alignment.bottomCenter, end: Alignment.topCenter)),
-        ),
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -122,6 +101,7 @@ class _myPostState extends State<myPost> {
                     itemBuilder: (context, index) {
                       final post = myservice[index];
                       return Card(
+                        color: Theme.of(context).colorScheme.secondary,
                         margin: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 15),
                         child: Padding(
@@ -131,13 +111,17 @@ class _myPostState extends State<myPost> {
                             children: [
                               Text(
                                 post.title ?? 'No Title',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSecondary,
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Text(post.description ?? 'No Description'),
+                              Text(
+                                post.description ?? 'No Description',
+                                style: TextStyle(color: colorScheme.primary),
+                              ),
                               const SizedBox(height: 5),
                               Text(
                                 '\$${post.budget ?? 'N/A'}',
